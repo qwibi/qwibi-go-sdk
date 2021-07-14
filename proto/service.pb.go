@@ -33,23 +33,31 @@ var File_qwibi_service_proto protoreflect.FileDescriptor
 var file_qwibi_service_proto_rawDesc = []byte{
 	0x0a, 0x13, 0x71, 0x77, 0x69, 0x62, 0x69, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x10, 0x71, 0x77, 0x69, 0x62, 0x69, 0x2f, 0x61, 0x75, 0x74,
-	0x68, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0x36, 0x0a, 0x07, 0x51, 0x50, 0x42, 0x78, 0x41,
-	0x70, 0x69, 0x12, 0x2b, 0x0a, 0x04, 0x41, 0x75, 0x74, 0x68, 0x12, 0x10, 0x2e, 0x51, 0x50, 0x42,
-	0x78, 0x41, 0x75, 0x74, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x11, 0x2e, 0x51,
-	0x50, 0x42, 0x78, 0x41, 0x75, 0x74, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42,
-	0x0d, 0x5a, 0x0b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x68, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x10, 0x71, 0x77, 0x69, 0x62, 0x69, 0x2f, 0x6a,
+	0x6f, 0x69, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0x63, 0x0a, 0x07, 0x51, 0x50, 0x42,
+	0x78, 0x41, 0x70, 0x69, 0x12, 0x2b, 0x0a, 0x04, 0x41, 0x75, 0x74, 0x68, 0x12, 0x10, 0x2e, 0x51,
+	0x50, 0x42, 0x78, 0x41, 0x75, 0x74, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x11,
+	0x2e, 0x51, 0x50, 0x42, 0x78, 0x41, 0x75, 0x74, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x2b, 0x0a, 0x04, 0x4a, 0x6f, 0x69, 0x6e, 0x12, 0x10, 0x2e, 0x51, 0x50, 0x42, 0x78,
+	0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x11, 0x2e, 0x51, 0x50,
+	0x42, 0x78, 0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x0d,
+	0x5a, 0x0b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var file_qwibi_service_proto_goTypes = []interface{}{
 	(*QPBxAuthRequest)(nil),  // 0: QPBxAuthRequest
-	(*QPBxAuthResponse)(nil), // 1: QPBxAuthResponse
+	(*QPBxJoinRequest)(nil),  // 1: QPBxJoinRequest
+	(*QPBxAuthResponse)(nil), // 2: QPBxAuthResponse
+	(*QPBxJoinResponse)(nil), // 3: QPBxJoinResponse
 }
 var file_qwibi_service_proto_depIdxs = []int32{
 	0, // 0: QPBxApi.Auth:input_type -> QPBxAuthRequest
-	1, // 1: QPBxApi.Auth:output_type -> QPBxAuthResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	1, // 1: QPBxApi.Join:input_type -> QPBxJoinRequest
+	2, // 2: QPBxApi.Auth:output_type -> QPBxAuthResponse
+	3, // 3: QPBxApi.Join:output_type -> QPBxJoinResponse
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -61,6 +69,7 @@ func file_qwibi_service_proto_init() {
 		return
 	}
 	file_qwibi_auth_proto_init()
+	file_qwibi_join_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
@@ -94,6 +103,8 @@ const _ = grpc.SupportPackageIsVersion6
 type QPBxApiClient interface {
 	// AUTH return authToken
 	Auth(ctx context.Context, in *QPBxAuthRequest, opts ...grpc.CallOption) (*QPBxAuthResponse, error)
+	// Join to layer
+	Join(ctx context.Context, in *QPBxJoinRequest, opts ...grpc.CallOption) (*QPBxJoinResponse, error)
 }
 
 type qPBxApiClient struct {
@@ -113,10 +124,21 @@ func (c *qPBxApiClient) Auth(ctx context.Context, in *QPBxAuthRequest, opts ...g
 	return out, nil
 }
 
+func (c *qPBxApiClient) Join(ctx context.Context, in *QPBxJoinRequest, opts ...grpc.CallOption) (*QPBxJoinResponse, error) {
+	out := new(QPBxJoinResponse)
+	err := c.cc.Invoke(ctx, "/QPBxApi/Join", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QPBxApiServer is the server API for QPBxApi service.
 type QPBxApiServer interface {
 	// AUTH return authToken
 	Auth(context.Context, *QPBxAuthRequest) (*QPBxAuthResponse, error)
+	// Join to layer
+	Join(context.Context, *QPBxJoinRequest) (*QPBxJoinResponse, error)
 }
 
 // UnimplementedQPBxApiServer can be embedded to have forward compatible implementations.
@@ -125,6 +147,9 @@ type UnimplementedQPBxApiServer struct {
 
 func (*UnimplementedQPBxApiServer) Auth(context.Context, *QPBxAuthRequest) (*QPBxAuthResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Auth not implemented")
+}
+func (*UnimplementedQPBxApiServer) Join(context.Context, *QPBxJoinRequest) (*QPBxJoinResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Join not implemented")
 }
 
 func RegisterQPBxApiServer(s *grpc.Server, srv QPBxApiServer) {
@@ -149,6 +174,24 @@ func _QPBxApi_Auth_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _QPBxApi_Join_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QPBxJoinRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QPBxApiServer).Join(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/QPBxApi/Join",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QPBxApiServer).Join(ctx, req.(*QPBxJoinRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _QPBxApi_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "QPBxApi",
 	HandlerType: (*QPBxApiServer)(nil),
@@ -156,6 +199,10 @@ var _QPBxApi_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Auth",
 			Handler:    _QPBxApi_Auth_Handler,
+		},
+		{
+			MethodName: "Join",
+			Handler:    _QPBxApi_Join_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
