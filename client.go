@@ -2,7 +2,10 @@ package sdk
 
 import (
 	"context"
+	"io"
+	"runtime"
 
+	"github.com/rs/zerolog/log"
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/auth"
 	"github.com/qwibi/qwibi-go-sdk/geo"
@@ -95,4 +98,46 @@ func (c *QApiClient) Join(layerID string) (*geo.QLayer, error) {
 	}
 
 	return layer, nil
+}
+
+// Stream
+func (c *QApiClient) Stream(ctx context.Context ) error {
+	streamRequest, err := request.NewStreamRequest()
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	pb, err := streamRequest.Pb()
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	stream, err := c.apiClient.Stream(ctx, pb)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	//go c.send(stream)
+	go c.receive(stream)
+	//return c.RunTest(ctx)
+	//go c.RunTest(ctx)
+
+	return nil
+}
+
+// Receive ...
+func (c *QApiClient) receive(stream proto.QPBxApi_StreamClient) error {
+	for {
+		msg, err := stream.Recv()
+		if err == io.EOF {
+			log.Info().Msgf("Client connected: %+v", c)
+			log.Info().Msgf("Goroutines: %d", runtime.NumGoroutine())
+			return err
+		}
+		if err != nil {
+			errors.WithStack(err)
+		}
+
+		log.Info().Msgf("==> Stream: [%T] %+v", msg.Response, msg)
+	}
 }

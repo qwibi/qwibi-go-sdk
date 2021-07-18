@@ -47,7 +47,7 @@ func NewJoinRequest(layerID string) (*QJoinRequest, error) {
 // NewJoinRequestPb ...
 func NewJoinRequestPb(pb *proto.QPBxJoinRequest) (*QJoinRequest, error) {
 	if pb == nil {
-		return nil, errors.New("Invalid format")
+		return nil, errors.New("Invalid format type nil")
 	}
 
 	r := &QJoinRequest{
