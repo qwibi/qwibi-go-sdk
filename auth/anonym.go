@@ -22,6 +22,12 @@ func (c *QAnonymousAuth) Pb() (*proto.QPBxAnonymAuth, error) {
 	return pb, nil
 }
 
+// NewAnonymousAuth ...
+func NewAnonymousAuth() (*QAnonymousAuth, error) {
+	auth := &QAnonymousAuth{}
+	return auth, nil
+}
+
 // NewAnonymousAuthPb ...
 func NewAnonymousAuthPb(pb *proto.QPBxAuthRequest_Anonym) (*QAnonymousAuth, error) {
 	if pb == nil {
@@ -30,10 +36,4 @@ func NewAnonymousAuthPb(pb *proto.QPBxAuthRequest_Anonym) (*QAnonymousAuth, erro
 
 	auth := &QAnonymousAuth{}
 	return auth, nil
-}
-
-// NewAnonymousAuth ...
-func NewAnonymousAuth() *QAnonymousAuth {
-	auth := &QAnonymousAuth{}
-	return auth
 }

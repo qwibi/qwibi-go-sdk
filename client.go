@@ -2,16 +2,17 @@ package sdk
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"runtime"
 
-	"github.com/rs/zerolog/log"
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/auth"
 	"github.com/qwibi/qwibi-go-sdk/geo"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 	"github.com/qwibi/qwibi-go-sdk/rpc/request"
 	"github.com/qwibi/qwibi-go-sdk/rpc/response"
+	"github.com/rs/zerolog/log"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -62,6 +63,19 @@ func (c *QApiClient) Auth(req *request.QAuthRequest) (*response.QAuthResponse, e
 	return res, nil
 }
 
+func (c *QApiClient) AnonymousAuth() (*response.QAuthResponse, error) {
+	auth, err := auth.NewAnonymousAuth()
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	req := &request.QAuthRequest{
+		Auth: auth,
+	}
+
+	return c.Auth(req)
+}
+
 func (c *QApiClient) BasicAuth(login string, password string) (*response.QAuthResponse, error) {
 	auth, err := auth.NewBasicAuth(login, password)
 	if err != nil {
@@ -97,33 +111,52 @@ func (c *QApiClient) Join(layerID string) (*geo.QLayer, error) {
 		return nil, err
 	}
 
+	messageRequest, err := request.NewMessageRequest("test")
+	if err != nil {
+		return nil, err
+	}
+
+	pbMessageRequest, err := messageRequest.Pb()
+	if err != nil {
+		return nil, err
+	}
+
+	messageResponse, err := c.apiClient.Message(c.ctx, pbMessageRequest)
+
+	fmt.Println(messageResponse)
+
+	//postResponse, err := c.apiClient.Post(c.ctx, reqest)
+	//if err != nil {
+	//	return nil, err
+	//}
+
 	return layer, nil
 }
 
-// Stream
-func (c *QApiClient) Stream(ctx context.Context ) error {
-	streamRequest, err := request.NewStreamRequest()
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	pb, err := streamRequest.Pb()
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	stream, err := c.apiClient.Stream(ctx, pb)
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	//go c.send(stream)
-	go c.receive(stream)
-	//return c.RunTest(ctx)
-	//go c.RunTest(ctx)
-
-	return nil
-}
+//// Stream
+//func (c *QApiClient) Stream(ctx context.Context ) error {
+//	streamRequest, err := request.NewStreamRequest()
+//	if err != nil {
+//		return errors.WithStack(err)
+//	}
+//
+//	pb, err := streamRequest.Pb()
+//	if err != nil {
+//		return errors.WithStack(err)
+//	}
+//
+//	stream, err := c.apiClient.Stream(ctx, pb)
+//	if err != nil {
+//		return errors.WithStack(err)
+//	}
+//
+//	//go c.send(stream)
+//	go c.receive(stream)
+//	//return c.RunTest(ctx)
+//	//go c.RunTest(ctx)
+//
+//	return nil
+//}
 
 // Receive ...
 func (c *QApiClient) receive(stream proto.QPBxApi_StreamClient) error {
@@ -138,6 +171,6 @@ func (c *QApiClient) receive(stream proto.QPBxApi_StreamClient) error {
 			errors.WithStack(err)
 		}
 
-		log.Info().Msgf("==> Stream: [%T] %+v", msg.Response, msg)
+		log.Info().Msgf("==> Stream: [%T] %+v", msg, msg)
 	}
 }

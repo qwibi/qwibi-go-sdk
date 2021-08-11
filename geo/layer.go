@@ -3,6 +3,7 @@ package geo
 import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/proto"
+	"github.com/qwibi/qwibi-go-sdk/utils"
 )
 
 // QLayer ...
@@ -20,7 +21,8 @@ func (c *QLayer) Valid() error {
 }
 
 // NewLayer ...
-func NewLayer(layerID string) (*QLayer, error) {
+func NewLayer() (*QLayer, error) {
+	layerID := utils.NewID()
 	layer := &QLayer{
 		LayerID: layerID,
 		Name:    layerID,
