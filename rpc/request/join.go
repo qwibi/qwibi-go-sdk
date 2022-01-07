@@ -8,11 +8,11 @@ import (
 
 // QJoinRequest ...
 type QJoinRequest struct {
-	LayerID string
+	Gid string
 }
 
 func (c *QJoinRequest) Valid() error {
-	if c.LayerID == "" {
+	if c.Gid == "" {
 		err := errors.New("Invalid format")
 		log.Error().Stack().Err(err).Msg("")
 		return errors.WithStack(err)
@@ -28,16 +28,16 @@ func (c *QJoinRequest) Pb() (*proto.QPBxJoinRequest, error) {
 	}
 
 	pb := &proto.QPBxJoinRequest{
-		LayerID: c.LayerID,
+		Gid: c.Gid,
 	}
 
 	return pb, nil
 }
 
 // NewJoinRequest ...
-func NewJoinRequest(layerID string) (*QJoinRequest, error) {
+func NewJoinRequest(gid string) (*QJoinRequest, error) {
 	r := &QJoinRequest{
-		LayerID: layerID,
+		Gid: gid,
 	}
 
 	if err := r.Valid(); err != nil {
@@ -56,7 +56,7 @@ func NewJoinRequestPb(pb *proto.QPBxJoinRequest) (*QJoinRequest, error) {
 	}
 
 	r := &QJoinRequest{
-		LayerID: pb.LayerID,
+		Gid: pb.Gid,
 	}
 
 	return r, nil
