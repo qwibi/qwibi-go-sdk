@@ -1,9 +1,12 @@
 package request
 
 import (
+	"fmt"
+
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/auth"
 	"github.com/qwibi/qwibi-go-sdk/proto"
+	"github.com/rs/zerolog/log"
 )
 
 // QAuthRequest ...
@@ -33,23 +36,29 @@ func (c *QAuthRequest) Pb() (*proto.QPBxAuthRequest, error) {
 		}
 		return request, nil
 	default:
-		return nil, errors.New("Unknown auth request")
+		err := errors.New("Unknown object type")
+		msg := fmt.Sprintf("%T", v)
+		log.Error().Stack().Err(err).Msg(msg)
+		return nil, errors.WithStack(err)
 	}
 }
 
 // NewAuthRequest ...
 func NewAuthRequest(authMethod interface{}) (*QAuthRequest, error) {
-	switch t := authMethod.(type) {
+	switch v := authMethod.(type) {
 	case *auth.QAnonymousAuth:
 		req := &QAuthRequest{
-			Auth: t,
+			Auth: v,
 		}
 		return req, nil
 	case *auth.QBasicAuth:
 		req := &QAuthRequest{}
 		return req, nil
 	default:
-		return nil, errors.New("Unknown auth request")
+		err := errors.New("Unknown object type")
+		msg := fmt.Sprintf("%T", v)
+		log.Error().Stack().Err(err).Msg(msg)
+		return nil, errors.WithStack(err)
 	}
 }
 
@@ -69,6 +78,9 @@ func NewAuthRequestPb(pb *proto.QPBxAuthRequest) (*QAuthRequest, error) {
 		}
 		return &QAuthRequest{Auth: t}, nil
 	default:
-		return nil, errors.New("Unknown auth request")
+		err := errors.New("Unknown object type")
+		msg := fmt.Sprintf("%T", v)
+		log.Error().Stack().Err(err).Msg(msg)
+		return nil, errors.WithStack(err)
 	}
 }

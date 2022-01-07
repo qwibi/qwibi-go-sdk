@@ -1,0 +1,29 @@
+package main
+
+import (
+	"os"
+
+	"github.com/pkg/errors"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+)
+
+func myFunc() {
+
+	err := errors.New("my error")
+	err2 := errors.New("my error!!!!")
+	err = errors.WithStack(errors.Wrap(err, "something failed"))
+
+	log.Error().Stack().Err(err).Msg("hello world")
+	log.Error().Stack().Err(err2).Msg("hello world")
+}
+
+func main() {
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr}).With().Caller().Logger()
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	// zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+
+	log.Logger = log.With().Str("my", "field").Logger()
+	myFunc()
+}

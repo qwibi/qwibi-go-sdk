@@ -4,6 +4,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/geo"
 	"github.com/qwibi/qwibi-go-sdk/proto"
+	"github.com/rs/zerolog/log"
 )
 
 // QJoinResponse ...
@@ -13,7 +14,9 @@ type QJoinResponse struct {
 
 func (c *QJoinResponse) Valid() error {
 	if c.Layer == nil {
-		return errors.New("Layer is not defined")
+		err := errors.New("Invalid format")
+		log.Error().Stack().Err(err).Msg("")
+		return errors.WithStack(err)
 	}
 
 	if err := c.Layer.Valid(); err != nil {
@@ -44,7 +47,9 @@ func (c *QJoinResponse) Pb() (*proto.QPBxJoinResponse, error) {
 // NewJoinResponse ...
 func NewJoinResponse(layer *geo.QLayer) (*QJoinResponse, error) {
 	if layer == nil {
-		return nil, errors.New("Wrong layer parameter type nil")
+		err := errors.New("Invalid format type nil")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
 	}
 
 	r := &QJoinResponse{

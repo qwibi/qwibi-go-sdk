@@ -4,17 +4,20 @@ import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 	"github.com/qwibi/qwibi-go-sdk/utils"
+	"github.com/rs/zerolog/log"
 )
 
 // QLayer ...
 type QLayer struct {
-	LayerID string
-	Name    string
+	Gid  string
+	Name string
 }
 
 func (c *QLayer) Valid() error {
-	if c.LayerID == "" || c.Name == "" {
-		return errors.New("Layer ID or Name is empty")
+	if c.Gid == "" || c.Name == "" {
+		err := errors.New("Invalid parameter type nil")
+		log.Error().Stack().Err(err).Msg("")
+		return errors.WithStack(err)
 	}
 
 	return nil
@@ -22,10 +25,10 @@ func (c *QLayer) Valid() error {
 
 // NewLayer ...
 func NewLayer() (*QLayer, error) {
-	layerID := utils.NewID()
+	gid := utils.NewID()
 	layer := &QLayer{
-		LayerID: layerID,
-		Name:    layerID,
+		Gid:  gid,
+		Name: gid,
 	}
 
 	if err := layer.Valid(); err != nil {
@@ -43,8 +46,8 @@ func (c *QLayer) Pb() (*proto.QPBxLayer, error) {
 	}
 
 	pb := &proto.QPBxLayer{
-		LayerID: c.LayerID,
-		Name:    c.Name,
+		Gid:  c.Gid,
+		Name: c.Name,
 	}
 
 	return pb, nil
@@ -53,12 +56,14 @@ func (c *QLayer) Pb() (*proto.QPBxLayer, error) {
 // NewLayerPb ...
 func NewLayerPb(pb *proto.QPBxLayer) (*QLayer, error) {
 	if pb == nil {
-		return nil, errors.New("Invalid parameter type nil")
+		err := errors.New("Invalid parameter type nil")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
 	}
 
 	layer := &QLayer{
-		LayerID: pb.LayerID,
-		Name:    pb.Name,
+		Gid:  pb.Gid,
+		Name: pb.Name,
 	}
 
 	if err := layer.Valid(); err != nil {

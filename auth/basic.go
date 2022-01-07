@@ -3,6 +3,7 @@ package auth
 import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/proto"
+	"github.com/rs/zerolog/log"
 )
 
 // QBasicAuth ...
@@ -13,7 +14,9 @@ type QBasicAuth struct {
 
 func (c *QBasicAuth) Valid() error {
 	if c.Login == "" || c.Password == "" {
-		return errors.New("Login or password not defined")
+		err := errors.New("Login or password not defined")
+		log.Error().Stack().Err(err).Msg("")
+		return errors.WithStack(err)
 	}
 
 	return nil
@@ -49,7 +52,9 @@ func NewBasicAuth(login string, password string) (*QBasicAuth, error) {
 // NewBasicAuthPb ...
 func NewBasicAuthPb(pb *proto.QPBxAuthRequest_Basic) (*QBasicAuth, error) {
 	if pb == nil || pb.Basic == nil {
-		return nil, errors.New("Invalid parameter type nil")
+		err := errors.New("Invalid parameter type nil")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
 	}
 
 	login := pb.Basic.Login

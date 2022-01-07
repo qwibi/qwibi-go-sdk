@@ -49,7 +49,7 @@ func (c *QApiClient) Auth(req *request.QAuthRequest) (*response.QAuthResponse, e
 
 	resPb, err := c.apiClient.Auth(c.ctx, reqPb)
 	if err != nil {
-		return nil, errors.Wrap(err, "Auth error")
+		return nil, errors.WithStack(err)
 	}
 
 	res, err := response.NewAuthResponsePb(resPb)
@@ -93,44 +93,57 @@ func (c *QApiClient) BasicAuth(login string, password string) (*response.QAuthRe
 func (c *QApiClient) Join(layerID string) (*geo.QLayer, error) {
 	joinRequest, err := request.NewJoinRequest(layerID)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	requestPb, err := joinRequest.Pb()
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	joinResponse, err := c.apiClient.Join(c.ctx, requestPb)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	layer, err := geo.NewLayerPb(joinResponse.Layer)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
-
-	messageRequest, err := request.NewMessageRequest("test")
-	if err != nil {
-		return nil, err
-	}
-
-	pbMessageRequest, err := messageRequest.Pb()
-	if err != nil {
-		return nil, err
-	}
-
-	messageResponse, err := c.apiClient.Message(c.ctx, pbMessageRequest)
-
-	fmt.Println(messageResponse)
-
-	//postResponse, err := c.apiClient.Post(c.ctx, reqest)
-	//if err != nil {
-	//	return nil, err
-	//}
 
 	return layer, nil
+}
+
+// Join ...
+func (c *QApiClient) Post(object *geo.QGeoObject) (*geo.QGeoObject, error) {
+	request, err := request.NewPostRequest(object)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	requestPb, err := request.Pb()
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	log.Debug().Msgf("RPC request: %s", requestPb.String())
+	responsePb, err := c.apiClient.Post(c.ctx, requestPb)
+	if err != nil {
+		// st, ok := status.FromError(err)
+		// if ok {
+		// 	fmt.Printf("!!!!! %v", st.Message())
+		// }
+		err := errors.New(fmt.Sprint(err))
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
+	}
+
+	response, err := response.NewPostResponsePb(responsePb)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return response.Object, nil
 }
 
 //// Stream

@@ -3,6 +3,7 @@ package request
 import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/proto"
+	"github.com/rs/zerolog/log"
 )
 
 // QJoinRequest ...
@@ -12,7 +13,9 @@ type QJoinRequest struct {
 
 func (c *QJoinRequest) Valid() error {
 	if c.LayerID == "" {
-		return errors.New("LayerID is not defined")
+		err := errors.New("Invalid format")
+		log.Error().Stack().Err(err).Msg("")
+		return errors.WithStack(err)
 	}
 
 	return nil
@@ -47,7 +50,9 @@ func NewJoinRequest(layerID string) (*QJoinRequest, error) {
 // NewJoinRequestPb ...
 func NewJoinRequestPb(pb *proto.QPBxJoinRequest) (*QJoinRequest, error) {
 	if pb == nil {
-		return nil, errors.New("Invalid format type nil")
+		err := errors.New("Invalid format type nil")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
 	}
 
 	r := &QJoinRequest{

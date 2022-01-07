@@ -3,6 +3,7 @@ package geojson
 import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/proto"
+	"github.com/rs/zerolog/log"
 )
 
 // QPoint ...
@@ -28,17 +29,6 @@ func (c *QPoint) GetType() string {
 func (c *QPoint) Pb() *proto.QPBxPoint {
 	pb := &proto.QPBxPoint{Coordinates: c.Coordinates}
 	return pb
-}
-
-// GeometryPb ...
-func (c *QPoint) GeometryPb() (*proto.QPBxGeometry, error) {
-	if err := c.Valid(); err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	pb := &proto.QPBxGeometry{Object: &proto.QPBxGeometry_Point{Point: c.Pb()}}
-
-	return pb, nil
 }
 
 // SetCenter ...
@@ -74,17 +64,19 @@ func NewPointZero() *QPoint {
 // NewPointPb ...
 func NewPointPb(pb *proto.QPBxPoint) (*QPoint, error) {
 	if pb == nil {
-		return nil, errors.New("Invalid format type nil")
+		err := errors.New("Invalid format type nil")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
 	}
 
 	return NewPoint(pb.Coordinates)
 }
 
-// NewPointGeometryPb ...
-func NewPointGeometryPb(pb *proto.QPBxGeometry_Point) (*QPoint, error) {
-	if pb == nil {
-		return nil, errors.New("Invalid format type nil")
-	}
+// // NewPointGeometryPb ...
+// func NewPointGeometryPb(pb *proto.QPBxGeometry_Point) (*QPoint, error) {
+// 	if pb == nil {
+// 		return nil, errors.New("Invalid format type nil")
+// 	}
 
-	return NewPointPb(pb.Point)
-}
+// 	return NewPointPb(pb.Point)
+// }

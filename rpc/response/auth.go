@@ -3,6 +3,7 @@ package response
 import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/proto"
+	"github.com/rs/zerolog/log"
 )
 
 // QAuthResponse ...
@@ -12,7 +13,9 @@ type QAuthResponse struct {
 
 func (c *QAuthResponse) Valid() error {
 	if c.Token == "" {
-		return errors.New("Empty token value")
+		err := errors.New("Invalid format")
+		log.Error().Stack().Err(err).Msg("")
+		return errors.WithStack(err)
 	}
 
 	return nil
@@ -22,7 +25,7 @@ func (c *QAuthResponse) Valid() error {
 func (c *QAuthResponse) Pb() (*proto.QPBxAuthResponse, error) {
 
 	if err := c.Valid(); err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	token := "TODO"
@@ -37,7 +40,9 @@ func (c *QAuthResponse) Pb() (*proto.QPBxAuthResponse, error) {
 // NewAuthResponsePb ...
 func NewAuthResponsePb(pb *proto.QPBxAuthResponse) (*QAuthResponse, error) {
 	if pb == nil {
-		return nil, errors.New("Invalid format")
+		err := errors.New("Invalid format")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
 	}
 
 	res := &QAuthResponse{

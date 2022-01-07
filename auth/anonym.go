@@ -3,6 +3,7 @@ package auth
 import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/proto"
+	"github.com/rs/zerolog/log"
 )
 
 //type AuthMethod int
@@ -31,7 +32,9 @@ func NewAnonymousAuth() (*QAnonymousAuth, error) {
 // NewAnonymousAuthPb ...
 func NewAnonymousAuthPb(pb *proto.QPBxAuthRequest_Anonym) (*QAnonymousAuth, error) {
 	if pb == nil {
-		return nil, errors.New("Invalid parameter type nil")
+		err := errors.New("Invalid parameter type nil")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
 	}
 
 	auth := &QAnonymousAuth{}

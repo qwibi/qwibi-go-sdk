@@ -1,39 +1,56 @@
 package geojson
 
 import (
+	"fmt"
+
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/proto"
+	"github.com/rs/zerolog/log"
 )
+
+type QGeometry interface {
+	// Valid() error
+}
 
 //QFeature ...
 type QFeature struct {
-	Gid        string
 	Geometry   QGeometry
 	Properties *structpb.Struct
 }
 
 func (c *QFeature) Valid() error {
-	if c.Gid == "" || c.Geometry == nil || c.Geometry.Valid() != nil {
-		return errors.New("QFeature invalid format")
+	if c.Geometry == nil {
+		err := errors.New("Invalid format type nil")
+		log.Error().Stack().Err(err).Msg("")
+		return err
 	}
 
-	return nil
+	switch v := c.Geometry.(type) {
+	case *QPoint:
+		return nil
+	default:
+		err := errors.New("Unknown object type")
+		msg := fmt.Sprintf("%T", v)
+		log.Error().Stack().Err(err).Msg(msg)
+		return errors.WithStack(err)
+	}
 }
 
 // NewFeaturePb ...
 func NewFeaturePb(pb *proto.QPBxFeature) (*QFeature, error) {
 	if pb == nil {
-		return nil, errors.New("Invalid format type nil")
+		err := errors.New("Invalid parameter type nil")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
 	}
 
 	feature := &QFeature{
-		Gid:        pb.Gid,
 		Properties: pb.Properties,
 	}
 
-	switch v := pb.Geometry.Object.(type) {
-	case *proto.QPBxGeometry_Point:
+	switch v := pb.Geometry.(type) {
+	case *proto.QPBxFeature_Point:
 		point, err := NewPointPb(v.Point)
 		if err != nil {
 			return nil, errors.WithStack(err)
@@ -41,14 +58,16 @@ func NewFeaturePb(pb *proto.QPBxFeature) (*QFeature, error) {
 		feature.Geometry = point
 		return feature, nil
 	default:
-		return nil, errors.New("Unknown geojson object")
+		err := errors.New("Unknown object type")
+		msg := fmt.Sprintf("%T", v)
+		log.Error().Stack().Err(err).Msg(msg)
+		return nil, errors.WithStack(err)
 	}
 }
 
 // NewFeature ...
-func NewFeature(gid string, geometry QGeometry) *QFeature {
+func NewFeature(geometry QGeometry) *QFeature {
 	feature := &QFeature{
-		Gid:      gid,
 		Geometry: geometry,
 		Properties: &structpb.Struct{
 			Fields: make(map[string]*structpb.Value),
@@ -58,8 +77,8 @@ func NewFeature(gid string, geometry QGeometry) *QFeature {
 }
 
 // NewPointFeautre ...
-func NewPointFeautre(gid string) *QFeature {
-	return NewFeature(gid, NewPointZero())
+func NewPointFeautre() *QFeature {
+	return NewFeature(NewPointZero())
 }
 
 // Pb ...
@@ -68,15 +87,21 @@ func (c *QFeature) Pb() (*proto.QPBxFeature, error) {
 		return nil, errors.WithStack(err)
 	}
 
-	pbGeometry, err := c.Geometry.GeometryPb()
-	if err != nil {
-		return nil, errors.WithStack(err)
+	pb := &proto.QPBxFeature{
+		Properties: c.Properties,
 	}
 
-	pb := &proto.QPBxFeature{
-		Gid:        c.Gid,
-		Geometry:   pbGeometry,
-		Properties: c.Properties,
+	geometry := c.Geometry
+	switch v := geometry.(type) {
+	case *QPoint:
+		pb.Geometry = &proto.QPBxFeature_Point{
+			Point: v.Pb(),
+		}
+	default:
+		err := errors.New("Unknown object type")
+		msg := fmt.Sprintf("%T", v)
+		log.Error().Stack().Err(err).Msg(msg)
+		return nil, errors.WithStack(err)
 	}
 
 	return pb, nil
