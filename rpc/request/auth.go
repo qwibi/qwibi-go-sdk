@@ -14,35 +14,6 @@ type QAuthRequest struct {
 	Auth interface{}
 }
 
-// Pb ...
-func (c *QAuthRequest) Pb() (*proto.QPBxAuthRequest, error) {
-	switch v := c.Auth.(type) {
-	case *auth.QAnonymousAuth:
-		pbAuth, err := v.Pb()
-		if err != nil {
-			return nil, errors.WithStack(err)
-		}
-		request := &proto.QPBxAuthRequest{
-			Auth: &proto.QPBxAuthRequest_Anonym{Anonym: pbAuth},
-		}
-		return request, nil
-	case *auth.QBasicAuth:
-		pbAuth, err := v.Pb()
-		if err != nil {
-			return nil, errors.WithStack(err)
-		}
-		request := &proto.QPBxAuthRequest{
-			Auth: &proto.QPBxAuthRequest_Basic{Basic: pbAuth},
-		}
-		return request, nil
-	default:
-		err := errors.New("Unknown object type")
-		msg := fmt.Sprintf("%T", v)
-		log.Error().Stack().Err(err).Msg(msg)
-		return nil, errors.WithStack(err)
-	}
-}
-
 // NewAuthRequest ...
 func NewAuthRequest(authMethod interface{}) (*QAuthRequest, error) {
 	switch v := authMethod.(type) {
@@ -77,6 +48,35 @@ func NewAuthRequestPb(pb *proto.QPBxAuthRequest) (*QAuthRequest, error) {
 			return nil, errors.WithStack(err)
 		}
 		return &QAuthRequest{Auth: t}, nil
+	default:
+		err := errors.New("Unknown object type")
+		msg := fmt.Sprintf("%T", v)
+		log.Error().Stack().Err(err).Msg(msg)
+		return nil, errors.WithStack(err)
+	}
+}
+
+// Pb ...
+func (c *QAuthRequest) Pb() (*proto.QPBxAuthRequest, error) {
+	switch v := c.Auth.(type) {
+	case *auth.QAnonymousAuth:
+		pbAuth, err := v.Pb()
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
+		request := &proto.QPBxAuthRequest{
+			Auth: &proto.QPBxAuthRequest_Anonym{Anonym: pbAuth},
+		}
+		return request, nil
+	case *auth.QBasicAuth:
+		pbAuth, err := v.Pb()
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
+		request := &proto.QPBxAuthRequest{
+			Auth: &proto.QPBxAuthRequest_Basic{Basic: pbAuth},
+		}
+		return request, nil
 	default:
 		err := errors.New("Unknown object type")
 		msg := fmt.Sprintf("%T", v)

@@ -90,8 +90,8 @@ func (c *QApiClient) BasicAuth(login string, password string) (*response.QAuthRe
 }
 
 // Join ...
-func (c *QApiClient) Join(layerID string) (*geo.QLayer, error) {
-	joinRequest, err := request.NewJoinRequest(layerID)
+func (c *QApiClient) Join(gid string) (*geo.QGeoLayer, error) {
+	joinRequest, err := request.NewJoinRequest(gid)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -106,7 +106,7 @@ func (c *QApiClient) Join(layerID string) (*geo.QLayer, error) {
 		return nil, errors.WithStack(err)
 	}
 
-	layer, err := geo.NewLayerPb(joinResponse.Layer)
+	layer, err := geo.NewGeoLayerPb(joinResponse.Layer)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -126,13 +126,9 @@ func (c *QApiClient) Post(object *geo.QGeoObject) (*geo.QGeoObject, error) {
 		return nil, errors.WithStack(err)
 	}
 
-	log.Debug().Msgf("RPC request: %s", requestPb.String())
+	log.Debug().Msgf("Post request: %#v", request)
 	responsePb, err := c.apiClient.Post(c.ctx, requestPb)
 	if err != nil {
-		// st, ok := status.FromError(err)
-		// if ok {
-		// 	fmt.Printf("!!!!! %v", st.Message())
-		// }
 		err := errors.New(fmt.Sprint(err))
 		log.Error().Stack().Err(err).Msg("")
 		return nil, errors.WithStack(err)
@@ -142,6 +138,8 @@ func (c *QApiClient) Post(object *geo.QGeoObject) (*geo.QGeoObject, error) {
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+
+	log.Debug().Msgf("Post response: %#v", response)
 
 	return response.Object, nil
 }

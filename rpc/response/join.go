@@ -9,9 +9,53 @@ import (
 
 // QJoinResponse ...
 type QJoinResponse struct {
-	Layer *geo.QLayer
+	Layer *geo.QGeoLayer
 }
 
+// NewJoinResponse ...
+func NewJoinResponse(layer *geo.QGeoLayer) (*QJoinResponse, error) {
+	if layer == nil {
+		err := errors.New("Invalid format type nil")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
+	}
+
+	r := &QJoinResponse{
+		Layer: layer,
+	}
+
+	if err := r.Valid(); err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return r, nil
+}
+
+// NewJoinResponsePb ...
+func NewJoinResponsePb(pb *proto.QPBxJoinResponse) (*QJoinResponse, error) {
+	if pb == nil {
+		err := errors.New("Invalid format type nil")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
+	}
+
+	layer, err := geo.NewGeoLayerPb(pb.Layer)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	r := &QJoinResponse{
+		Layer: layer,
+	}
+
+	if err := r.Valid(); err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return r, nil
+}
+
+// Valid ...
 func (c *QJoinResponse) Valid() error {
 	if c.Layer == nil {
 		err := errors.New("Invalid format")
@@ -32,33 +76,14 @@ func (c *QJoinResponse) Pb() (*proto.QPBxJoinResponse, error) {
 		return nil, errors.WithStack(err)
 	}
 
-	pbObject, err := c.Layer.Pb()
+	pbLayer, err := c.Layer.Pb()
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
 	pb := &proto.QPBxJoinResponse{
-		Layer: pbObject,
+		Layer: pbLayer,
 	}
 
 	return pb, nil
-}
-
-// NewJoinResponse ...
-func NewJoinResponse(layer *geo.QLayer) (*QJoinResponse, error) {
-	if layer == nil {
-		err := errors.New("Invalid format type nil")
-		log.Error().Stack().Err(err).Msg("")
-		return nil, errors.WithStack(err)
-	}
-
-	r := &QJoinResponse{
-		Layer: layer,
-	}
-
-	if err := r.Valid(); err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	return r, nil
 }

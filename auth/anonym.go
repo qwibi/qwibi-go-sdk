@@ -6,21 +6,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-//type AuthMethod int
-
 // QAnonymousAuth ...
 type QAnonymousAuth struct {
-	//Object *geo.QGeoObject
-}
-
-func (c *QAnonymousAuth) Valid() (*QAnonymousAuth, error) {
-	return c, nil
-}
-
-// Pb ...
-func (c *QAnonymousAuth) Pb() (*proto.QPBxAnonymAuth, error) {
-	pb := &proto.QPBxAnonymAuth{}
-	return pb, nil
 }
 
 // NewAnonymousAuth ...
@@ -39,4 +26,15 @@ func NewAnonymousAuthPb(pb *proto.QPBxAuthRequest_Anonym) (*QAnonymousAuth, erro
 
 	auth := &QAnonymousAuth{}
 	return auth, nil
+}
+
+// Valid ...
+func (c *QAnonymousAuth) Valid() (*QAnonymousAuth, error) {
+	return c, nil
+}
+
+// Pb ...
+func (c *QAnonymousAuth) Pb() (*proto.QPBxAnonymAuth, error) {
+	pb := &proto.QPBxAnonymAuth{}
+	return pb, nil
 }

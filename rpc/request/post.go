@@ -9,17 +9,57 @@ import (
 
 // QPostRequest ...
 type QPostRequest struct {
-	object *geo.QGeoObject
+	Object *geo.QGeoObject
 }
 
+// NewPostRequest ...
+func NewPostRequest(object *geo.QGeoObject) (*QPostRequest, error) {
+	r := &QPostRequest{
+		Object: object,
+	}
+
+	if err := r.Valid(); err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return r, nil
+}
+
+// NewQPostRequestPb ...
+func NewQPostRequestPb(pb *proto.QPBxPostRequest) (*QPostRequest, error) {
+	if pb == nil {
+		err := errors.New("Invalid message type nil")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
+	}
+
+	if pb.Object == nil {
+		err := errors.New("Invalid object type nil")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
+	}
+
+	req := &QPostRequest{}
+
+	object, err := geo.NewGeoObjectPb(pb.Object)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	req.Object = object
+
+	return req, nil
+}
+
+// Valid ...
 func (c *QPostRequest) Valid() error {
-	if c.object == nil {
+	if c.Object == nil {
 		err := errors.New("Invalid format type nil")
 		log.Error().Stack().Err(err).Msg("")
 		return errors.WithStack(err)
 	}
 
-	if err := c.object.Valid(); err != nil {
+	if err := c.Object.Valid(); err != nil {
 		return errors.WithStack(err)
 	}
 
@@ -32,7 +72,7 @@ func (c *QPostRequest) Pb() (*proto.QPBxPostRequest, error) {
 		return nil, errors.WithStack(err)
 	}
 
-	pbObject, err := c.object.Pb()
+	pbObject, err := c.Object.Pb()
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -42,16 +82,4 @@ func (c *QPostRequest) Pb() (*proto.QPBxPostRequest, error) {
 	}
 
 	return pb, nil
-}
-
-func NewPostRequest(object *geo.QGeoObject) (*QPostRequest, error) {
-	r := &QPostRequest{
-		object: object,
-	}
-
-	if err := r.Valid(); err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	return r, nil
 }

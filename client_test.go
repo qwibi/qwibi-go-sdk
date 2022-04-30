@@ -7,7 +7,6 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/geo"
-	"github.com/qwibi/qwibi-go-sdk/geojson"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/rs/zerolog/pkgerrors"
@@ -44,6 +43,7 @@ func TestNewApiClient(t *testing.T) {
 	}
 
 	_client = client
+
 }
 
 func TestAnonymousAuth(t *testing.T) {
@@ -62,26 +62,38 @@ func TestBasicAuth(t *testing.T) {
 	log.Info().Msgf("Auth response: %#v", res)
 }
 
-func TestJoin(t *testing.T) {
-	layer, err := _client.Join("123")
+func TestJoinWithoutGid(t *testing.T) {
+	layer, err := _client.Join("")
 	if err != nil {
 		t.Fatal(err)
 	}
 	log.Info().Msgf("Layer response: %#v", layer)
 }
 
-func TestPost(t *testing.T) {
-	object := &geo.QGeoObject{
-		Gid:     "123",
-		OwnerID: "123",
-		LayerID: "123",
-		Feature: geojson.NewPointFeautre(),
+func TestJoinWithGid(t *testing.T) {
+	layer, err := _client.Join("123456789")
+	if err != nil {
+		t.Fatal(err)
 	}
+	log.Info().Msgf("Join response: %#v", layer)
+}
 
-	res, err := _client.Post(object)
+func TestPost(t *testing.T) {
+
+	res1, err := _client.Join("")
 	if err != nil {
 		TraceError(err)
 		t.Fatal(err)
 	}
-	log.Info().Msgf("Post response: %#v", res)
+	log.Info().Msgf("Join response: %#v", res1)
+
+	object := geo.NewGeoPoint()
+
+	res2, err := _client.Post(object)
+	if err != nil {
+		TraceError(err)
+		t.Fatal(err)
+	}
+
+	log.Info().Msgf("Post response: %#v", res2)
 }

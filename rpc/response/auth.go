@@ -11,6 +11,40 @@ type QAuthResponse struct {
 	Token string
 }
 
+// NewAuthResponse ...
+func NewAuthResponse(token string) (*QAuthResponse, error) {
+
+	r := &QAuthResponse{
+		Token: token,
+	}
+
+	if err := r.Valid(); err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return r, nil
+}
+
+// NewAuthResponsePb ...
+func NewAuthResponsePb(pb *proto.QPBxAuthResponse) (*QAuthResponse, error) {
+	if pb == nil {
+		err := errors.New("Invalid format")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
+	}
+
+	res := &QAuthResponse{
+		Token: pb.Token,
+	}
+
+	if err := res.Valid(); err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return res, nil
+}
+
+// Valid ...
 func (c *QAuthResponse) Valid() error {
 	if c.Token == "" {
 		err := errors.New("Invalid format")
@@ -35,37 +69,4 @@ func (c *QAuthResponse) Pb() (*proto.QPBxAuthResponse, error) {
 	}
 
 	return pb, nil
-}
-
-// NewAuthResponsePb ...
-func NewAuthResponsePb(pb *proto.QPBxAuthResponse) (*QAuthResponse, error) {
-	if pb == nil {
-		err := errors.New("Invalid format")
-		log.Error().Stack().Err(err).Msg("")
-		return nil, errors.WithStack(err)
-	}
-
-	res := &QAuthResponse{
-		Token: pb.Token,
-	}
-
-	if err := res.Valid(); err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	return res, nil
-}
-
-// NewAuthResponse ...
-func NewAuthResponse(token string) (*QAuthResponse, error) {
-
-	r := &QAuthResponse{
-		Token: token,
-	}
-
-	if err := r.Valid(); err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	return r, nil
 }

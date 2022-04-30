@@ -11,6 +11,38 @@ type QPostResponse struct {
 	Object *geo.QGeoObject
 }
 
+// NewPostResponse ...
+func NewPostResponse(object *geo.QGeoObject) (*QPostResponse, error) {
+	res := &QPostResponse{
+		Object: object,
+	}
+
+	if err := res.Valid(); err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return res, nil
+}
+
+// NewPostResponsePb ...
+func NewPostResponsePb(pb *proto.QPBxPostResponse) (*QPostResponse, error) {
+	object, err := geo.NewGeoObjectPb(pb.Object)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	res := &QPostResponse{
+		Object: object,
+	}
+
+	if err := res.Valid(); err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return res, nil
+}
+
+// Valid ...
 func (c *QPostResponse) Valid() error {
 	if err := c.Object.Valid(); err != nil {
 		return errors.WithStack(err)
@@ -35,21 +67,4 @@ func (c *QPostResponse) Pb() (*proto.QPBxPostResponse, error) {
 	}
 
 	return pb, nil
-}
-
-func NewPostResponsePb(response *proto.QPBxPostResponse) (*QPostResponse, error) {
-	object, err := geo.NewGeoObjectPb(response.Object)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	r := &QPostResponse{
-		Object: object,
-	}
-
-	if err := r.Valid(); err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	return r, nil
 }

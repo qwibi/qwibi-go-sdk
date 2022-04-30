@@ -3,38 +3,26 @@ package geojson
 import (
 	"fmt"
 
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 	"github.com/rs/zerolog/log"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
-type QGeometry interface {
-	// Valid() error
-}
-
-//QFeature ...
+// QFeature ...
 type QFeature struct {
 	Geometry   QGeometry
 	Properties *structpb.Struct
 }
 
-func (c *QFeature) Valid() error {
-	if c.Geometry == nil {
-		err := errors.New("Invalid format type nil")
-		log.Error().Stack().Err(err).Msg("")
-		return err
+// NewPointFeautre ...
+func NewPointFeautre() *QFeature {
+	feature := &QFeature{
+		Geometry:   NewZeroPoint(),
+		Properties: &structpb.Struct{},
 	}
 
-	switch v := c.Geometry.(type) {
-	case *QPoint:
-		return nil
-	default:
-		err := errors.New("Unknown object type")
-		msg := fmt.Sprintf("%T", v)
-		log.Error().Stack().Err(err).Msg(msg)
-		return errors.WithStack(err)
-	}
+	return feature
 }
 
 // NewFeaturePb ...
@@ -58,27 +46,16 @@ func NewFeaturePb(pb *proto.QPBxFeature) (*QFeature, error) {
 		feature.Geometry = point
 		return feature, nil
 	default:
-		err := errors.New("Unknown object type")
+		err := errors.New("Unknown geometry type")
 		msg := fmt.Sprintf("%T", v)
 		log.Error().Stack().Err(err).Msg(msg)
 		return nil, errors.WithStack(err)
 	}
 }
 
-// NewFeature ...
-func NewFeature(geometry QGeometry) *QFeature {
-	feature := &QFeature{
-		Geometry: geometry,
-		Properties: &structpb.Struct{
-			Fields: make(map[string]*structpb.Value),
-		},
-	}
-	return feature
-}
-
-// NewPointFeautre ...
-func NewPointFeautre() *QFeature {
-	return NewFeature(NewPointZero())
+// Valid
+func (c *QFeature) Valid() error {
+	return c.Geometry.Valid()
 }
 
 // Pb ...
@@ -94,8 +71,12 @@ func (c *QFeature) Pb() (*proto.QPBxFeature, error) {
 	geometry := c.Geometry
 	switch v := geometry.(type) {
 	case *QPoint:
+		pointPb, err := v.Pb()
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
 		pb.Geometry = &proto.QPBxFeature_Point{
-			Point: v.Pb(),
+			Point: pointPb,
 		}
 	default:
 		err := errors.New("Unknown object type")
@@ -105,23 +86,4 @@ func (c *QFeature) Pb() (*proto.QPBxFeature, error) {
 	}
 
 	return pb, nil
-}
-
-// SetString ...
-func (c *QFeature) SetString(key string, value string) {
-	c.Properties.Fields[key] = &structpb.Value{
-		Kind: &structpb.Value_StringValue{
-			StringValue: value,
-		},
-	}
-}
-
-// GetString ...
-func (c *QFeature) GetString(key string) string {
-	switch v := c.Properties.Fields[key].Kind.(type) {
-	case *structpb.Value_StringValue:
-		return v.StringValue
-	}
-
-	return ""
 }
