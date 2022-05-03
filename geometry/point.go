@@ -1,4 +1,4 @@
-package geojson
+package geometry
 
 import (
 	"github.com/pkg/errors"
@@ -57,13 +57,18 @@ func (c *QPoint) Valid() error {
 }
 
 // Pb ...
-func (c *QPoint) Pb() (*proto.QPBxPoint, error) {
+func (c *QPoint) Pb() (*proto.QPBxGeometry, error) {
 	if len(c.Coordinates) < 2 {
 		err := errors.New("Wrong coordinates format")
 		log.Error().Stack().Err(err).Msg("")
 		return nil, errors.WithStack(err)
 	}
-	pb := &proto.QPBxPoint{Coordinates: c.Coordinates}
+
+	pb := &proto.QPBxGeometry{
+		Geometry: &proto.QPBxGeometry_Point{
+			Point: &proto.QPBxPoint{Coordinates: c.Coordinates},
+		},
+	}
 
 	return pb, nil
 }

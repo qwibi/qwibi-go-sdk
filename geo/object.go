@@ -2,7 +2,7 @@ package geo
 
 import (
 	"github.com/pkg/errors"
-	"github.com/qwibi/qwibi-go-sdk/geojson"
+	"github.com/qwibi/qwibi-go-sdk/geometry"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 	"github.com/qwibi/qwibi-go-sdk/utils"
 	"github.com/rs/zerolog/log"
@@ -12,18 +12,8 @@ import (
 // QGeoObject ...
 type QGeoObject struct {
 	Gid        string
-	Feature    *geojson.QFeature
+	Geometry   geometry.QGeometry
 	Properties *structpb.Struct
-}
-
-// NewGeoPoint ...
-func NewGeoPoint() *QGeoObject {
-	point := &QGeoObject{
-		Gid:        utils.NewID(),
-		Feature:    geojson.NewPointFeautre(),
-		Properties: &structpb.Struct{},
-	}
-	return point
 }
 
 // NewGeoObjectPb ...
@@ -38,13 +28,13 @@ func NewGeoObjectPb(pb *proto.QPBxGeoObject) (*QGeoObject, error) {
 		pb.Gid = utils.NewID()
 	}
 
-	if pb.Feature == nil {
+	if pb.Geometry == nil {
 		err := errors.New("Invalid feature type nil")
 		log.Error().Stack().Err(err).Msg("")
 		return nil, errors.WithStack(err)
 	}
 
-	feature, err := geojson.NewFeaturePb(pb.Feature)
+	geometry, err := geometry.NewGeometryPb(pb.Geometry)
 	if err != nil {
 		log.Error().Stack().Err(err).Msg("")
 		return nil, errors.WithStack(err)
@@ -52,7 +42,7 @@ func NewGeoObjectPb(pb *proto.QPBxGeoObject) (*QGeoObject, error) {
 
 	object := &QGeoObject{
 		Gid:        pb.Gid,
-		Feature:    feature,
+		Geometry:   geometry,
 		Properties: pb.Properties,
 	}
 
@@ -67,13 +57,13 @@ func (c QGeoObject) Valid() error {
 		return errors.WithStack(err)
 	}
 
-	if c.Feature == nil {
-		err := errors.New("Object feature is not defined")
+	if c.Geometry == nil {
+		err := errors.New("Object geometry is not defined")
 		log.Error().Stack().Err(err).Msg("")
 		return errors.WithStack(err)
 	}
 
-	return c.Feature.Valid()
+	return c.Geometry.Valid()
 }
 
 // Pb ...
@@ -83,12 +73,12 @@ func (c QGeoObject) Pb() (*proto.QPBxGeoObject, error) {
 		Properties: c.Properties,
 	}
 
-	featurePb, err := c.Feature.Pb()
+	geometryPb, err := c.Geometry.Pb()
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
-	pb.Feature = featurePb
+	pb.Geometry = geometryPb
 
 	return pb, nil
 }

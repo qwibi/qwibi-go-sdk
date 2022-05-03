@@ -1,4 +1,4 @@
-package geojson
+package geometry
 
 // The geojson types supported by GeoJSON 1.0
 const (

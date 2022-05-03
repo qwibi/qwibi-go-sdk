@@ -7,10 +7,10 @@ import (
 )
 
 // NewGeoPoint ...
-func NewGeoLayer() *QGeoObject {
+func NewGeoPoint() *QGeoObject {
 	return &QGeoObject{
 		Gid:        utils.NewID(),
-		Geometry:   geometry.NewDefaultLayer(),
+		Geometry:   geometry.NewZeroPoint(),
 		Properties: &structpb.Struct{},
 	}
 }

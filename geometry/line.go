@@ -1,4 +1,4 @@
-package geojson
+package geometry
 
 // QLine ...
 type QLine struct {

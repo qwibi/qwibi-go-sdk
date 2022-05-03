@@ -90,7 +90,7 @@ func (c *QApiClient) BasicAuth(login string, password string) (*response.QAuthRe
 }
 
 // Join ...
-func (c *QApiClient) Join(gid string) (*geo.QGeoLayer, error) {
+func (c *QApiClient) Join(gid string) (*geo.QGeoObject, error) {
 	joinRequest, err := request.NewJoinRequest(gid)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -106,12 +106,12 @@ func (c *QApiClient) Join(gid string) (*geo.QGeoLayer, error) {
 		return nil, errors.WithStack(err)
 	}
 
-	layer, err := geo.NewGeoLayerPb(joinResponse.Layer)
+	object, err := geo.NewGeoObjectPb(joinResponse.Object)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
-	return layer, nil
+	return object, nil
 }
 
 // Join ...

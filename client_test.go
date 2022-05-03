@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/pkg/errors"
+	"github.com/qwibi/qwibi-go-sdk/geo"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -64,64 +65,64 @@ func client() *QApiClient {
 	return client
 }
 
-// func TestAnonymousAuth(t *testing.T) {
-// 	res, err := client().AnonymousAuth()
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	log.Info().Msgf("Auth response: %#v", res)
-// }
+func TestAnonymousAuth(t *testing.T) {
+	res, err := client().AnonymousAuth()
+	if err != nil {
+		t.Fatal(err)
+	}
+	log.Info().Msgf("Auth response: %#v", res)
+}
 
-// func TestBasicAuth(t *testing.T) {
-// 	res, err := client().BasicAuth("user", "password")
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	log.Info().Msgf("Auth response: %#v", res)
-// }
+func TestBasicAuth(t *testing.T) {
+	res, err := client().BasicAuth("user", "password")
+	if err != nil {
+		t.Fatal(err)
+	}
+	log.Info().Msgf("Auth response: %#v", res)
+}
 
-// func TestJoinWithoutGid(t *testing.T) {
-// 	layer, err := client().Join("")
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	log.Info().Msgf("Layer response: %#v", layer)
-// }
+func TestJoinWithoutGid(t *testing.T) {
+	layer, err := client().Join("")
+	if err != nil {
+		t.Fatal(err)
+	}
+	log.Info().Msgf("Layer response: %#v", layer)
+}
 
-// func TestJoinWithGid(t *testing.T) {
-// 	layer, err := client().Join("123456789")
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	log.Info().Msgf("Join response: %#v", layer)
-// }
+func TestJoinWithGid(t *testing.T) {
+	layer, err := client().Join("123456789")
+	if err != nil {
+		t.Fatal(err)
+	}
+	log.Info().Msgf("Join response: %#v", layer)
+}
 
-// func TestPost(t *testing.T) {
+func TestPost(t *testing.T) {
 
-// 	res1, err := client().Join("")
-// 	if err != nil {
-// 		TraceError(err)
-// 		t.Fatal(err)
-// 	}
-// 	log.Info().Msgf("Join response: %#v", res1)
+	res1, err := client().Join("")
+	if err != nil {
+		TraceError(err)
+		t.Fatal(err)
+	}
+	log.Info().Msgf("Join response: %#v", res1)
 
-// 	object := geo.NewGeoPoint()
+	object := geo.NewGeoPoint()
 
-// 	res2, err := client().Post(object)
-// 	if err != nil {
-// 		TraceError(err)
-// 		t.Fatal(err)
-// 	}
+	res2, err := client().Post(object)
+	if err != nil {
+		TraceError(err)
+		t.Fatal(err)
+	}
 
-// 	log.Info().Msgf("Post response: %#v", res2)
-// }
+	log.Info().Msgf("Post response: %#v", res2)
+}
 
 func TestPostPb(t *testing.T) {
 	ctx := context.Background()
 	req1 := &proto.QPBxPostRequest{
 		Object: &proto.QPBxGeoObject{
-			Feature: &proto.QPBxFeature{
-				Geometry: &proto.QPBxFeature_Point{
+			Geometry: &proto.QPBxGeometry{
+				Geometry: &proto.QPBxGeometry_Point{
 					Point: &proto.QPBxPoint{
 						Coordinates: []float64{0, 0},
 					},
