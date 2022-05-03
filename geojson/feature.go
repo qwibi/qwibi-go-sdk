@@ -28,7 +28,7 @@ func NewPointFeautre() *QFeature {
 // NewFeaturePb ...
 func NewFeaturePb(pb *proto.QPBxFeature) (*QFeature, error) {
 	if pb == nil {
-		err := errors.New("Invalid parameter type nil")
+		err := errors.New("Invalid feature type nil")
 		log.Error().Stack().Err(err).Msg("")
 		return nil, errors.WithStack(err)
 	}

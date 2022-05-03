@@ -21,11 +21,6 @@ func NewPoint(coordinates ...float64) (*QPoint, error) {
 	return p, p.Valid()
 }
 
-// NewPointLatLng ...
-func NewPointLatLng(lat float64, lng float64) (*QPoint, error) {
-	return NewPoint(lng, lat)
-}
-
 // NewZeroPoint ...
 func NewZeroPoint() *QPoint {
 	point, _ := NewPoint(0, 0)
@@ -35,7 +30,7 @@ func NewZeroPoint() *QPoint {
 // NewPointPb ...
 func NewPointPb(pb *proto.QPBxPoint) (*QPoint, error) {
 	if pb == nil {
-		err := errors.New("Invalid format type nil")
+		err := errors.New("Invalid point format type nil")
 		log.Error().Stack().Err(err).Msg("")
 		return nil, errors.WithStack(err)
 	}
