@@ -25,8 +25,8 @@ func NewPostRequest(object *geo.QGeoObject) (*QPostRequest, error) {
 	return r, nil
 }
 
-// NewQPostRequestPb ...
-func NewQPostRequestPb(pb *proto.QPBxPostRequest) (*QPostRequest, error) {
+// NewPostRequestPb ...
+func NewPostRequestPb(pb *proto.QPBxPostRequest) (*QPostRequest, error) {
 	if pb == nil {
 		err := errors.New("Invalid message type nil")
 		log.Error().Stack().Err(err).Msg("")

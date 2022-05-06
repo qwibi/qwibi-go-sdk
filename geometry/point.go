@@ -4,19 +4,21 @@ import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 	"github.com/rs/zerolog/log"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // QPoint ...
 type QPoint struct {
-	Type        string    `json:"type"`
 	Coordinates []float64 `json:"coordinates"`
+	Properties  *structpb.Struct
 }
 
 // NewPoint ...
 func NewPoint(coordinates ...float64) (*QPoint, error) {
 	p := &QPoint{
-		Type:        QPointType,
-		Coordinates: coordinates}
+		Coordinates: coordinates,
+		Properties:  &structpb.Struct{},
+	}
 
 	return p, p.Valid()
 }
@@ -34,7 +36,18 @@ func NewPointPb(pb *proto.QPBxPoint) (*QPoint, error) {
 		log.Error().Stack().Err(err).Msg("")
 		return nil, errors.WithStack(err)
 	}
-	return NewPoint(pb.Coordinates...)
+
+	point, err := NewPoint(pb.Coordinates...)
+	if err != nil {
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
+	}
+
+	if pb.Properties != nil {
+		point.Properties = pb.Properties
+	}
+
+	return point, nil
 }
 
 // SetCenter ...
@@ -49,7 +62,7 @@ func (c *QPoint) SetCoordinates(x float64, y float64) {
 
 // Valid ...
 func (c *QPoint) Valid() error {
-	if c.Type == "" || len(c.Coordinates) < 2 {
+	if len(c.Coordinates) < 2 {
 		errors.New("Invalid point format")
 	}
 
