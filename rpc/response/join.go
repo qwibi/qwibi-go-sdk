@@ -9,13 +9,13 @@ import (
 
 // QJoinResponse ...
 type QJoinResponse struct {
-	Object *geo.QGeoObject
+	Object geo.QGeoObject
 }
 
 // NewJoinResponse ...
-func NewJoinResponse(object *geo.QGeoObject) (*QJoinResponse, error) {
+func NewJoinResponse(object geo.QGeoObject) (*QJoinResponse, error) {
 	if object == nil {
-		err := errors.New("Invalid format type nil")
+		err := errors.New("Invalid parameter type nil")
 		log.Error().Stack().Err(err).Msg("")
 		return nil, errors.WithStack(err)
 	}
@@ -24,17 +24,13 @@ func NewJoinResponse(object *geo.QGeoObject) (*QJoinResponse, error) {
 		Object: object,
 	}
 
-	if err := r.Valid(); err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	return r, nil
+	return r, r.Valid()
 }
 
 // NewJoinResponsePb ...
 func NewJoinResponsePb(pb *proto.QPBxJoinResponse) (*QJoinResponse, error) {
 	if pb == nil {
-		err := errors.New("Invalid format type nil")
+		err := errors.New("Invalid parameter type nil")
 		log.Error().Stack().Err(err).Msg("")
 		return nil, errors.WithStack(err)
 	}
@@ -71,19 +67,8 @@ func (c *QJoinResponse) Valid() error {
 }
 
 // Pb ...
-func (c *QJoinResponse) Pb() (*proto.QPBxJoinResponse, error) {
-	if err := c.Valid(); err != nil {
-		return nil, errors.WithStack(err)
+func (c *QJoinResponse) Pb() *proto.QPBxJoinResponse {
+	return &proto.QPBxJoinResponse{
+		Object: c.Object.Pb(),
 	}
-
-	pbObject, err := c.Object.Pb()
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	pb := &proto.QPBxJoinResponse{
-		Object: pbObject,
-	}
-
-	return pb, nil
 }

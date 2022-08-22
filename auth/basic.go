@@ -27,15 +27,15 @@ func NewBasicAuth(login string, password string) (*QBasicAuth, error) {
 }
 
 // NewBasicAuthPb ...
-func NewBasicAuthPb(pb *proto.QPBxAuthRequest_Basic) (*QBasicAuth, error) {
-	if pb == nil || pb.Basic == nil {
+func NewBasicAuthPb(pb *proto.QPBxBasicAuth) (*QBasicAuth, error) {
+	if pb == nil {
 		err := errors.New("Invalid parameter type nil")
 		log.Error().Stack().Err(err).Msg("")
 		return nil, errors.WithStack(err)
 	}
 
-	login := pb.Basic.Login
-	password := pb.Basic.Password
+	login := pb.Login
+	password := pb.Password
 
 	auth, err := NewBasicAuth(login, password)
 	if err != nil {

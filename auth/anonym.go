@@ -7,8 +7,7 @@ import (
 )
 
 // QAnonymousAuth ...
-type QAnonymousAuth struct {
-}
+type QAnonymousAuth struct{}
 
 // NewAnonymousAuth ...
 func NewAnonymousAuth() (*QAnonymousAuth, error) {
@@ -17,7 +16,7 @@ func NewAnonymousAuth() (*QAnonymousAuth, error) {
 }
 
 // NewAnonymousAuthPb ...
-func NewAnonymousAuthPb(pb *proto.QPBxAuthRequest_Anonym) (*QAnonymousAuth, error) {
+func NewAnonymousAuthPb(pb *proto.QPBxAnonymAuth) (*QAnonymousAuth, error) {
 	if pb == nil {
 		err := errors.New("Invalid parameter type nil")
 		log.Error().Stack().Err(err).Msg("")
@@ -25,12 +24,13 @@ func NewAnonymousAuthPb(pb *proto.QPBxAuthRequest_Anonym) (*QAnonymousAuth, erro
 	}
 
 	auth := &QAnonymousAuth{}
+
 	return auth, nil
 }
 
 // Valid ...
-func (c *QAnonymousAuth) Valid() (*QAnonymousAuth, error) {
-	return c, nil
+func (c *QAnonymousAuth) Valid() error {
+	return nil
 }
 
 // Pb ...

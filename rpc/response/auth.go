@@ -2,20 +2,21 @@ package response
 
 import (
 	"github.com/pkg/errors"
+	"github.com/qwibi/qwibi-go-sdk/auth"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 	"github.com/rs/zerolog/log"
 )
 
 // QAuthResponse ...
 type QAuthResponse struct {
-	Token string
+	Session *auth.QSession
 }
 
 // NewAuthResponse ...
-func NewAuthResponse(token string) (*QAuthResponse, error) {
+func NewAuthResponse(session *auth.QSession) (*QAuthResponse, error) {
 
 	r := &QAuthResponse{
-		Token: token,
+		Session: session,
 	}
 
 	if err := r.Valid(); err != nil {
@@ -28,14 +29,12 @@ func NewAuthResponse(token string) (*QAuthResponse, error) {
 // NewAuthResponsePb ...
 func NewAuthResponsePb(pb *proto.QPBxAuthResponse) (*QAuthResponse, error) {
 	if pb == nil {
-		err := errors.New("Invalid format")
+		err := errors.New("Invalid parameter type nil")
 		log.Error().Stack().Err(err).Msg("")
 		return nil, errors.WithStack(err)
 	}
 
-	res := &QAuthResponse{
-		Token: pb.Token,
-	}
+	res := &QAuthResponse{}
 
 	if err := res.Valid(); err != nil {
 		return nil, errors.WithStack(err)
@@ -46,13 +45,7 @@ func NewAuthResponsePb(pb *proto.QPBxAuthResponse) (*QAuthResponse, error) {
 
 // Valid ...
 func (c *QAuthResponse) Valid() error {
-	if c.Token == "" {
-		err := errors.New("Invalid format")
-		log.Error().Stack().Err(err).Msg("")
-		return errors.WithStack(err)
-	}
-
-	return nil
+	return c.Session.Valid()
 }
 
 // Pb ...
@@ -62,10 +55,13 @@ func (c *QAuthResponse) Pb() (*proto.QPBxAuthResponse, error) {
 		return nil, errors.WithStack(err)
 	}
 
-	token := "TODO"
+	sessionPB, err := c.Session.Pb()
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
 
 	pb := &proto.QPBxAuthResponse{
-		Token: token,
+		Session: sessionPB,
 	}
 
 	return pb, nil

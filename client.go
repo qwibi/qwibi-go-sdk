@@ -12,6 +12,7 @@ import (
 	"github.com/qwibi/qwibi-go-sdk/proto"
 	"github.com/qwibi/qwibi-go-sdk/rpc/request"
 	"github.com/qwibi/qwibi-go-sdk/rpc/response"
+	"github.com/qwibi/qwibi-go-sdk/utils"
 	"github.com/rs/zerolog/log"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -57,7 +58,7 @@ func (c *QApiClient) Auth(req *request.QAuthRequest) (*response.QAuthResponse, e
 		return nil, errors.WithStack(err)
 	}
 
-	md := metadata.Pairs("token", res.Token)
+	md := metadata.Pairs("token", res.Session.Token)
 	c.ctx = metadata.NewOutgoingContext(context.Background(), md)
 
 	return res, nil
@@ -90,7 +91,11 @@ func (c *QApiClient) BasicAuth(login string, password string) (*response.QAuthRe
 }
 
 // Join ...
-func (c *QApiClient) Join(gid string) (*geo.QGeoObject, error) {
+func (c *QApiClient) Join(gid string) (geo.QGeoObject, error) {
+	if gid == "" {
+		gid = utils.NewID()
+	}
+
 	joinRequest, err := request.NewJoinRequest(gid)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -115,19 +120,14 @@ func (c *QApiClient) Join(gid string) (*geo.QGeoObject, error) {
 }
 
 // Join ...
-func (c *QApiClient) Post(object *geo.QGeoObject) (*geo.QGeoObject, error) {
+func (c *QApiClient) Post(object geo.QGeoObject) (geo.QGeoObject, error) {
 	request, err := request.NewPostRequest(object)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
-	requestPb, err := request.Pb()
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
 	log.Debug().Msgf("Post request: %#v", request)
-	responsePb, err := c.apiClient.Post(c.ctx, requestPb)
+	responsePb, err := c.apiClient.Post(c.ctx, request.Pb())
 	if err != nil {
 		err := errors.New(fmt.Sprint(err))
 		log.Error().Stack().Err(err).Msg("")
@@ -144,30 +144,20 @@ func (c *QApiClient) Post(object *geo.QGeoObject) (*geo.QGeoObject, error) {
 	return response.Object, nil
 }
 
-//// Stream
-//func (c *QApiClient) Stream(ctx context.Context ) error {
-//	streamRequest, err := request.NewStreamRequest()
-//	if err != nil {
-//		return errors.WithStack(err)
-//	}
-//
-//	pb, err := streamRequest.Pb()
-//	if err != nil {
-//		return errors.WithStack(err)
-//	}
-//
-//	stream, err := c.apiClient.Stream(ctx, pb)
-//	if err != nil {
-//		return errors.WithStack(err)
-//	}
-//
-//	//go c.send(stream)
-//	go c.receive(stream)
-//	//return c.RunTest(ctx)
-//	//go c.RunTest(ctx)
-//
-//	return nil
-//}
+// Stream
+func (c *QApiClient) Stream() error {
+	stream, err := c.apiClient.Stream(c.ctx)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	//go c.send(stream)
+	return c.receive(stream)
+	//return c.RunTest(ctx)
+	//go c.RunTest(ctx)
+
+	// return nil
+}
 
 // Receive ...
 func (c *QApiClient) receive(stream proto.QPBxApi_StreamClient) error {
@@ -176,10 +166,10 @@ func (c *QApiClient) receive(stream proto.QPBxApi_StreamClient) error {
 		if err == io.EOF {
 			log.Info().Msgf("Client connected: %+v", c)
 			log.Info().Msgf("Goroutines: %d", runtime.NumGoroutine())
-			return err
+			return errors.Cause(err)
 		}
 		if err != nil {
-			errors.WithStack(err)
+			return errors.Cause(err)
 		}
 
 		log.Info().Msgf("==> Stream: [%T] %+v", msg, msg)

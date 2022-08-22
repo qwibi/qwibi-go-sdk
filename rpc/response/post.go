@@ -4,15 +4,22 @@ import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/geo"
 	"github.com/qwibi/qwibi-go-sdk/proto"
+	"github.com/rs/zerolog/log"
 )
 
 // QPostResponse ...
 type QPostResponse struct {
-	Object *geo.QGeoObject
+	Object geo.QGeoObject
 }
 
 // NewPostResponse ...
-func NewPostResponse(object *geo.QGeoObject) (*QPostResponse, error) {
+func NewPostResponse(object geo.QGeoObject) (*QPostResponse, error) {
+	if object == nil {
+		err := errors.New("Invalid parameter type nil")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
+	}
+
 	res := &QPostResponse{
 		Object: object,
 	}
@@ -26,6 +33,12 @@ func NewPostResponse(object *geo.QGeoObject) (*QPostResponse, error) {
 
 // NewPostResponsePb ...
 func NewPostResponsePb(pb *proto.QPBxPostResponse) (*QPostResponse, error) {
+	if pb == nil {
+		err := errors.New("Invalid parameter type nil")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
+	}
+
 	object, err := geo.NewGeoObjectPb(pb.Object)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -52,19 +65,8 @@ func (c *QPostResponse) Valid() error {
 }
 
 // Pb...
-func (c *QPostResponse) Pb() (*proto.QPBxPostResponse, error) {
-	if err := c.Valid(); err != nil {
-		return nil, errors.WithStack(err)
+func (c *QPostResponse) Pb() *proto.QPBxPostResponse {
+	return &proto.QPBxPostResponse{
+		Object: c.Object.Pb(),
 	}
-
-	pbObject, err := c.Object.Pb()
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	pb := &proto.QPBxPostResponse{
-		Object: pbObject,
-	}
-
-	return pb, nil
 }

@@ -3,7 +3,6 @@ package request
 import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/proto"
-	"github.com/qwibi/qwibi-go-sdk/utils"
 	"github.com/rs/zerolog/log"
 )
 
@@ -15,24 +14,22 @@ type QJoinRequest struct {
 // NewJoinRequest ...
 func NewJoinRequest(gid string) (*QJoinRequest, error) {
 	if gid == "" {
-		gid = utils.NewID()
+		err := errors.New("Join Gid not defined")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, err
 	}
 
 	r := &QJoinRequest{
 		Gid: gid,
 	}
 
-	if err := r.Valid(); err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	return r, nil
+	return r, r.Valid()
 }
 
 // NewJoinRequestPb ...
 func NewJoinRequestPb(pb *proto.QPBxJoinRequest) (*QJoinRequest, error) {
 	if pb == nil {
-		err := errors.New("Invalid format type nil")
+		err := errors.New("Invalid parameter type nil")
 		log.Error().Stack().Err(err).Msg("")
 		return nil, errors.WithStack(err)
 	}

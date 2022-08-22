@@ -1,14 +1,12 @@
 package sdk
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"testing"
 
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/geo"
-	"github.com/qwibi/qwibi-go-sdk/proto"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/rs/zerolog/pkgerrors"
@@ -107,7 +105,6 @@ func TestPost(t *testing.T) {
 	log.Info().Msgf("Join response: %#v", res1)
 
 	object := geo.NewGeoPoint()
-
 	res2, err := client().Post(object)
 	if err != nil {
 		TraceError(err)
@@ -117,27 +114,11 @@ func TestPost(t *testing.T) {
 	log.Info().Msgf("Post response: %#v", res2)
 }
 
-func TestPostPb(t *testing.T) {
-	ctx := context.Background()
-	req1 := &proto.QPBxPostRequest{
-		Object: &proto.QPBxGeoObject{
-			Geometry: &proto.QPBxGeometry{
-				Geometry: &proto.QPBxGeometry_Point{
-					Point: &proto.QPBxPoint{
-						Coordinates: []float64{0, 0},
-					},
-				},
-				// 		Properties: &structpb.Struct{},
-			},
-			// 	Properties: &structpb.Struct{},
-		},
-	}
-
-	res1, err := client().apiClient.Post(ctx, req1)
-	if err != nil {
-		TraceError(err)
-		t.Fatal(err)
-	}
-
-	log.Info().Msgf("Post response: %#v", res1)
-}
+// func TestStream(t *testing.T) {
+// 	// log.Info().Msg("Test stream connection")
+// 	err := client().Stream()
+// 	if err != nil {
+// 		TraceError(err)
+// 		t.Fatal(err)
+// 	}
+// }

@@ -35,15 +35,21 @@ func NewAuthRequest(authMethod interface{}) (*QAuthRequest, error) {
 
 // NewAuthRequestPb ...
 func NewAuthRequestPb(pb *proto.QPBxAuthRequest) (*QAuthRequest, error) {
+	if pb == nil {
+		err := errors.New("Invalid parameter type nil")
+		log.Error().Stack().Err(err).Msg("")
+		return nil, errors.WithStack(err)
+	}
+
 	switch v := pb.Auth.(type) {
 	case *proto.QPBxAuthRequest_Anonym:
-		t, err := auth.NewAnonymousAuthPb(v)
+		t, err := auth.NewAnonymousAuthPb(v.Anonym)
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}
 		return &QAuthRequest{Auth: t}, nil
 	case *proto.QPBxAuthRequest_Basic:
-		t, err := auth.NewBasicAuthPb(v)
+		t, err := auth.NewBasicAuthPb(v.Basic)
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}
