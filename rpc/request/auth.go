@@ -11,19 +11,21 @@ import (
 
 // QAuthRequest ...
 type QAuthRequest struct {
-	Auth interface{}
+	Auth auth.QAuth
 }
 
 // NewAuthRequest ...
-func NewAuthRequest(authMethod interface{}) (*QAuthRequest, error) {
-	switch v := authMethod.(type) {
+func NewAuthRequest(a auth.QAuth) (*QAuthRequest, error) {
+	switch v := a.(type) {
 	case *auth.QAnonymousAuth:
 		req := &QAuthRequest{
 			Auth: v,
 		}
 		return req, nil
 	case *auth.QBasicAuth:
-		req := &QAuthRequest{}
+		req := &QAuthRequest{
+			Auth: v,
+		}
 		return req, nil
 	default:
 		err := errors.New("Unknown object type")
@@ -55,7 +57,7 @@ func NewAuthRequestPb(pb *proto.QPBxAuthRequest) (*QAuthRequest, error) {
 		}
 		return &QAuthRequest{Auth: t}, nil
 	default:
-		err := errors.New("Unknown object type")
+		err := errors.New("Unknown auth request type")
 		msg := fmt.Sprintf("%T", v)
 		log.Error().Stack().Err(err).Msg(msg)
 		return nil, errors.WithStack(err)
@@ -84,8 +86,8 @@ func (c *QAuthRequest) Pb() (*proto.QPBxAuthRequest, error) {
 		}
 		return request, nil
 	default:
-		err := errors.New("Unknown object type")
-		msg := fmt.Sprintf("%T", v)
+		msg := fmt.Sprintf("Unknown auth type: %T", v)
+		err := errors.New(msg)
 		log.Error().Stack().Err(err).Msg(msg)
 		return nil, errors.WithStack(err)
 	}

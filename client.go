@@ -41,7 +41,12 @@ func NewClient(addr string) (*QApiClient, error) {
 }
 
 // Auth ...
-func (c *QApiClient) Auth(req *request.QAuthRequest) (*response.QAuthResponse, error) {
+func (c *QApiClient) Auth(auth auth.QAuth) (*auth.QSession, error) {
+
+	req, err := request.NewAuthRequest(auth)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
 
 	reqPb, err := req.Pb()
 	if err != nil {
@@ -61,33 +66,25 @@ func (c *QApiClient) Auth(req *request.QAuthRequest) (*response.QAuthResponse, e
 	md := metadata.Pairs("token", res.Session.Token)
 	c.ctx = metadata.NewOutgoingContext(context.Background(), md)
 
-	return res, nil
+	return res.Session, nil
 }
 
-func (c *QApiClient) AnonymousAuth() (*response.QAuthResponse, error) {
+func (c *QApiClient) AnonymousAuth() (*auth.QSession, error) {
 	auth, err := auth.NewAnonymousAuth()
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
-	req := &request.QAuthRequest{
-		Auth: auth,
-	}
-
-	return c.Auth(req)
+	return c.Auth(auth)
 }
 
-func (c *QApiClient) BasicAuth(login string, password string) (*response.QAuthResponse, error) {
+func (c *QApiClient) BasicAuth(login string, password string) (*auth.QSession, error) {
 	auth, err := auth.NewBasicAuth(login, password)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
-	req := &request.QAuthRequest{
-		Auth: auth,
-	}
-
-	return c.Auth(req)
+	return c.Auth(auth)
 }
 
 // Join ...
