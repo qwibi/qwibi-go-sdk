@@ -4,7 +4,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/geometry"
 	"github.com/qwibi/qwibi-go-sdk/proto"
-	"github.com/rs/zerolog/log"
+	"github.com/qwibi/qwibi-go-sdk/qlog"
 )
 
 type QPointFeature struct {
@@ -21,13 +21,12 @@ func NewPointFeature() *QPointFeature {
 func NewPointFeaturePb(pb *proto.QPBxPointFeature) (*QPointFeature, error) {
 	if pb == nil {
 		err := errors.New("Invalid parameter type nil")
-		log.Error().Stack().Err(err).Msg("")
-		return nil, errors.WithStack(err)
+		return nil, qlog.Error(err)
 	}
 
 	geometry, err := geometry.NewPointPb(pb.Geometry)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, qlog.Error(err)
 	}
 
 	feature := &QPointFeature{
@@ -41,7 +40,6 @@ func NewPointFeaturePb(pb *proto.QPBxPointFeature) (*QPointFeature, error) {
 func (c *QPointFeature) Valid() error {
 	if c.Geometry == nil {
 		err := errors.New("Invalid geometry type nil")
-		log.Error().Stack().Err(err).Msg("")
 		return err
 	}
 

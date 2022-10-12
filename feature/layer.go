@@ -3,7 +3,7 @@ package feature
 import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/proto"
-	"github.com/rs/zerolog/log"
+	"github.com/qwibi/qwibi-go-sdk/qlog"
 )
 
 type QLayerFeature struct {
@@ -19,8 +19,7 @@ func NewLayerFeature() *QLayerFeature {
 func NewLayerFeaturePb(pb *proto.QPBxLayerFeature) (*QLayerFeature, error) {
 	if pb == nil {
 		err := errors.New("Invalid parameter type nil")
-		log.Error().Stack().Err(err).Msg("")
-		return nil, errors.WithStack(err)
+		return nil, qlog.Error(err)
 	}
 
 	feature := &QLayerFeature{}

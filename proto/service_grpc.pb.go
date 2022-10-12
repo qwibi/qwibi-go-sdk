@@ -26,6 +26,8 @@ type QPBxApiClient interface {
 	Auth(ctx context.Context, in *QPBxAuthRequest, opts ...grpc.CallOption) (*QPBxAuthResponse, error)
 	// Join to geo object layer
 	Join(ctx context.Context, in *QPBxJoinRequest, opts ...grpc.CallOption) (*QPBxJoinResponse, error)
+	// Command
+	Command(ctx context.Context, in *QPBxCommandRequest, opts ...grpc.CallOption) (*QPBxCommandResponse, error)
 	// Post
 	Post(ctx context.Context, in *QPBxPostRequest, opts ...grpc.CallOption) (*QPBxPostResponse, error)
 	// Stream
@@ -52,6 +54,15 @@ func (c *qPBxApiClient) Auth(ctx context.Context, in *QPBxAuthRequest, opts ...g
 func (c *qPBxApiClient) Join(ctx context.Context, in *QPBxJoinRequest, opts ...grpc.CallOption) (*QPBxJoinResponse, error) {
 	out := new(QPBxJoinResponse)
 	err := c.cc.Invoke(ctx, "/QPBxApi/Join", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *qPBxApiClient) Command(ctx context.Context, in *QPBxCommandRequest, opts ...grpc.CallOption) (*QPBxCommandResponse, error) {
+	out := new(QPBxCommandResponse)
+	err := c.cc.Invoke(ctx, "/QPBxApi/Command", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -106,6 +117,8 @@ type QPBxApiServer interface {
 	Auth(context.Context, *QPBxAuthRequest) (*QPBxAuthResponse, error)
 	// Join to geo object layer
 	Join(context.Context, *QPBxJoinRequest) (*QPBxJoinResponse, error)
+	// Command
+	Command(context.Context, *QPBxCommandRequest) (*QPBxCommandResponse, error)
 	// Post
 	Post(context.Context, *QPBxPostRequest) (*QPBxPostResponse, error)
 	// Stream
@@ -121,6 +134,9 @@ func (UnimplementedQPBxApiServer) Auth(context.Context, *QPBxAuthRequest) (*QPBx
 }
 func (UnimplementedQPBxApiServer) Join(context.Context, *QPBxJoinRequest) (*QPBxJoinResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Join not implemented")
+}
+func (UnimplementedQPBxApiServer) Command(context.Context, *QPBxCommandRequest) (*QPBxCommandResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Command not implemented")
 }
 func (UnimplementedQPBxApiServer) Post(context.Context, *QPBxPostRequest) (*QPBxPostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Post not implemented")
@@ -172,6 +188,24 @@ func _QPBxApi_Join_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QPBxApiServer).Join(ctx, req.(*QPBxJoinRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _QPBxApi_Command_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QPBxCommandRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QPBxApiServer).Command(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/QPBxApi/Command",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QPBxApiServer).Command(ctx, req.(*QPBxCommandRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -234,6 +268,10 @@ var QPBxApi_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Join",
 			Handler:    _QPBxApi_Join_Handler,
+		},
+		{
+			MethodName: "Command",
+			Handler:    _QPBxApi_Command_Handler,
 		},
 		{
 			MethodName: "Post",

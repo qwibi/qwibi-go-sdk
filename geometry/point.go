@@ -3,7 +3,7 @@ package geometry
 import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/proto"
-	"github.com/rs/zerolog/log"
+	"github.com/qwibi/qwibi-go-sdk/qlog"
 )
 
 // QPoint ...
@@ -22,8 +22,7 @@ func NewPoint() *QPoint {
 func NewPointPb(pb *proto.QPBxPoint) (*QPoint, error) {
 	if pb == nil {
 		err := errors.New("Invalid parameter type nil")
-		log.Error().Stack().Err(err).Msg("")
-		return nil, errors.WithStack(err)
+		return nil, qlog.Error(err)
 	}
 
 	point := NewPoint()
@@ -36,8 +35,7 @@ func NewPointPb(pb *proto.QPBxPoint) (*QPoint, error) {
 func (c *QPoint) Valid() error {
 	if len(c.Coordinates) < 2 {
 		err := errors.New("Wrong coordinates format")
-		log.Error().Stack().Err(err).Msg("")
-		return err
+		return qlog.Error(err)
 	}
 
 	return nil

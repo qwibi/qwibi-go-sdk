@@ -4,8 +4,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/feature"
 	"github.com/qwibi/qwibi-go-sdk/proto"
+	"github.com/qwibi/qwibi-go-sdk/qlog"
 	"github.com/qwibi/qwibi-go-sdk/utils"
-	"github.com/rs/zerolog/log"
 )
 
 type QGeoPoint struct {
@@ -25,20 +25,18 @@ func NewGeoPoint() *QGeoPoint {
 func NewGeoPointPb(pb *proto.QPBxGeoObject) (*QGeoPoint, error) {
 	if pb == nil {
 		err := errors.New("Invalid parameter type nil")
-		log.Error().Stack().Err(err).Msg("")
-		return nil, errors.WithStack(err)
+		return nil, qlog.Error(err)
 	}
 
 	pointPb := pb.GetPoint()
 	if pointPb == nil {
 		err := errors.New("Invalid GeoLayer format type nil")
-		log.Error().Stack().Err(err).Msg("")
-		return nil, errors.WithStack(err)
+		return nil, qlog.Error(err)
 	}
 
 	featurePb, err := feature.NewPointFeaturePb(pointPb.Feature)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, qlog.Error(err)
 	}
 
 	point := &QGeoPoint{

@@ -2,20 +2,18 @@ package sdk
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"runtime"
 
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/auth"
+	"github.com/qwibi/qwibi-go-sdk/feature"
 	"github.com/qwibi/qwibi-go-sdk/geo"
+	"github.com/qwibi/qwibi-go-sdk/geometry"
+	"github.com/qwibi/qwibi-go-sdk/metadata"
 	"github.com/qwibi/qwibi-go-sdk/proto"
-	"github.com/qwibi/qwibi-go-sdk/rpc/request"
-	"github.com/qwibi/qwibi-go-sdk/rpc/response"
-	"github.com/qwibi/qwibi-go-sdk/utils"
-	"github.com/rs/zerolog/log"
+	"github.com/qwibi/qwibi-go-sdk/qlog"
 	grpc "google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 type QApiClient struct {
@@ -23,7 +21,7 @@ type QApiClient struct {
 	ctx       context.Context
 }
 
-func NewClient(addr string) (*QApiClient, error) {
+func NewClient(ctx context.Context, addr string) (*QApiClient, error) {
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithInsecure())
 	conn, err := grpc.Dial(addr, opts...)
@@ -34,83 +32,89 @@ func NewClient(addr string) (*QApiClient, error) {
 
 	client := &QApiClient{
 		apiClient: proto.NewQPBxApiClient(conn),
-		ctx:       context.Background(),
+		ctx:       ctx,
 	}
 
 	return client, nil
 }
 
 // Auth ...
-func (c *QApiClient) Auth(auth auth.QAuth) (*auth.QSession, error) {
+func (c *QApiClient) Auth(a auth.QAuth) (*auth.QSession, error) {
 
-	req, err := request.NewAuthRequest(auth)
-	if err != nil {
-		return nil, errors.WithStack(err)
+	switch v := a.(type) {
+	case *auth.QAnonymousAuth:
+		return c.AnonymousAuth()
+	case *auth.QBasicAuth:
+		return c.BasicAuth(v.Login, v.Password)
+	default:
+		return nil, errors.New("Unknown auth type")
 	}
-
-	reqPb, err := req.Pb()
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	resPb, err := c.apiClient.Auth(c.ctx, reqPb)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	res, err := response.NewAuthResponsePb(resPb)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	md := metadata.Pairs("token", res.Session.Token)
-	c.ctx = metadata.NewOutgoingContext(context.Background(), md)
-
-	return res.Session, nil
+	// md := metadata.Pairs("token", res.Session.Token)
+	// c.ctx = metadata.NewOutgoingContext(context.Background(), md)
+	// return res.Session, nil
 }
 
 func (c *QApiClient) AnonymousAuth() (*auth.QSession, error) {
-	auth, err := auth.NewAnonymousAuth()
-	if err != nil {
-		return nil, errors.WithStack(err)
+	req := &proto.QPBxAuthRequest{
+		Auth: &proto.QPBxAuthRequest_Anonym{
+			Anonym: &proto.QPBxAnonymAuth{},
+		},
 	}
 
-	return c.Auth(auth)
+	res, err := c.apiClient.Auth(c.ctx, req)
+	if err != nil {
+		return nil, qlog.Error(err)
+	}
+
+	session, err := auth.NewSessionPb(res.Session)
+	if err != nil {
+		return nil, qlog.Error(err)
+	}
+
+	c.ctx = metadata.SetContextToken(c.ctx, session.Token)
+
+	return session, nil
 }
 
 func (c *QApiClient) BasicAuth(login string, password string) (*auth.QSession, error) {
-	auth, err := auth.NewBasicAuth(login, password)
-	if err != nil {
-		return nil, errors.WithStack(err)
+	req := &proto.QPBxAuthRequest{
+		Auth: &proto.QPBxAuthRequest_Basic{
+			Basic: &proto.QPBxBasicAuth{
+				Login:    login,
+				Password: password,
+			},
+		},
 	}
 
-	return c.Auth(auth)
+	res, err := c.apiClient.Auth(c.ctx, req)
+	if err != nil {
+		return nil, qlog.Error(err)
+	}
+
+	session, err := auth.NewSessionPb(res.Session)
+	if err != nil {
+		return nil, qlog.Error(err)
+	}
+
+	c.ctx = metadata.SetContextToken(c.ctx, session.Token)
+
+	return session, nil
 }
 
 // Join ...
 func (c *QApiClient) Join(gid string) (geo.QGeoObject, error) {
-	if gid == "" {
-		gid = utils.NewID()
+	req := &proto.QPBxJoinRequest{
+		Gid: gid,
 	}
 
-	joinRequest, err := request.NewJoinRequest(gid)
+	res, err := c.apiClient.Join(c.ctx, req)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, qlog.Error(err)
 	}
 
-	requestPb, err := joinRequest.Pb()
+	object, err := geo.NewGeoObjectPb(res.Object)
 	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	joinResponse, err := c.apiClient.Join(c.ctx, requestPb)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	object, err := geo.NewGeoObjectPb(joinResponse.Object)
-	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, qlog.Error(err)
 	}
 
 	return object, nil
@@ -118,57 +122,57 @@ func (c *QApiClient) Join(gid string) (geo.QGeoObject, error) {
 
 // Join ...
 func (c *QApiClient) Post(object geo.QGeoObject) (geo.QGeoObject, error) {
-	request, err := request.NewPostRequest(object)
-	if err != nil {
-		return nil, errors.WithStack(err)
+	req := &proto.QPBxPostRequest{
+		Object: object.Pb(),
 	}
 
-	log.Debug().Msgf("Post request: %#v", request)
-	responsePb, err := c.apiClient.Post(c.ctx, request.Pb())
+	res, err := c.apiClient.Post(c.ctx, req)
 	if err != nil {
-		err := errors.New(fmt.Sprint(err))
-		log.Error().Stack().Err(err).Msg("")
-		return nil, errors.WithStack(err)
+		return nil, qlog.Error(err)
 	}
 
-	response, err := response.NewPostResponsePb(responsePb)
+	object, err = geo.NewGeoObjectPb(res.Object)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, qlog.Error(err)
 	}
 
-	log.Debug().Msgf("Post response: %#v", response)
-
-	return response.Object, nil
+	return object, nil
 }
 
 // Stream
 func (c *QApiClient) Stream() error {
 	stream, err := c.apiClient.Stream(c.ctx)
 	if err != nil {
-		return errors.WithStack(err)
+		return qlog.Error(err)
 	}
 
-	//go c.send(stream)
 	return c.receive(stream)
-	//return c.RunTest(ctx)
-	//go c.RunTest(ctx)
-
-	// return nil
 }
 
 // Receive ...
 func (c *QApiClient) receive(stream proto.QPBxApi_StreamClient) error {
+	x, y := 37.33172861, -122.03068446
 	for {
 		msg, err := stream.Recv()
 		if err == io.EOF {
-			log.Info().Msgf("Client connected: %+v", c)
-			log.Info().Msgf("Goroutines: %d", runtime.NumGoroutine())
+			qlog.Infof("Client connected: %+v", c)
+			qlog.Infof("Goroutines: %d", runtime.NumGoroutine())
 			return errors.Cause(err)
 		}
 		if err != nil {
 			return errors.Cause(err)
 		}
 
-		log.Info().Msgf("==> Stream: [%T] %+v", msg, msg)
+		qlog.Infof("==> Stream: [%T] %+v", msg, msg)
+
+		c.Post(&geo.QGeoPoint{
+			Gid: "123456",
+			Feature: &feature.QPointFeature{
+				Geometry: &geometry.QPoint{
+					Coordinates: []float64{x, y},
+				},
+			},
+		})
+
 	}
 }

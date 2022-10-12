@@ -11,7 +11,7 @@ type QGeometry interface {
 // 	if pb == nil {
 // 		err := errors.New("Invalid geometry type nil")
 // 		log.Error().Stack().Err(err).Msg("")
-// 		return nil, errors.WithStack(err)
+// 		return nil, qlog.Error(err)
 // 	}
 
 // 	switch v := pb.Geometry.(type) {
@@ -23,6 +23,6 @@ type QGeometry interface {
 // 		err := errors.New("Unknown geometry type")
 // 		msg := fmt.Sprintf("%T", v)
 // 		log.Error().Stack().Err(err).Msg(msg)
-// 		return nil, errors.WithStack(err)
+// 		return nil, qlog.Error(err)
 // 	}
 // }
