@@ -4,15 +4,15 @@ SRC_PATH := $(GOPATH)/src/qwibi.com
 .PHONY: build get
 
 build:
-	go build -v ./cmd/...
+	go build -v ./...
 
 get:
-	go get -v ./cmd/...
+	go get -v ./...
 
 test:
 	go test ./...
 
 push:
-	go mod tidy && git add -A && git commit -m "WIP: Test" | true && git push
+	go mod tidy && git add -A && git commit -m "WIP: Update" | true && git push
 
 .DEFAULT_GOAL := get
