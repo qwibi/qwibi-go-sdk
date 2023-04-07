@@ -34,7 +34,7 @@ func NewGeoLayerPb(pb *proto.QPBxGeoObject) (*QGeoLayer, error) {
 	}
 
 	layer := &QGeoLayer{
-		gid:        layerPb.Gid,
+		gid:        pb.Gid,
 		Properties: layerPb.Properties,
 	}
 
@@ -51,9 +51,9 @@ func (c *QGeoLayer) Gid() string {
 
 func (c *QGeoLayer) Pb() *proto.QPBxGeoObject {
 	return &proto.QPBxGeoObject{
+		Gid: c.gid,
 		Geo: &proto.QPBxGeoObject_Layer{
 			Layer: &proto.QPBxGeoLayer{
-				Gid:        c.gid,
 				Properties: c.Properties,
 			},
 		},

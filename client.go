@@ -2,14 +2,14 @@ package sdk
 
 import (
 	"context"
+	"github.com/qwibi/qwibi-go-sdk/feature"
+	"github.com/qwibi/qwibi-go-sdk/geometry"
 	"io"
 	"runtime"
 
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/auth"
-	"github.com/qwibi/qwibi-go-sdk/feature"
 	"github.com/qwibi/qwibi-go-sdk/geo"
-	"github.com/qwibi/qwibi-go-sdk/geometry"
 	"github.com/qwibi/qwibi-go-sdk/metadata"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 	"github.com/qwibi/qwibi-go-sdk/qlog"
@@ -152,6 +152,15 @@ func (c *QApiClient) Stream() error {
 // Receive ...
 func (c *QApiClient) receive(stream proto.QPBxApi_StreamClient) error {
 	x, y := 37.33172861, -122.03068446
+
+	point := &geo.QGeoPoint{
+		Feature: &feature.QPointFeature{
+			Geometry: &geometry.QPoint{
+				Coordinates: []float64{x, y},
+			},
+		},
+	}
+
 	for {
 		msg, err := stream.Recv()
 		if err == io.EOF {
@@ -165,14 +174,7 @@ func (c *QApiClient) receive(stream proto.QPBxApi_StreamClient) error {
 
 		qlog.Infof("==> Stream: [%T] %+v", msg, msg)
 
-		c.Post(&geo.QGeoPoint{
-			gid: "123456",
-			Feature: &feature.QPointFeature{
-				Geometry: &geometry.QPoint{
-					Coordinates: []float64{x, y},
-				},
-			},
-		})
+		c.Post(point)
 
 	}
 }

@@ -40,7 +40,7 @@ func NewGeoPointPb(pb *proto.QPBxGeoObject) (*QGeoPoint, error) {
 	}
 
 	point := &QGeoPoint{
-		gid:        pointPb.Gid,
+		gid:        pb.Gid,
 		Feature:    featurePb,
 		Properties: pointPb.Properties,
 	}
@@ -58,9 +58,9 @@ func (c *QGeoPoint) Gid() string {
 
 func (c *QGeoPoint) Pb() *proto.QPBxGeoObject {
 	return &proto.QPBxGeoObject{
+		Gid: c.gid,
 		Geo: &proto.QPBxGeoObject_Point{
 			Point: &proto.QPBxGeoPoint{
-				Gid:        c.gid,
 				Feature:    c.Feature.Pb(),
 				Properties: c.Properties,
 			},
