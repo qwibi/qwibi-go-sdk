@@ -8,7 +8,7 @@ import (
 )
 
 type QGeoLayer struct {
-	Gid        string
+	gid        string
 	Properties []byte
 }
 
@@ -17,7 +17,7 @@ func NewGeoLayer(gid string) *QGeoLayer {
 		gid = utils.NewID()
 	}
 	return &QGeoLayer{
-		Gid: gid,
+		gid: gid,
 	}
 }
 
@@ -34,7 +34,7 @@ func NewGeoLayerPb(pb *proto.QPBxGeoObject) (*QGeoLayer, error) {
 	}
 
 	layer := &QGeoLayer{
-		Gid:        layerPb.Gid,
+		gid:        layerPb.Gid,
 		Properties: layerPb.Properties,
 	}
 
@@ -45,11 +45,15 @@ func (c *QGeoLayer) Valid() error {
 	return nil
 }
 
+func (c *QGeoLayer) Gid() string {
+	return c.gid
+}
+
 func (c *QGeoLayer) Pb() *proto.QPBxGeoObject {
 	return &proto.QPBxGeoObject{
 		Geo: &proto.QPBxGeoObject_Layer{
 			Layer: &proto.QPBxGeoLayer{
-				Gid:        c.Gid,
+				Gid:        c.gid,
 				Properties: c.Properties,
 			},
 		},

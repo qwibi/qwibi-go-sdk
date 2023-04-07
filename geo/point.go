@@ -9,7 +9,7 @@ import (
 )
 
 type QGeoPoint struct {
-	Gid        string
+	gid        string
 	Feature    *feature.QPointFeature
 	Properties []byte
 }
@@ -17,7 +17,7 @@ type QGeoPoint struct {
 // NewGeoPoint ...
 func NewGeoPoint() *QGeoPoint {
 	return &QGeoPoint{
-		Gid:     utils.NewID(),
+		gid:     utils.NewID(),
 		Feature: feature.NewPointFeature(),
 	}
 }
@@ -40,7 +40,7 @@ func NewGeoPointPb(pb *proto.QPBxGeoObject) (*QGeoPoint, error) {
 	}
 
 	point := &QGeoPoint{
-		Gid:        pointPb.Gid,
+		gid:        pointPb.Gid,
 		Feature:    featurePb,
 		Properties: pointPb.Properties,
 	}
@@ -52,11 +52,15 @@ func (c *QGeoPoint) Valid() error {
 	return c.Feature.Geometry.Valid()
 }
 
+func (c *QGeoPoint) Gid() string {
+	return c.gid
+}
+
 func (c *QGeoPoint) Pb() *proto.QPBxGeoObject {
 	return &proto.QPBxGeoObject{
 		Geo: &proto.QPBxGeoObject_Point{
 			Point: &proto.QPBxGeoPoint{
-				Gid:        c.Gid,
+				Gid:        c.gid,
 				Feature:    c.Feature.Pb(),
 				Properties: c.Properties,
 			},

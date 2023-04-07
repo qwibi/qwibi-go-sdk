@@ -28,7 +28,7 @@ func NewLayerFeaturePb(pb *proto.QPBxLayerFeature) (*QLayerFeature, error) {
 }
 
 func (c *QLayerFeature) Valid() error {
-	return nil
+	return qlog.TODO()
 }
 
 func (c *QLayerFeature) Pb() (*proto.QPBxLayerFeature, error) {

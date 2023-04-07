@@ -7,6 +7,7 @@ import (
 )
 
 type QGeoObject interface {
+	Gid() string
 	Valid() error
 	Pb() *proto.QPBxGeoObject
 }

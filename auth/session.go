@@ -9,15 +9,13 @@ import (
 
 // QSession ...
 type QSession struct {
-	Token   string
-	LayerID string
+	Token string
 }
 
 // NewSession ...
-func NewSession(token string) (*QSession, error) {
+func NewSession() (*QSession, error) {
 	session := &QSession{
-		Token:   token,
-		LayerID: utils.NewID(),
+		Token: utils.NewToken(),
 	}
 
 	if err := session.Valid(); err != nil {
@@ -34,10 +32,12 @@ func NewSessionPb(pb *proto.QPBxSession) (*QSession, error) {
 		return nil, qlog.Error(err)
 	}
 
-	session, err := NewSession(pb.Token)
+	session, err := NewSession()
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
+
+	session.Token = pb.Token
 
 	return session, nil
 }

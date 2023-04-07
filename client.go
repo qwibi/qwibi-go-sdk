@@ -166,7 +166,7 @@ func (c *QApiClient) receive(stream proto.QPBxApi_StreamClient) error {
 		qlog.Infof("==> Stream: [%T] %+v", msg, msg)
 
 		c.Post(&geo.QGeoPoint{
-			Gid: "123456",
+			gid: "123456",
 			Feature: &feature.QPointFeature{
 				Geometry: &geometry.QPoint{
 					Coordinates: []float64{x, y},
