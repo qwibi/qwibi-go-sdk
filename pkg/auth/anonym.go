@@ -2,8 +2,8 @@ package auth
 
 import (
 	"github.com/pkg/errors"
+	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/proto"
-	"github.com/qwibi/qwibi-go-sdk/qlog"
 )
 
 // QAnonymousAuth ...

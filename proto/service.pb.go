@@ -297,7 +297,7 @@ type QPBxJoinResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Object *QPBxGeoObject `protobuf:"bytes,1,opt,name=object,proto3" json:"object,omitempty"`
+	Layer *QPBxGeoLayer `protobuf:"bytes,1,opt,name=layer,proto3" json:"layer,omitempty"`
 }
 
 func (x *QPBxJoinResponse) Reset() {
@@ -332,9 +332,104 @@ func (*QPBxJoinResponse) Descriptor() ([]byte, []int) {
 	return file_service_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *QPBxJoinResponse) GetObject() *QPBxGeoObject {
+func (x *QPBxJoinResponse) GetLayer() *QPBxGeoLayer {
 	if x != nil {
-		return x.Object
+		return x.Layer
+	}
+	return nil
+}
+
+// / Get
+type QPBxGetRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Gid string `protobuf:"bytes,1,opt,name=gid,proto3" json:"gid,omitempty"`
+}
+
+func (x *QPBxGetRequest) Reset() {
+	*x = QPBxGetRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_service_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QPBxGetRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QPBxGetRequest) ProtoMessage() {}
+
+func (x *QPBxGetRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_service_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QPBxGetRequest.ProtoReflect.Descriptor instead.
+func (*QPBxGetRequest) Descriptor() ([]byte, []int) {
+	return file_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *QPBxGetRequest) GetGid() string {
+	if x != nil {
+		return x.Gid
+	}
+	return ""
+}
+
+type QPBxGetResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Objects []*QPBxGeoObject `protobuf:"bytes,1,rep,name=objects,proto3" json:"objects,omitempty"`
+}
+
+func (x *QPBxGetResponse) Reset() {
+	*x = QPBxGetResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_service_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QPBxGetResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QPBxGetResponse) ProtoMessage() {}
+
+func (x *QPBxGetResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_service_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QPBxGetResponse.ProtoReflect.Descriptor instead.
+func (*QPBxGetResponse) Descriptor() ([]byte, []int) {
+	return file_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *QPBxGetResponse) GetObjects() []*QPBxGeoObject {
+	if x != nil {
+		return x.Objects
 	}
 	return nil
 }
@@ -351,7 +446,7 @@ type QPBxCommandRequest struct {
 func (x *QPBxCommandRequest) Reset() {
 	*x = QPBxCommandRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_service_proto_msgTypes[6]
+		mi := &file_service_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -364,7 +459,7 @@ func (x *QPBxCommandRequest) String() string {
 func (*QPBxCommandRequest) ProtoMessage() {}
 
 func (x *QPBxCommandRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[6]
+	mi := &file_service_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -377,7 +472,7 @@ func (x *QPBxCommandRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QPBxCommandRequest.ProtoReflect.Descriptor instead.
 func (*QPBxCommandRequest) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{6}
+	return file_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *QPBxCommandRequest) GetCommand() string {
@@ -398,7 +493,7 @@ type QPBxCommandResponse struct {
 func (x *QPBxCommandResponse) Reset() {
 	*x = QPBxCommandResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_service_proto_msgTypes[7]
+		mi := &file_service_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -411,7 +506,7 @@ func (x *QPBxCommandResponse) String() string {
 func (*QPBxCommandResponse) ProtoMessage() {}
 
 func (x *QPBxCommandResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[7]
+	mi := &file_service_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -424,7 +519,7 @@ func (x *QPBxCommandResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QPBxCommandResponse.ProtoReflect.Descriptor instead.
 func (*QPBxCommandResponse) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{7}
+	return file_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *QPBxCommandResponse) GetResult() string {
@@ -434,17 +529,108 @@ func (x *QPBxCommandResponse) GetResult() string {
 	return ""
 }
 
-// / Stream
-type QPBxStreamRequest struct {
+// / Bot
+type QPBxBotRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Gid string `protobuf:"bytes,1,opt,name=gid,proto3" json:"gid,omitempty"`
+}
+
+func (x *QPBxBotRequest) Reset() {
+	*x = QPBxBotRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_service_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QPBxBotRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QPBxBotRequest) ProtoMessage() {}
+
+func (x *QPBxBotRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_service_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QPBxBotRequest.ProtoReflect.Descriptor instead.
+func (*QPBxBotRequest) Descriptor() ([]byte, []int) {
+	return file_service_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *QPBxBotRequest) GetGid() string {
+	if x != nil {
+		return x.Gid
+	}
+	return ""
+}
+
+type QPBxBotResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 }
 
+func (x *QPBxBotResponse) Reset() {
+	*x = QPBxBotResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_service_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QPBxBotResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QPBxBotResponse) ProtoMessage() {}
+
+func (x *QPBxBotResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_service_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QPBxBotResponse.ProtoReflect.Descriptor instead.
+func (*QPBxBotResponse) Descriptor() ([]byte, []int) {
+	return file_service_proto_rawDescGZIP(), []int{11}
+}
+
+// / Stream
+type QPBxStreamRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to Type:
+	//
+	//	*QPBxStreamRequest_Command
+	Type isQPBxStreamRequest_Type `protobuf_oneof:"type"`
+}
+
 func (x *QPBxStreamRequest) Reset() {
 	*x = QPBxStreamRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_service_proto_msgTypes[8]
+		mi := &file_service_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -457,7 +643,7 @@ func (x *QPBxStreamRequest) String() string {
 func (*QPBxStreamRequest) ProtoMessage() {}
 
 func (x *QPBxStreamRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[8]
+	mi := &file_service_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -470,21 +656,50 @@ func (x *QPBxStreamRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QPBxStreamRequest.ProtoReflect.Descriptor instead.
 func (*QPBxStreamRequest) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{8}
+	return file_service_proto_rawDescGZIP(), []int{12}
 }
+
+func (m *QPBxStreamRequest) GetType() isQPBxStreamRequest_Type {
+	if m != nil {
+		return m.Type
+	}
+	return nil
+}
+
+func (x *QPBxStreamRequest) GetCommand() *QPBxCommandRequest {
+	if x, ok := x.GetType().(*QPBxStreamRequest_Command); ok {
+		return x.Command
+	}
+	return nil
+}
+
+type isQPBxStreamRequest_Type interface {
+	isQPBxStreamRequest_Type()
+}
+
+type QPBxStreamRequest_Command struct {
+	Command *QPBxCommandRequest `protobuf:"bytes,1,opt,name=command,proto3,oneof"`
+}
+
+func (*QPBxStreamRequest_Command) isQPBxStreamRequest_Type() {}
 
 type QPBxStreamResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Object *QPBxGeoObject `protobuf:"bytes,1,opt,name=object,proto3" json:"object,omitempty"`
+	//	QPBxGeoObject object = 1;
+	//
+	// Types that are assignable to Type:
+	//
+	//	*QPBxStreamResponse_Command
+	Type isQPBxStreamResponse_Type `protobuf_oneof:"type"`
 }
 
 func (x *QPBxStreamResponse) Reset() {
 	*x = QPBxStreamResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_service_proto_msgTypes[9]
+		mi := &file_service_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -497,7 +712,7 @@ func (x *QPBxStreamResponse) String() string {
 func (*QPBxStreamResponse) ProtoMessage() {}
 
 func (x *QPBxStreamResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_service_proto_msgTypes[9]
+	mi := &file_service_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -510,15 +725,32 @@ func (x *QPBxStreamResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QPBxStreamResponse.ProtoReflect.Descriptor instead.
 func (*QPBxStreamResponse) Descriptor() ([]byte, []int) {
-	return file_service_proto_rawDescGZIP(), []int{9}
+	return file_service_proto_rawDescGZIP(), []int{13}
 }
 
-func (x *QPBxStreamResponse) GetObject() *QPBxGeoObject {
-	if x != nil {
-		return x.Object
+func (m *QPBxStreamResponse) GetType() isQPBxStreamResponse_Type {
+	if m != nil {
+		return m.Type
 	}
 	return nil
 }
+
+func (x *QPBxStreamResponse) GetCommand() *QPBxCommandResponse {
+	if x, ok := x.GetType().(*QPBxStreamResponse_Command); ok {
+		return x.Command
+	}
+	return nil
+}
+
+type isQPBxStreamResponse_Type interface {
+	isQPBxStreamResponse_Type()
+}
+
+type QPBxStreamResponse_Command struct {
+	Command *QPBxCommandResponse `protobuf:"bytes,1,opt,name=command,proto3,oneof"`
+}
+
+func (*QPBxStreamResponse_Command) isQPBxStreamResponse_Type() {}
 
 var File_service_proto protoreflect.FileDescriptor
 
@@ -545,22 +777,36 @@ var file_service_proto_rawDesc = []byte{
 	0x0e, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x47, 0x65, 0x6f, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x52,
 	0x06, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x22, 0x23, 0x0a, 0x0f, 0x51, 0x50, 0x42, 0x78, 0x4a,
 	0x6f, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x67, 0x69,
-	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x67, 0x69, 0x64, 0x22, 0x3a, 0x0a, 0x10,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x67, 0x69, 0x64, 0x22, 0x37, 0x0a, 0x10,
 	0x51, 0x50, 0x42, 0x78, 0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x26, 0x0a, 0x06, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x0e, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x47, 0x65, 0x6f, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74,
-	0x52, 0x06, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x22, 0x2e, 0x0a, 0x12, 0x51, 0x50, 0x42, 0x78,
-	0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x18,
-	0x0a, 0x07, 0x63, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x07, 0x63, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x22, 0x2d, 0x0a, 0x13, 0x51, 0x50, 0x42, 0x78,
-	0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x16, 0x0a, 0x06, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x06, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x13, 0x0a, 0x11, 0x51, 0x50, 0x42, 0x78, 0x53,
-	0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x3c, 0x0a, 0x12,
-	0x51, 0x50, 0x42, 0x78, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x26, 0x0a, 0x06, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x47, 0x65, 0x6f, 0x4f, 0x62, 0x6a, 0x65,
-	0x63, 0x74, 0x52, 0x06, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x32, 0xfd, 0x01, 0x0a, 0x07, 0x51,
+	0x12, 0x23, 0x0a, 0x05, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x0d, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x47, 0x65, 0x6f, 0x4c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x05,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x22, 0x22, 0x0a, 0x0e, 0x51, 0x50, 0x42, 0x78, 0x47, 0x65, 0x74,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x67, 0x69, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x67, 0x69, 0x64, 0x22, 0x3b, 0x0a, 0x0f, 0x51, 0x50, 0x42,
+	0x78, 0x47, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x28, 0x0a, 0x07,
+	0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0e, 0x2e,
+	0x51, 0x50, 0x42, 0x78, 0x47, 0x65, 0x6f, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x07, 0x6f,
+	0x62, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x22, 0x2e, 0x0a, 0x12, 0x51, 0x50, 0x42, 0x78, 0x43, 0x6f,
+	0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x18, 0x0a, 0x07,
+	0x63, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63,
+	0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x22, 0x2d, 0x0a, 0x13, 0x51, 0x50, 0x42, 0x78, 0x43, 0x6f,
+	0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x16, 0x0a,
+	0x06, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x72,
+	0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x22, 0x0a, 0x0e, 0x51, 0x50, 0x42, 0x78, 0x42, 0x6f, 0x74,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x67, 0x69, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x67, 0x69, 0x64, 0x22, 0x11, 0x0a, 0x0f, 0x51, 0x50, 0x42,
+	0x78, 0x42, 0x6f, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x4c, 0x0a, 0x11,
+	0x51, 0x50, 0x42, 0x78, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x12, 0x2f, 0x0a, 0x07, 0x63, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x13, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x48, 0x00, 0x52, 0x07, 0x63, 0x6f, 0x6d, 0x6d, 0x61,
+	0x6e, 0x64, 0x42, 0x06, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x22, 0x4e, 0x0a, 0x12, 0x51, 0x50,
+	0x42, 0x78, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x30, 0x0a, 0x07, 0x63, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x14, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x48, 0x00, 0x52, 0x07, 0x63, 0x6f, 0x6d, 0x6d, 0x61,
+	0x6e, 0x64, 0x42, 0x06, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x32, 0x9f, 0x02, 0x0a, 0x07, 0x51,
 	0x50, 0x42, 0x78, 0x41, 0x70, 0x69, 0x12, 0x2b, 0x0a, 0x04, 0x41, 0x75, 0x74, 0x68, 0x12, 0x10,
 	0x2e, 0x51, 0x50, 0x42, 0x78, 0x41, 0x75, 0x74, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
 	0x1a, 0x11, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x41, 0x75, 0x74, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f,
@@ -569,16 +815,18 @@ var file_service_proto_rawDesc = []byte{
 	0x51, 0x50, 0x42, 0x78, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
 	0x12, 0x2b, 0x0a, 0x04, 0x4a, 0x6f, 0x69, 0x6e, 0x12, 0x10, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x4a,
 	0x6f, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x11, 0x2e, 0x51, 0x50, 0x42,
-	0x78, 0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x34, 0x0a,
-	0x07, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x12, 0x13, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x43,
-	0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e,
-	0x51, 0x50, 0x42, 0x78, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x35, 0x0a, 0x06, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x12, 0x12, 0x2e,
-	0x51, 0x50, 0x42, 0x78, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x13, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x28, 0x01, 0x30, 0x01, 0x42, 0x0f, 0x5a, 0x0d, 0x2e, 0x2f,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x78, 0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x28, 0x0a,
+	0x03, 0x47, 0x65, 0x74, 0x12, 0x0f, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x47, 0x65, 0x74, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x10, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x47, 0x65, 0x74, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2c, 0x0a, 0x03, 0x42, 0x6f, 0x74, 0x12, 0x0f,
+	0x2e, 0x51, 0x50, 0x42, 0x78, 0x42, 0x6f, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x10, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x42, 0x6f, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x28, 0x01, 0x30, 0x01, 0x12, 0x35, 0x0a, 0x06, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x12,
+	0x12, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x28, 0x01, 0x30, 0x01, 0x42, 0x0f, 0x5a, 0x0d,
+	0x2e, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -593,7 +841,7 @@ func file_service_proto_rawDescGZIP() []byte {
 	return file_service_proto_rawDescData
 }
 
-var file_service_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_service_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_service_proto_goTypes = []interface{}{
 	(*QPBxAuthRequest)(nil),     // 0: QPBxAuthRequest
 	(*QPBxAuthResponse)(nil),    // 1: QPBxAuthResponse
@@ -601,38 +849,47 @@ var file_service_proto_goTypes = []interface{}{
 	(*QPBxPostResponse)(nil),    // 3: QPBxPostResponse
 	(*QPBxJoinRequest)(nil),     // 4: QPBxJoinRequest
 	(*QPBxJoinResponse)(nil),    // 5: QPBxJoinResponse
-	(*QPBxCommandRequest)(nil),  // 6: QPBxCommandRequest
-	(*QPBxCommandResponse)(nil), // 7: QPBxCommandResponse
-	(*QPBxStreamRequest)(nil),   // 8: QPBxStreamRequest
-	(*QPBxStreamResponse)(nil),  // 9: QPBxStreamResponse
-	(*QPBxAnonymAuth)(nil),      // 10: QPBxAnonymAuth
-	(*QPBxBasicAuth)(nil),       // 11: QPBxBasicAuth
-	(*QPBxSession)(nil),         // 12: QPBxSession
-	(*QPBxGeoObject)(nil),       // 13: QPBxGeoObject
+	(*QPBxGetRequest)(nil),      // 6: QPBxGetRequest
+	(*QPBxGetResponse)(nil),     // 7: QPBxGetResponse
+	(*QPBxCommandRequest)(nil),  // 8: QPBxCommandRequest
+	(*QPBxCommandResponse)(nil), // 9: QPBxCommandResponse
+	(*QPBxBotRequest)(nil),      // 10: QPBxBotRequest
+	(*QPBxBotResponse)(nil),     // 11: QPBxBotResponse
+	(*QPBxStreamRequest)(nil),   // 12: QPBxStreamRequest
+	(*QPBxStreamResponse)(nil),  // 13: QPBxStreamResponse
+	(*QPBxAnonymAuth)(nil),      // 14: QPBxAnonymAuth
+	(*QPBxBasicAuth)(nil),       // 15: QPBxBasicAuth
+	(*QPBxSession)(nil),         // 16: QPBxSession
+	(*QPBxGeoObject)(nil),       // 17: QPBxGeoObject
+	(*QPBxGeoLayer)(nil),        // 18: QPBxGeoLayer
 }
 var file_service_proto_depIdxs = []int32{
-	10, // 0: QPBxAuthRequest.anonym:type_name -> QPBxAnonymAuth
-	11, // 1: QPBxAuthRequest.basic:type_name -> QPBxBasicAuth
-	12, // 2: QPBxAuthResponse.session:type_name -> QPBxSession
-	13, // 3: QPBxPostRequest.object:type_name -> QPBxGeoObject
-	13, // 4: QPBxPostResponse.object:type_name -> QPBxGeoObject
-	13, // 5: QPBxJoinResponse.object:type_name -> QPBxGeoObject
-	13, // 6: QPBxStreamResponse.object:type_name -> QPBxGeoObject
-	0,  // 7: QPBxApi.Auth:input_type -> QPBxAuthRequest
-	2,  // 8: QPBxApi.Post:input_type -> QPBxPostRequest
-	4,  // 9: QPBxApi.Join:input_type -> QPBxJoinRequest
-	6,  // 10: QPBxApi.Command:input_type -> QPBxCommandRequest
-	8,  // 11: QPBxApi.Stream:input_type -> QPBxStreamRequest
-	1,  // 12: QPBxApi.Auth:output_type -> QPBxAuthResponse
-	3,  // 13: QPBxApi.Post:output_type -> QPBxPostResponse
-	5,  // 14: QPBxApi.Join:output_type -> QPBxJoinResponse
-	7,  // 15: QPBxApi.Command:output_type -> QPBxCommandResponse
-	9,  // 16: QPBxApi.Stream:output_type -> QPBxStreamResponse
-	12, // [12:17] is the sub-list for method output_type
-	7,  // [7:12] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	14, // 0: QPBxAuthRequest.anonym:type_name -> QPBxAnonymAuth
+	15, // 1: QPBxAuthRequest.basic:type_name -> QPBxBasicAuth
+	16, // 2: QPBxAuthResponse.session:type_name -> QPBxSession
+	17, // 3: QPBxPostRequest.object:type_name -> QPBxGeoObject
+	17, // 4: QPBxPostResponse.object:type_name -> QPBxGeoObject
+	18, // 5: QPBxJoinResponse.layer:type_name -> QPBxGeoLayer
+	17, // 6: QPBxGetResponse.objects:type_name -> QPBxGeoObject
+	8,  // 7: QPBxStreamRequest.command:type_name -> QPBxCommandRequest
+	9,  // 8: QPBxStreamResponse.command:type_name -> QPBxCommandResponse
+	0,  // 9: QPBxApi.Auth:input_type -> QPBxAuthRequest
+	2,  // 10: QPBxApi.Post:input_type -> QPBxPostRequest
+	4,  // 11: QPBxApi.Join:input_type -> QPBxJoinRequest
+	6,  // 12: QPBxApi.Get:input_type -> QPBxGetRequest
+	10, // 13: QPBxApi.Bot:input_type -> QPBxBotRequest
+	12, // 14: QPBxApi.Stream:input_type -> QPBxStreamRequest
+	1,  // 15: QPBxApi.Auth:output_type -> QPBxAuthResponse
+	3,  // 16: QPBxApi.Post:output_type -> QPBxPostResponse
+	5,  // 17: QPBxApi.Join:output_type -> QPBxJoinResponse
+	7,  // 18: QPBxApi.Get:output_type -> QPBxGetResponse
+	11, // 19: QPBxApi.Bot:output_type -> QPBxBotResponse
+	13, // 20: QPBxApi.Stream:output_type -> QPBxStreamResponse
+	15, // [15:21] is the sub-list for method output_type
+	9,  // [9:15] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_service_proto_init() }
@@ -716,7 +973,7 @@ func file_service_proto_init() {
 			}
 		}
 		file_service_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QPBxCommandRequest); i {
+			switch v := v.(*QPBxGetRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -728,7 +985,7 @@ func file_service_proto_init() {
 			}
 		}
 		file_service_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QPBxCommandResponse); i {
+			switch v := v.(*QPBxGetResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -740,7 +997,7 @@ func file_service_proto_init() {
 			}
 		}
 		file_service_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QPBxStreamRequest); i {
+			switch v := v.(*QPBxCommandRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -752,6 +1009,54 @@ func file_service_proto_init() {
 			}
 		}
 		file_service_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QPBxCommandResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_service_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QPBxBotRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_service_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QPBxBotResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_service_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QPBxStreamRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_service_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*QPBxStreamResponse); i {
 			case 0:
 				return &v.state
@@ -768,13 +1073,19 @@ func file_service_proto_init() {
 		(*QPBxAuthRequest_Anonym)(nil),
 		(*QPBxAuthRequest_Basic)(nil),
 	}
+	file_service_proto_msgTypes[12].OneofWrappers = []interface{}{
+		(*QPBxStreamRequest_Command)(nil),
+	}
+	file_service_proto_msgTypes[13].OneofWrappers = []interface{}{
+		(*QPBxStreamResponse_Command)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_service_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

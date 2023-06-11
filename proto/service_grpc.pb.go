@@ -28,8 +28,10 @@ type QPBxApiClient interface {
 	Post(ctx context.Context, in *QPBxPostRequest, opts ...grpc.CallOption) (*QPBxPostResponse, error)
 	// Join to geo object layer
 	Join(ctx context.Context, in *QPBxJoinRequest, opts ...grpc.CallOption) (*QPBxJoinResponse, error)
-	// Command
-	Command(ctx context.Context, in *QPBxCommandRequest, opts ...grpc.CallOption) (*QPBxCommandResponse, error)
+	// Get geo objects
+	Get(ctx context.Context, in *QPBxGetRequest, opts ...grpc.CallOption) (*QPBxGetResponse, error)
+	// Stream
+	Bot(ctx context.Context, opts ...grpc.CallOption) (QPBxApi_BotClient, error)
 	// Stream
 	Stream(ctx context.Context, opts ...grpc.CallOption) (QPBxApi_StreamClient, error)
 }
@@ -69,17 +71,48 @@ func (c *qPBxApiClient) Join(ctx context.Context, in *QPBxJoinRequest, opts ...g
 	return out, nil
 }
 
-func (c *qPBxApiClient) Command(ctx context.Context, in *QPBxCommandRequest, opts ...grpc.CallOption) (*QPBxCommandResponse, error) {
-	out := new(QPBxCommandResponse)
-	err := c.cc.Invoke(ctx, "/QPBxApi/Command", in, out, opts...)
+func (c *qPBxApiClient) Get(ctx context.Context, in *QPBxGetRequest, opts ...grpc.CallOption) (*QPBxGetResponse, error) {
+	out := new(QPBxGetResponse)
+	err := c.cc.Invoke(ctx, "/QPBxApi/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
+func (c *qPBxApiClient) Bot(ctx context.Context, opts ...grpc.CallOption) (QPBxApi_BotClient, error) {
+	stream, err := c.cc.NewStream(ctx, &QPBxApi_ServiceDesc.Streams[0], "/QPBxApi/Bot", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &qPBxApiBotClient{stream}
+	return x, nil
+}
+
+type QPBxApi_BotClient interface {
+	Send(*QPBxBotRequest) error
+	Recv() (*QPBxBotResponse, error)
+	grpc.ClientStream
+}
+
+type qPBxApiBotClient struct {
+	grpc.ClientStream
+}
+
+func (x *qPBxApiBotClient) Send(m *QPBxBotRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *qPBxApiBotClient) Recv() (*QPBxBotResponse, error) {
+	m := new(QPBxBotResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *qPBxApiClient) Stream(ctx context.Context, opts ...grpc.CallOption) (QPBxApi_StreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &QPBxApi_ServiceDesc.Streams[0], "/QPBxApi/Stream", opts...)
+	stream, err := c.cc.NewStream(ctx, &QPBxApi_ServiceDesc.Streams[1], "/QPBxApi/Stream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -119,8 +152,10 @@ type QPBxApiServer interface {
 	Post(context.Context, *QPBxPostRequest) (*QPBxPostResponse, error)
 	// Join to geo object layer
 	Join(context.Context, *QPBxJoinRequest) (*QPBxJoinResponse, error)
-	// Command
-	Command(context.Context, *QPBxCommandRequest) (*QPBxCommandResponse, error)
+	// Get geo objects
+	Get(context.Context, *QPBxGetRequest) (*QPBxGetResponse, error)
+	// Stream
+	Bot(QPBxApi_BotServer) error
 	// Stream
 	Stream(QPBxApi_StreamServer) error
 }
@@ -138,8 +173,11 @@ func (UnimplementedQPBxApiServer) Post(context.Context, *QPBxPostRequest) (*QPBx
 func (UnimplementedQPBxApiServer) Join(context.Context, *QPBxJoinRequest) (*QPBxJoinResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Join not implemented")
 }
-func (UnimplementedQPBxApiServer) Command(context.Context, *QPBxCommandRequest) (*QPBxCommandResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Command not implemented")
+func (UnimplementedQPBxApiServer) Get(context.Context, *QPBxGetRequest) (*QPBxGetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedQPBxApiServer) Bot(QPBxApi_BotServer) error {
+	return status.Errorf(codes.Unimplemented, "method Bot not implemented")
 }
 func (UnimplementedQPBxApiServer) Stream(QPBxApi_StreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method Stream not implemented")
@@ -210,22 +248,48 @@ func _QPBxApi_Join_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QPBxApi_Command_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QPBxCommandRequest)
+func _QPBxApi_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QPBxGetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QPBxApiServer).Command(ctx, in)
+		return srv.(QPBxApiServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/QPBxApi/Command",
+		FullMethod: "/QPBxApi/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QPBxApiServer).Command(ctx, req.(*QPBxCommandRequest))
+		return srv.(QPBxApiServer).Get(ctx, req.(*QPBxGetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
+}
+
+func _QPBxApi_Bot_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(QPBxApiServer).Bot(&qPBxApiBotServer{stream})
+}
+
+type QPBxApi_BotServer interface {
+	Send(*QPBxBotResponse) error
+	Recv() (*QPBxBotRequest, error)
+	grpc.ServerStream
+}
+
+type qPBxApiBotServer struct {
+	grpc.ServerStream
+}
+
+func (x *qPBxApiBotServer) Send(m *QPBxBotResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *qPBxApiBotServer) Recv() (*QPBxBotRequest, error) {
+	m := new(QPBxBotRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 func _QPBxApi_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -274,11 +338,17 @@ var QPBxApi_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _QPBxApi_Join_Handler,
 		},
 		{
-			MethodName: "Command",
-			Handler:    _QPBxApi_Command_Handler,
+			MethodName: "Get",
+			Handler:    _QPBxApi_Get_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "Bot",
+			Handler:       _QPBxApi_Bot_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
 		{
 			StreamName:    "Stream",
 			Handler:       _QPBxApi_Stream_Handler,

@@ -2,18 +2,16 @@ package sdk
 
 import (
 	"context"
-	"github.com/qwibi/qwibi-go-sdk/feature"
-	"github.com/qwibi/qwibi-go-sdk/geometry"
+	"github.com/pkg/errors"
+	auth2 "github.com/qwibi/qwibi-go-sdk/pkg/auth"
+	"github.com/qwibi/qwibi-go-sdk/pkg/command"
+	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
+	"github.com/qwibi/qwibi-go-sdk/pkg/metadata"
+	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
+	"github.com/qwibi/qwibi-go-sdk/proto"
+	grpc "google.golang.org/grpc"
 	"io"
 	"runtime"
-
-	"github.com/pkg/errors"
-	"github.com/qwibi/qwibi-go-sdk/auth"
-	"github.com/qwibi/qwibi-go-sdk/geo"
-	"github.com/qwibi/qwibi-go-sdk/metadata"
-	"github.com/qwibi/qwibi-go-sdk/proto"
-	"github.com/qwibi/qwibi-go-sdk/qlog"
-	grpc "google.golang.org/grpc"
 )
 
 type QApiClient struct {
@@ -39,12 +37,12 @@ func NewClient(ctx context.Context, addr string) (*QApiClient, error) {
 }
 
 // Auth ...
-func (c *QApiClient) Auth(a auth.QAuth) (*auth.QSession, error) {
+func (c *QApiClient) Auth(a auth2.QAuth) (*auth2.QSession, error) {
 
 	switch v := a.(type) {
-	case *auth.QAnonymousAuth:
+	case *auth2.QAnonymousAuth:
 		return c.AnonymousAuth()
-	case *auth.QBasicAuth:
+	case *auth2.QBasicAuth:
 		return c.BasicAuth(v.Login, v.Password)
 	default:
 		return nil, errors.New("Unknown auth type")
@@ -54,7 +52,7 @@ func (c *QApiClient) Auth(a auth.QAuth) (*auth.QSession, error) {
 	// return res.Session, nil
 }
 
-func (c *QApiClient) AnonymousAuth() (*auth.QSession, error) {
+func (c *QApiClient) AnonymousAuth() (*auth2.QSession, error) {
 	req := &proto.QPBxAuthRequest{
 		Auth: &proto.QPBxAuthRequest_Anonym{
 			Anonym: &proto.QPBxAnonymAuth{},
@@ -66,7 +64,7 @@ func (c *QApiClient) AnonymousAuth() (*auth.QSession, error) {
 		return nil, qlog.Error(err)
 	}
 
-	session, err := auth.NewSessionPb(res.Session)
+	session, err := auth2.NewSessionPb(res.Session)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
@@ -76,7 +74,7 @@ func (c *QApiClient) AnonymousAuth() (*auth.QSession, error) {
 	return session, nil
 }
 
-func (c *QApiClient) BasicAuth(login string, password string) (*auth.QSession, error) {
+func (c *QApiClient) BasicAuth(login string, password string) (*auth2.QSession, error) {
 	req := &proto.QPBxAuthRequest{
 		Auth: &proto.QPBxAuthRequest_Basic{
 			Basic: &proto.QPBxBasicAuth{
@@ -91,7 +89,7 @@ func (c *QApiClient) BasicAuth(login string, password string) (*auth.QSession, e
 		return nil, qlog.Error(err)
 	}
 
-	session, err := auth.NewSessionPb(res.Session)
+	session, err := auth2.NewSessionPb(res.Session)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
@@ -102,7 +100,7 @@ func (c *QApiClient) BasicAuth(login string, password string) (*auth.QSession, e
 }
 
 // Join ...
-func (c *QApiClient) Join(gid string) (geo.QGeoObject, error) {
+func (c *QApiClient) Join(gid string) (*geo.QGeoLayer, error) {
 	req := &proto.QPBxJoinRequest{
 		Gid: gid,
 	}
@@ -112,15 +110,15 @@ func (c *QApiClient) Join(gid string) (geo.QGeoObject, error) {
 		return nil, qlog.Error(err)
 	}
 
-	object, err := geo.NewGeoObjectPb(res.Object)
+	layer, err := geo.NewGeoLayerPb(res.Layer)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
 
-	return object, nil
+	return layer, nil
 }
 
-// Join ...
+// Post ...
 func (c *QApiClient) Post(object geo.QGeoObject) (geo.QGeoObject, error) {
 	req := &proto.QPBxPostRequest{
 		Object: object.Pb(),
@@ -131,34 +129,118 @@ func (c *QApiClient) Post(object geo.QGeoObject) (geo.QGeoObject, error) {
 		return nil, qlog.Error(err)
 	}
 
-	object, err = geo.NewGeoObjectPb(res.Object)
+	object2, err := geo.NewGeoObjectPb(res.Object)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
 
-	return object, nil
+	return object2, nil
 }
 
-// Stream
-func (c *QApiClient) Stream() error {
-	stream, err := c.apiClient.Stream(c.ctx)
+// Get ...
+func (c *QApiClient) Get(gid string) ([]geo.QGeoObject, error) {
+	req := &proto.QPBxGetRequest{
+		Gid: gid,
+	}
+
+	res, err := c.apiClient.Get(c.ctx, req)
+	if err != nil {
+		return nil, qlog.Error(err)
+	}
+
+	var objects []geo.QGeoObject
+	for _, objectPb := range res.Objects {
+		object, err := geo.NewGeoObjectPb(objectPb)
+		if err != nil {
+			return nil, qlog.Error(err)
+		}
+		objects = append(objects, object)
+	}
+
+	return objects, nil
+}
+
+func (c *QApiClient) Bot(gid string, h func(request *command.QRequest)) error {
+	qlog.Infof("Start Bot for... %s", gid)
+
+	client, err := c.apiClient.Bot(c.ctx, grpc.EmptyCallOption{})
 	if err != nil {
 		return qlog.Error(err)
 	}
 
-	return c.receive(stream)
+	//go func() {
+	//	for {
+	//		qlog.Infof("Send ping command...")
+	//		client.Send(&proto.QPBxBotRequest{
+	//			Path: "/ping",
+	//		})
+	//		time.Sleep(2 * time.Second)
+	//	}
+	//}()
+
+	//// Receive ...
+	for {
+		in, err := client.Recv()
+		if err == io.EOF {
+			qlog.Infof("Client connected: %+v", c)
+			qlog.Infof("Goroutines: %d", runtime.NumGoroutine())
+			return qlog.Error(err)
+		}
+		if err != nil {
+			return qlog.Error(err)
+		}
+
+		qlog.Infof("==> Bot: [%T] %+v", in, in)
+
+		cmd := &command.QRequest{
+			Path: "/kkkk",
+		}
+
+		h(cmd)
+
+	}
 }
 
-// Receive ...
-func (c *QApiClient) receive(stream proto.QPBxApi_StreamClient) error {
-	x, y := 37.33172861, -122.03068446
+//// / Stream
+//func (c *QApiClient) Stream() error {
+//	qlog.Infof("Start stream")
+//	stream, err := c.apiClient.Stream(c.ctx)
+//	if err != nil {
+//		return qlog.Error(err)
+//	}
+//
+//	return c.receive(stream)
+//}
+//
+//// Receive ...
+//func (c *QApiClient) receive(stream proto.QPBxApi_StreamClient) error {
+//	//x, y := 37.33172861, -122.03068446
+//
+//	point := geo.NewGeoPoint()
+//
+//	for {
+//		msg, err := stream.Recv()
+//		if err == io.EOF {
+//			qlog.Infof("Client connected: %+v", c)
+//			qlog.Infof("Goroutines: %d", runtime.NumGoroutine())
+//			return errors.Cause(err)
+//		}
+//		if err != nil {
+//			return errors.Cause(err)
+//		}
+//
+//		qlog.Infof("==> Stream: [%T] %+v", msg, msg)
+//
+//		c.Post(point)
+//
+//	}
+//}
 
-	point := &geo.QGeoPoint{
-		Feature: &feature.QPointFeature{
-			Geometry: &geometry.QPoint{
-				Coordinates: []float64{x, y},
-			},
-		},
+func (c *QApiClient) Stream(handler func(r *proto.QPBxStreamResponse)) error {
+	qlog.Infof("Start stream")
+	stream, err := c.apiClient.Stream(c.ctx)
+	if err != nil {
+		return qlog.Error(err)
 	}
 
 	for {
@@ -166,15 +248,17 @@ func (c *QApiClient) receive(stream proto.QPBxApi_StreamClient) error {
 		if err == io.EOF {
 			qlog.Infof("Client connected: %+v", c)
 			qlog.Infof("Goroutines: %d", runtime.NumGoroutine())
-			return errors.Cause(err)
+			return qlog.Error(err)
 		}
 		if err != nil {
-			return errors.Cause(err)
+			return qlog.Error(err)
 		}
 
 		qlog.Infof("==> Stream: [%T] %+v", msg, msg)
 
-		c.Post(point)
+		handler(msg)
 
+		//c.Post(point)
 	}
+
 }

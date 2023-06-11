@@ -2,8 +2,8 @@ package geometry
 
 import (
 	"github.com/pkg/errors"
+	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/proto"
-	"github.com/qwibi/qwibi-go-sdk/qlog"
 )
 
 // QPoint ...
@@ -29,6 +29,11 @@ func NewPointPb(pb *proto.QPBxPoint) (*QPoint, error) {
 	point.Coordinates = pb.Coordinates
 
 	return point, point.Valid()
+}
+
+// Valid ...
+func (c *QPoint) GetType() string {
+	return QPointGeometryType
 }
 
 // Valid ...

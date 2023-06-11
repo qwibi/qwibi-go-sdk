@@ -2,20 +2,22 @@ package auth
 
 import (
 	"github.com/pkg/errors"
+	"github.com/qwibi/qwibi-go-sdk/internal/utils"
+	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/proto"
-	"github.com/qwibi/qwibi-go-sdk/qlog"
-	"github.com/qwibi/qwibi-go-sdk/utils"
 )
 
 // QSession ...
 type QSession struct {
 	Token string
+	//Gid   string
 }
 
 // NewSession ...
 func NewSession() (*QSession, error) {
 	session := &QSession{
 		Token: utils.NewToken(),
+		//Gid:   utils.NewID(),
 	}
 
 	if err := session.Valid(); err != nil {
@@ -45,9 +47,12 @@ func NewSessionPb(pb *proto.QPBxSession) (*QSession, error) {
 // Valid ...
 func (c *QSession) Valid() error {
 	if c.Token == "" {
-		err := errors.New("Sesion token is not defined")
-		return qlog.Error(err)
+		return qlog.Error("Session token is not defined")
 	}
+
+	//if c.Gid == "" {
+	//	return qlog.Error("Session gid is not defined")
+	//}
 
 	return nil
 }
@@ -60,6 +65,7 @@ func (c *QSession) Pb() (*proto.QPBxSession, error) {
 
 	pb := &proto.QPBxSession{
 		Token: c.Token,
+		//Gid:   c.Gid,
 	}
 
 	return pb, nil
