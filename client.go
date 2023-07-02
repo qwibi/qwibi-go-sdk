@@ -6,6 +6,7 @@ import (
 	auth2 "github.com/qwibi/qwibi-go-sdk/pkg/auth"
 	"github.com/qwibi/qwibi-go-sdk/pkg/command"
 	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
+	"github.com/qwibi/qwibi-go-sdk/pkg/geometry"
 	"github.com/qwibi/qwibi-go-sdk/pkg/metadata"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/proto"
@@ -119,7 +120,7 @@ func (c *QApiClient) Join(gid string) (*geo.QGeoLayer, error) {
 }
 
 // Post ...
-func (c *QApiClient) Post(object *geo.QGeoObject) (*geo.QGeoObject, error) {
+func (c *QApiClient) Post(object *geo.QGeoObject[geometry.QGeometry]) (*geo.QGeoObject[geometry.QGeometry], error) {
 	req := &proto.QPBxPostRequest{
 		Object: object.Pb(),
 	}

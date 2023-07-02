@@ -3,15 +3,16 @@ package geo
 import (
 	"encoding/json"
 	"github.com/qwibi/qwibi-go-sdk/internal/utils"
+	"github.com/qwibi/qwibi-go-sdk/pkg/geometry"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 	"regexp"
 )
 
 type QGeoLayer struct {
-	Gid        string        `json:"gid"`
-	Objects    []*QGeoObject `json:"objects"`
-	Properties []byte        `json:"properties"`
+	Gid        string                            `json:"gid"`
+	Objects    []*QGeoObject[geometry.QGeometry] `json:"objects"`
+	Properties []byte                            `json:"properties"`
 }
 
 //func (c *QGeoObject) UnmarshalJSON(data []byte) error {
@@ -74,7 +75,7 @@ func NewGeoLayerData(data []byte) (*QGeoLayer, error) {
 }
 
 func NewGeoLayerPb(in *proto.QPBxGeoLayer) (*QGeoLayer, error) {
-	var objects []*QGeoObject
+	var objects []*QGeoObject[geometry.QGeometry]
 
 	for _, k := range in.Objects {
 		object, err := NewGeoObjectPb(k)
@@ -131,7 +132,7 @@ func (c *QGeoLayer) Valid() error {
 	return nil
 }
 
-func (c *QGeoLayer) Post(object *QGeoObject) error {
+func (c *QGeoLayer) Post(object *QGeoObject[geometry.QGeometry]) error {
 
 	return qlog.TODO()
 }

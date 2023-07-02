@@ -9,10 +9,10 @@ import (
 	"regexp"
 )
 
-type QGeoObject struct {
-	Gid        string    `json:"gid"`
-	Feature    *QFeature `json:"feature"`
-	Properties []byte    `json:"properties"`
+type QGeoObject[T geometry.QGeometry] struct {
+	Gid        string       `json:"gid"`
+	Feature    *QFeature[T] `json:"feature"`
+	Properties []byte       `json:"properties"`
 }
 
 //func NewGeoObject2[T feature.QFeature]() *QGeoObject {
@@ -23,15 +23,15 @@ type QGeoObject struct {
 //	}
 //}
 
-func NewGeoObject[T geometry.QGeometry](geometry T) *QGeoObject {
-	return &QGeoObject{
+func NewGeoObject[T geometry.QGeometry](geometry T) *QGeoObject[T] {
+	return &QGeoObject[T]{
 		Gid:        utils.NewID(),
 		Feature:    NewFeature(geometry),
 		Properties: []byte{},
 	}
 }
 
-func NewGeoPoint() *QGeoObject {
+func NewGeoPoint() *QGeoObject[geometry.QPoint] {
 	return NewGeoObject(geometry.NewPoint())
 }
 
@@ -47,13 +47,13 @@ func NewGeoPoint() *QGeoObject {
 //	return NewGeoObject(feature.NewPointFeature())
 //}
 
-func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject, error) {
+func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject[geometry.QGeometry], error) {
 	feature, err := NewFeaturePb(in.Feature)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
 
-	object := &QGeoObject{
+	object := &QGeoObject[geometry.QGeometry]{
 		Gid:        in.Gid,
 		Feature:    feature,
 		Properties: in.Properties,
@@ -62,10 +62,10 @@ func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject, error) {
 	return object, object.Valid()
 }
 
-func NewGeoObjectBytes(data []byte) (*QGeoObject, error) {
+func NewGeoObjectBytes(data []byte) (*QGeoObject[geometry.QGeometry], error) {
 
-	var object QGeoObject
-	var raw QGeoObject
+	var object QGeoObject[geometry.QGeometry]
+	var raw QGeoObject[geometry.QGeometry]
 	//var raw map[string]interface{}
 
 	err := json.Unmarshal(data, &raw)
@@ -171,7 +171,7 @@ func NewGeoObjectBytes(data []byte) (*QGeoObject, error) {
 //		return object, object.Valid()
 //	}
 
-func (c *QGeoObject) Pb() *proto.QPBxGeoObject {
+func (c *QGeoObject[T]) Pb() *proto.QPBxGeoObject {
 	return &proto.QPBxGeoObject{
 		Gid:        c.Gid,
 		Feature:    c.Feature.Pb(),
@@ -179,7 +179,7 @@ func (c *QGeoObject) Pb() *proto.QPBxGeoObject {
 	}
 }
 
-func (c *QGeoObject) Valid() error {
+func (c *QGeoObject[T]) Valid() error {
 	if c.Gid == "" {
 		return qlog.Error("Object gid not defined")
 	}
