@@ -30,7 +30,7 @@ type QPBxApiClient interface {
 	Join(ctx context.Context, in *QPBxJoinRequest, opts ...grpc.CallOption) (*QPBxJoinResponse, error)
 	// Get geo objects
 	Get(ctx context.Context, in *QPBxGetRequest, opts ...grpc.CallOption) (*QPBxGetResponse, error)
-	// Stream
+	// Bot
 	Bot(ctx context.Context, opts ...grpc.CallOption) (QPBxApi_BotClient, error)
 	// Stream
 	Stream(ctx context.Context, opts ...grpc.CallOption) (QPBxApi_StreamClient, error)
@@ -154,7 +154,7 @@ type QPBxApiServer interface {
 	Join(context.Context, *QPBxJoinRequest) (*QPBxJoinResponse, error)
 	// Get geo objects
 	Get(context.Context, *QPBxGetRequest) (*QPBxGetResponse, error)
-	// Stream
+	// Bot
 	Bot(QPBxApi_BotServer) error
 	// Stream
 	Stream(QPBxApi_StreamServer) error

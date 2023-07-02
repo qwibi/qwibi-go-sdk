@@ -4,6 +4,7 @@ import (
 	"context"
 	sdk "github.com/qwibi/qwibi-go-sdk"
 	"github.com/qwibi/qwibi-go-sdk/pkg/auth"
+	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 	"time"
@@ -26,32 +27,50 @@ func main() {
 	}
 	qlog.Infof("Auth with Session... %+v", session)
 
-	layer, err = client.Join("chat")
-	if err != nil {
-		qlog.Fatal(err)
-		panic("")
-	}
-	qlog.Infof("Join to... %+v", "/chat")
-
-	layer.Post("/hello")
-
-	layers.GetObjects()
+	object := geo.NewGeoPoint()
+	object.Properties = []byte("object properties")
+	object.Feature.Properties = []byte("feature properties")
 
 	go func() {
 		for {
-			qlog.TODO("Send command... /")
+			//object := geo.NewGeoPoint()
+			qlog.Infof("Post object %v", object)
+			client.Post(object)
 			time.Sleep(3 * time.Second)
 		}
 	}()
 
-	err = client.Stream(func(r *proto.QPBxStreamResponse) {
+	err = client.Stream(session.LayerId, func(r *proto.QPBxStreamResponse) {
 		qlog.Debug(r)
 	})
-
 	if err != nil {
-		qlog.Fatal(err)
-		panic("")
-
+		panic(err)
 	}
+
+	//layer, err := stream.Join("chat")
+	//if err != nil {
+	//	qlog.Fatal(err)
+	//	panic("")
+	//}
+	//qlog.Infof("Join to... %+v", "/chat")
+	//
+	//layer.Post("/hello")
+
+	//go func() {
+	//	for {
+	//		qlog.TODO("Send command... /")
+	//		time.Sleep(3 * time.Second)
+	//	}
+	//}()
+	//
+	//err = client.Stream(func(r *proto.QPBxStreamResponse) {
+	//	qlog.Debug(r)
+	//})
+	//
+	//if err != nil {
+	//	qlog.Fatal(err)
+	//	panic("")
+	//
+	//}
 
 }

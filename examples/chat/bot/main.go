@@ -29,12 +29,15 @@ func main() {
 	layer := geo.NewGeoLayer(
 		geo.WithGid("chat"),
 	)
-	object, err := client.Post(layer)
-	qlog.Infof("Post new Layer... %+v", layer)
 
-	qlog.Info("Start Bot...", object.GetGid())
+	qlog.Infof("Layer: %s", layer)
 
-	client.Bot(object.GetGid(), func(request *command.QRequest) {
+	//object, err := client.Post(layer)
+	//qlog.Infof("Post new Layer... %+v", layer)
+	//
+	qlog.Info("Start Bot...", layer.Gid)
+
+	client.Bot(layer.Gid, func(request *command.QRequest) {
 		qlog.Infof("Bot: request => %s", request)
 
 		//_, err := client.Command("/dodo")

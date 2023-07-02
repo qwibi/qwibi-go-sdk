@@ -119,7 +119,7 @@ func (c *QApiClient) Join(gid string) (*geo.QGeoLayer, error) {
 }
 
 // Post ...
-func (c *QApiClient) Post(object geo.QGeoObject) (geo.QGeoObject, error) {
+func (c *QApiClient) Post(object *geo.QGeoObject) (*geo.QGeoObject, error) {
 	req := &proto.QPBxPostRequest{
 		Object: object.Pb(),
 	}
@@ -137,28 +137,28 @@ func (c *QApiClient) Post(object geo.QGeoObject) (geo.QGeoObject, error) {
 	return object2, nil
 }
 
-// Get ...
-func (c *QApiClient) Get(gid string) ([]geo.QGeoObject, error) {
-	req := &proto.QPBxGetRequest{
-		Gid: gid,
-	}
-
-	res, err := c.apiClient.Get(c.ctx, req)
-	if err != nil {
-		return nil, qlog.Error(err)
-	}
-
-	var objects []geo.QGeoObject
-	for _, objectPb := range res.Objects {
-		object, err := geo.NewGeoObjectPb(objectPb)
-		if err != nil {
-			return nil, qlog.Error(err)
-		}
-		objects = append(objects, object)
-	}
-
-	return objects, nil
-}
+//// Get ...
+//func (c *QApiClient) Get(gid string) ([]geo.QGeoObject, error) {
+//	req := &proto.QPBxGetRequest{
+//		Gid: gid,
+//	}
+//
+//	res, err := c.apiClient.Get(c.ctx, req)
+//	if err != nil {
+//		return nil, qlog.Error(err)
+//	}
+//
+//	var objects []geo.QGeoObject
+//	for _, objectPb := range res.Objects {
+//		object, err := geo.NewGeoObjectPb(objectPb)
+//		if err != nil {
+//			return nil, qlog.Error(err)
+//		}
+//		objects = append(objects, object)
+//	}
+//
+//	return objects, nil
+//}
 
 func (c *QApiClient) Bot(gid string, h func(request *command.QRequest)) error {
 	qlog.Infof("Start Bot for... %s", gid)
@@ -236,8 +236,8 @@ func (c *QApiClient) Bot(gid string, h func(request *command.QRequest)) error {
 //	}
 //}
 
-func (c *QApiClient) Stream(handler func(r *proto.QPBxStreamResponse)) error {
-	qlog.Infof("Start stream")
+func (c *QApiClient) Stream(gid string, handler func(r *proto.QPBxStreamResponse)) error {
+	qlog.Infof("Start stream... %s", gid)
 	stream, err := c.apiClient.Stream(c.ctx)
 	if err != nil {
 		return qlog.Error(err)

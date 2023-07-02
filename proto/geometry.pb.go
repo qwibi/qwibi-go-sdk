@@ -20,6 +20,101 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type QPBxGeometry struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to Type:
+	//
+	//	*QPBxGeometry_Layer
+	//	*QPBxGeometry_Point
+	//	*QPBxGeometry_Line
+	Type isQPBxGeometry_Type `protobuf_oneof:"type"`
+}
+
+func (x *QPBxGeometry) Reset() {
+	*x = QPBxGeometry{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_geometry_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QPBxGeometry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QPBxGeometry) ProtoMessage() {}
+
+func (x *QPBxGeometry) ProtoReflect() protoreflect.Message {
+	mi := &file_geometry_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QPBxGeometry.ProtoReflect.Descriptor instead.
+func (*QPBxGeometry) Descriptor() ([]byte, []int) {
+	return file_geometry_proto_rawDescGZIP(), []int{0}
+}
+
+func (m *QPBxGeometry) GetType() isQPBxGeometry_Type {
+	if m != nil {
+		return m.Type
+	}
+	return nil
+}
+
+func (x *QPBxGeometry) GetLayer() *QPBxLayer {
+	if x, ok := x.GetType().(*QPBxGeometry_Layer); ok {
+		return x.Layer
+	}
+	return nil
+}
+
+func (x *QPBxGeometry) GetPoint() *QPBxPoint {
+	if x, ok := x.GetType().(*QPBxGeometry_Point); ok {
+		return x.Point
+	}
+	return nil
+}
+
+func (x *QPBxGeometry) GetLine() *QPBxLine {
+	if x, ok := x.GetType().(*QPBxGeometry_Line); ok {
+		return x.Line
+	}
+	return nil
+}
+
+type isQPBxGeometry_Type interface {
+	isQPBxGeometry_Type()
+}
+
+type QPBxGeometry_Layer struct {
+	Layer *QPBxLayer `protobuf:"bytes,1,opt,name=layer,proto3,oneof"`
+}
+
+type QPBxGeometry_Point struct {
+	Point *QPBxPoint `protobuf:"bytes,2,opt,name=point,proto3,oneof"`
+}
+
+type QPBxGeometry_Line struct {
+	Line *QPBxLine `protobuf:"bytes,3,opt,name=line,proto3,oneof"`
+}
+
+func (*QPBxGeometry_Layer) isQPBxGeometry_Type() {}
+
+func (*QPBxGeometry_Point) isQPBxGeometry_Type() {}
+
+func (*QPBxGeometry_Line) isQPBxGeometry_Type() {}
+
 type QPBxLayer struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -29,7 +124,7 @@ type QPBxLayer struct {
 func (x *QPBxLayer) Reset() {
 	*x = QPBxLayer{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_geometry_proto_msgTypes[0]
+		mi := &file_geometry_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -42,7 +137,7 @@ func (x *QPBxLayer) String() string {
 func (*QPBxLayer) ProtoMessage() {}
 
 func (x *QPBxLayer) ProtoReflect() protoreflect.Message {
-	mi := &file_geometry_proto_msgTypes[0]
+	mi := &file_geometry_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55,7 +150,7 @@ func (x *QPBxLayer) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QPBxLayer.ProtoReflect.Descriptor instead.
 func (*QPBxLayer) Descriptor() ([]byte, []int) {
-	return file_geometry_proto_rawDescGZIP(), []int{0}
+	return file_geometry_proto_rawDescGZIP(), []int{1}
 }
 
 type QPBxPoint struct {
@@ -69,7 +164,7 @@ type QPBxPoint struct {
 func (x *QPBxPoint) Reset() {
 	*x = QPBxPoint{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_geometry_proto_msgTypes[1]
+		mi := &file_geometry_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -82,7 +177,7 @@ func (x *QPBxPoint) String() string {
 func (*QPBxPoint) ProtoMessage() {}
 
 func (x *QPBxPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_geometry_proto_msgTypes[1]
+	mi := &file_geometry_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -95,7 +190,7 @@ func (x *QPBxPoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QPBxPoint.ProtoReflect.Descriptor instead.
 func (*QPBxPoint) Descriptor() ([]byte, []int) {
-	return file_geometry_proto_rawDescGZIP(), []int{1}
+	return file_geometry_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *QPBxPoint) GetCoordinates() []float64 {
@@ -116,7 +211,7 @@ type QPBxLine struct {
 func (x *QPBxLine) Reset() {
 	*x = QPBxLine{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_geometry_proto_msgTypes[2]
+		mi := &file_geometry_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -129,7 +224,7 @@ func (x *QPBxLine) String() string {
 func (*QPBxLine) ProtoMessage() {}
 
 func (x *QPBxLine) ProtoReflect() protoreflect.Message {
-	mi := &file_geometry_proto_msgTypes[2]
+	mi := &file_geometry_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -142,7 +237,7 @@ func (x *QPBxLine) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QPBxLine.ProtoReflect.Descriptor instead.
 func (*QPBxLine) Descriptor() ([]byte, []int) {
-	return file_geometry_proto_rawDescGZIP(), []int{2}
+	return file_geometry_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *QPBxLine) GetPoints() []*QPBxPoint {
@@ -156,15 +251,23 @@ var File_geometry_proto protoreflect.FileDescriptor
 
 var file_geometry_proto_rawDesc = []byte{
 	0x0a, 0x0e, 0x67, 0x65, 0x6f, 0x6d, 0x65, 0x74, 0x72, 0x79, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x22, 0x0b, 0x0a, 0x09, 0x51, 0x50, 0x42, 0x78, 0x4c, 0x61, 0x79, 0x65, 0x72, 0x22, 0x2d, 0x0a,
-	0x09, 0x51, 0x50, 0x42, 0x78, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x12, 0x20, 0x0a, 0x0b, 0x63, 0x6f,
-	0x6f, 0x72, 0x64, 0x69, 0x6e, 0x61, 0x74, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x01, 0x52,
-	0x0b, 0x63, 0x6f, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x61, 0x74, 0x65, 0x73, 0x22, 0x2e, 0x0a, 0x08,
-	0x51, 0x50, 0x42, 0x78, 0x4c, 0x69, 0x6e, 0x65, 0x12, 0x22, 0x0a, 0x06, 0x70, 0x6f, 0x69, 0x6e,
-	0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0a, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x50,
-	0x6f, 0x69, 0x6e, 0x74, 0x52, 0x06, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x42, 0x0f, 0x5a, 0x0d,
-	0x2e, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x22, 0x7f, 0x0a, 0x0c, 0x51, 0x50, 0x42, 0x78, 0x47, 0x65, 0x6f, 0x6d, 0x65, 0x74, 0x72, 0x79,
+	0x12, 0x22, 0x0a, 0x05, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x0a, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x4c, 0x61, 0x79, 0x65, 0x72, 0x48, 0x00, 0x52, 0x05, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x12, 0x22, 0x0a, 0x05, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x0a, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x48,
+	0x00, 0x52, 0x05, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x12, 0x1f, 0x0a, 0x04, 0x6c, 0x69, 0x6e, 0x65,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x51, 0x50, 0x42, 0x78, 0x4c, 0x69, 0x6e,
+	0x65, 0x48, 0x00, 0x52, 0x04, 0x6c, 0x69, 0x6e, 0x65, 0x42, 0x06, 0x0a, 0x04, 0x74, 0x79, 0x70,
+	0x65, 0x22, 0x0b, 0x0a, 0x09, 0x51, 0x50, 0x42, 0x78, 0x4c, 0x61, 0x79, 0x65, 0x72, 0x22, 0x2d,
+	0x0a, 0x09, 0x51, 0x50, 0x42, 0x78, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x12, 0x20, 0x0a, 0x0b, 0x63,
+	0x6f, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x61, 0x74, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x01,
+	0x52, 0x0b, 0x63, 0x6f, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x61, 0x74, 0x65, 0x73, 0x22, 0x2e, 0x0a,
+	0x08, 0x51, 0x50, 0x42, 0x78, 0x4c, 0x69, 0x6e, 0x65, 0x12, 0x22, 0x0a, 0x06, 0x70, 0x6f, 0x69,
+	0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0a, 0x2e, 0x51, 0x50, 0x42, 0x78,
+	0x50, 0x6f, 0x69, 0x6e, 0x74, 0x52, 0x06, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x42, 0x0f, 0x5a,
+	0x0d, 0x2e, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -179,19 +282,23 @@ func file_geometry_proto_rawDescGZIP() []byte {
 	return file_geometry_proto_rawDescData
 }
 
-var file_geometry_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_geometry_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_geometry_proto_goTypes = []interface{}{
-	(*QPBxLayer)(nil), // 0: QPBxLayer
-	(*QPBxPoint)(nil), // 1: QPBxPoint
-	(*QPBxLine)(nil),  // 2: QPBxLine
+	(*QPBxGeometry)(nil), // 0: QPBxGeometry
+	(*QPBxLayer)(nil),    // 1: QPBxLayer
+	(*QPBxPoint)(nil),    // 2: QPBxPoint
+	(*QPBxLine)(nil),     // 3: QPBxLine
 }
 var file_geometry_proto_depIdxs = []int32{
-	1, // 0: QPBxLine.points:type_name -> QPBxPoint
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	1, // 0: QPBxGeometry.layer:type_name -> QPBxLayer
+	2, // 1: QPBxGeometry.point:type_name -> QPBxPoint
+	3, // 2: QPBxGeometry.line:type_name -> QPBxLine
+	2, // 3: QPBxLine.points:type_name -> QPBxPoint
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_geometry_proto_init() }
@@ -201,7 +308,7 @@ func file_geometry_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_geometry_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QPBxLayer); i {
+			switch v := v.(*QPBxGeometry); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -213,7 +320,7 @@ func file_geometry_proto_init() {
 			}
 		}
 		file_geometry_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QPBxPoint); i {
+			switch v := v.(*QPBxLayer); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -225,6 +332,18 @@ func file_geometry_proto_init() {
 			}
 		}
 		file_geometry_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QPBxPoint); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_geometry_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*QPBxLine); i {
 			case 0:
 				return &v.state
@@ -237,13 +356,18 @@ func file_geometry_proto_init() {
 			}
 		}
 	}
+	file_geometry_proto_msgTypes[0].OneofWrappers = []interface{}{
+		(*QPBxGeometry_Layer)(nil),
+		(*QPBxGeometry_Point)(nil),
+		(*QPBxGeometry_Line)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_geometry_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -37,6 +37,15 @@ func (c *QLayer) Valid() error {
 }
 
 // Pb ...
-func (c *QLayer) Pb() *proto.QPBxLayer {
-	return &proto.QPBxLayer{}
+func (c *QLayer) Pb() *proto.QPBxGeometry {
+	return &proto.QPBxGeometry{
+		Type: &proto.QPBxGeometry_Layer{
+			Layer: &proto.QPBxLayer{},
+		},
+	}
 }
+
+//func (f *QLayer) UnmarshalJSON(data []byte) error {
+//	qlog.TODO("#### Layer")
+//	return nil
+//}

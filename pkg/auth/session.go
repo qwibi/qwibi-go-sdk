@@ -9,15 +9,15 @@ import (
 
 // QSession ...
 type QSession struct {
-	Token string
-	//Gid   string
+	Token   string
+	LayerId string
 }
 
 // NewSession ...
 func NewSession() (*QSession, error) {
 	session := &QSession{
-		Token: utils.NewToken(),
-		//Gid:   utils.NewID(),
+		Token:   utils.NewToken(),
+		LayerId: utils.NewID(),
 	}
 
 	if err := session.Valid(); err != nil {
@@ -50,9 +50,9 @@ func (c *QSession) Valid() error {
 		return qlog.Error("Session token is not defined")
 	}
 
-	//if c.Gid == "" {
-	//	return qlog.Error("Session gid is not defined")
-	//}
+	if c.LayerId == "" {
+		return qlog.Error("Session layerId is not defined")
+	}
 
 	return nil
 }
@@ -64,8 +64,8 @@ func (c *QSession) Pb() (*proto.QPBxSession, error) {
 	}
 
 	pb := &proto.QPBxSession{
-		Token: c.Token,
-		//Gid:   c.Gid,
+		Token:   c.Token,
+		LayerId: c.LayerId,
 	}
 
 	return pb, nil

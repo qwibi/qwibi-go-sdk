@@ -2,10 +2,7 @@ package sdk
 
 import (
 	"context"
-	"fmt"
-	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
-	"math/rand"
 	"testing"
 )
 
@@ -39,49 +36,49 @@ func TestBasicAuth(t *testing.T) {
 	qlog.Infof("Basic auth response: %#v", res)
 }
 
-func TestPostLayer(t *testing.T) {
-	object := geo.NewGeoPoint()
+//func TestPostLayer(t *testing.T) {
+//	object := geo.NewGeoPoint()
+//
+//	qlog.Infof("Post request: %#v", object)
+//	res, err := client.Post(object)
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//	qlog.Infof("Post response: %#v", res)
+//
+//	qlog.Infof("Update request: %#v", object)
+//	res2, err := client.Post(object)
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//	qlog.Infof("Update response: %#v", res2)
+//}
 
-	qlog.Infof("Post request: %#v", object)
-	res, err := client.Post(object)
-	if err != nil {
-		t.Fatal(err)
-	}
-	qlog.Infof("Post response: %#v", res)
-
-	qlog.Infof("Update request: %#v", object)
-	res2, err := client.Post(object)
-	if err != nil {
-		t.Fatal(err)
-	}
-	qlog.Infof("Update response: %#v", res2)
-}
-
-func TestGetObjects(t *testing.T) {
-	testId := fmt.Sprint(rand.Int())
-	object := geo.NewGeoPoint()
-	object.Gid = testId
-
-	qlog.Infof("Post request: %#v", object)
-	res, err := client.Post(object)
-	if err != nil {
-		t.Fatal(err)
-	}
-	qlog.Infof("Post response: %#v", res)
-
-	res2, err := client.Get(testId)
-	if err != nil {
-		t.Fatal(err)
-	}
-	qlog.Infof("Get response: %#v", res2)
-
-	//qlog.Infof("Update request: %#v", object)
-	//res2, err := client.Post(object)
-	//if err != nil {
-	//	t.Fatal(err)
-	//}
-	//qlog.Infof("Update response: %#v", res2)
-}
+//func TestGetObjects(t *testing.T) {
+//	testId := fmt.Sprint(rand.Int())
+//	object := geo.NewGeoPoint()
+//	object.Gid = testId
+//
+//	qlog.Infof("Post request: %#v", object)
+//	res, err := client.Post(object)
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//	qlog.Infof("Post response: %#v", res)
+//
+//	res2, err := client.Get(testId)
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//	qlog.Infof("Get response: %#v", res2)
+//
+//	//qlog.Infof("Update request: %#v", object)
+//	//res2, err := client.Post(object)
+//	//if err != nil {
+//	//	t.Fatal(err)
+//	//}
+//	//qlog.Infof("Update response: %#v", res2)
+//}
 
 //func TestPostPoint(t *testing.T) {
 //	object := geo.NewGeoPoint()

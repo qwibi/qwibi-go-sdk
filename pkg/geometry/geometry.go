@@ -1,28 +1,30 @@
 package geometry
 
+import (
+	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
+	"github.com/qwibi/qwibi-go-sdk/proto"
+)
+
 // QGeometry ...
 type QGeometry interface {
 	Valid() error
-	// Pb() (*proto.QPBxGeo, error)
+	Pb() *proto.QPBxGeometry
+	GetType() string
+	//UnmarshalJSON(data []byte) error
 }
 
-// // NewGeometryPb ...
-// func NewGeometryPb(pb *proto.QPBxGeometry) (QGeometry, error) {
-// 	if pb == nil {
-// 		err := errors.New("Invalid geometry type nil")
-// 		log.Error().Stack().Err(err).Msg("")
-// 		return nil, qlog.Error(err)
-// 	}
+// NewGeometryPb ...
+func NewGeometryPb(in *proto.QPBxGeometry) (QGeometry, error) {
+	if in == nil {
+		return nil, qlog.Error("Wrong geometry parameter type nil")
+	}
 
-// 	switch v := pb.Geometry.(type) {
-// 	case *proto.QPBxGeometry_Layer:
-// 		return NewLayerPb(v.Layer)
-// 	case *proto.QPBxGeometry_Point:
-// 		return NewPointPb(v.Point)
-// 	default:
-// 		err := errors.New("Unknown geometry type")
-// 		msg := fmt.Sprintf("%T", v)
-// 		log.Error().Stack().Err(err).Msg(msg)
-// 		return nil, qlog.Error(err)
-// 	}
-// }
+	switch v := in.Type.(type) {
+	case *proto.QPBxGeometry_Layer:
+		return NewLayerPb(v.Layer)
+	case *proto.QPBxGeometry_Point:
+		return NewPointPb(v.Point)
+	default:
+		return nil, qlog.Errorf("Unknown geometry type: %s", v)
+	}
+}
