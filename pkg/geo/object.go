@@ -9,10 +9,10 @@ import (
 	"regexp"
 )
 
-type QGeoObject[T geometry.QGeometry] struct {
-	Gid        string       `json:"gid"`
-	Feature    *QFeature[T] `json:"feature"`
-	Properties []byte       `json:"properties"`
+type QGeoObject struct {
+	Gid        string    `json:"gid"`
+	Feature    *QFeature `json:"feature"`
+	Properties []byte    `json:"properties"`
 }
 
 //func NewGeoObject2[T feature.QFeature]() *QGeoObject {
@@ -23,15 +23,19 @@ type QGeoObject[T geometry.QGeometry] struct {
 //	}
 //}
 
-func NewGeoObject[T geometry.QGeometry](geometry T) *QGeoObject[T] {
-	return &QGeoObject[T]{
+func NewGeoObject(geometry geometry.QGeometry) *QGeoObject {
+	return &QGeoObject{
 		Gid:        utils.NewID(),
 		Feature:    NewFeature(geometry),
 		Properties: []byte{},
 	}
 }
 
-func NewGeoPoint() *QGeoObject[geometry.QPoint] {
+func NewGeoLayer() *QGeoObject {
+	return NewGeoObject(geometry.NewLayer())
+}
+
+func NewGeoPoint() *QGeoObject {
 	return NewGeoObject(geometry.NewPoint())
 }
 
@@ -47,13 +51,13 @@ func NewGeoPoint() *QGeoObject[geometry.QPoint] {
 //	return NewGeoObject(feature.NewPointFeature())
 //}
 
-func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject[geometry.QGeometry], error) {
+func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject, error) {
 	feature, err := NewFeaturePb(in.Feature)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
 
-	object := &QGeoObject[geometry.QGeometry]{
+	object := &QGeoObject{
 		Gid:        in.Gid,
 		Feature:    feature,
 		Properties: in.Properties,
@@ -62,10 +66,10 @@ func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject[geometry.QGeometry], e
 	return object, object.Valid()
 }
 
-func NewGeoObjectBytes(data []byte) (*QGeoObject[geometry.QGeometry], error) {
+func NewGeoObjectBytes(data []byte) (*QGeoObject, error) {
 
-	var object QGeoObject[geometry.QGeometry]
-	var raw QGeoObject[geometry.QGeometry]
+	var object QGeoObject
+	var raw QGeoObject
 	//var raw map[string]interface{}
 
 	err := json.Unmarshal(data, &raw)
@@ -73,23 +77,7 @@ func NewGeoObjectBytes(data []byte) (*QGeoObject[geometry.QGeometry], error) {
 		return nil, qlog.Error(err)
 	}
 
-	qlog.Debugf("NewGeoObjectBytes (Feature): %+v", raw.Feature)
-
-	//t, ok := raw["type"].(string)
-	//if !ok {
-	//	return nil, qlog.Error("Object type not defined")
-	//}
-	//
-	//switch t {
-	//case QGeoLayerType:
-	//	return NewGeoLayerData(data)
-	//case QGeoPointType:
-	//	return NewGeoPointData(data)
-	//default:
-	//	return nil, qlog.Error("Unknown object type...", t)
-	//}
-
-	return &object, qlog.TODO("check me")
+	return &object, nil
 }
 
 // package geo
@@ -171,7 +159,7 @@ func NewGeoObjectBytes(data []byte) (*QGeoObject[geometry.QGeometry], error) {
 //		return object, object.Valid()
 //	}
 
-func (c *QGeoObject[T]) Pb() *proto.QPBxGeoObject {
+func (c *QGeoObject) Pb() *proto.QPBxGeoObject {
 	return &proto.QPBxGeoObject{
 		Gid:        c.Gid,
 		Feature:    c.Feature.Pb(),
@@ -179,7 +167,7 @@ func (c *QGeoObject[T]) Pb() *proto.QPBxGeoObject {
 	}
 }
 
-func (c *QGeoObject[T]) Valid() error {
+func (c *QGeoObject) Valid() error {
 	if c.Gid == "" {
 		return qlog.Error("Object gid not defined")
 	}

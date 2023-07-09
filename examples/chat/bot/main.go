@@ -30,12 +30,7 @@ func main() {
 		geo.WithGid("chat"),
 	)
 
-	qlog.Infof("Layer: %s", layer)
-
-	//object, err := client.Post(layer)
-	//qlog.Infof("Post new Layer... %+v", layer)
-	//
-	qlog.Info("Start Bot...", layer.Gid)
+	qlog.Infof("Start Bot for layer: %+v", layer)
 
 	client.Bot(layer.Gid, func(request *command.QRequest) {
 		qlog.Infof("Bot: request => %s", request)

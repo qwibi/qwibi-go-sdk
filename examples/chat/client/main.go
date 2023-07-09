@@ -31,11 +31,20 @@ func main() {
 	object.Properties = []byte("object properties")
 	object.Feature.Properties = []byte("feature properties")
 
+	layer, err = client.Layer("abc")
+	if err != nil {
+		qlog.Error(err)
+		return
+	}
+
 	go func() {
 		for {
 			//object := geo.NewGeoPoint()
-			qlog.Infof("Post object %v", object)
-			client.Post(object)
+			qlog.Infof("Post object %+v", object)
+			_, err = layer.Post(object)
+			//if err != nil {
+			//	return
+			//}
 			time.Sleep(3 * time.Second)
 		}
 	}()
@@ -46,31 +55,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	//layer, err := stream.Join("chat")
-	//if err != nil {
-	//	qlog.Fatal(err)
-	//	panic("")
-	//}
-	//qlog.Infof("Join to... %+v", "/chat")
-	//
-	//layer.Post("/hello")
-
-	//go func() {
-	//	for {
-	//		qlog.TODO("Send command... /")
-	//		time.Sleep(3 * time.Second)
-	//	}
-	//}()
-	//
-	//err = client.Stream(func(r *proto.QPBxStreamResponse) {
-	//	qlog.Debug(r)
-	//})
-	//
-	//if err != nil {
-	//	qlog.Fatal(err)
-	//	panic("")
-	//
-	//}
 
 }

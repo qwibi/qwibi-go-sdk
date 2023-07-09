@@ -6,7 +6,6 @@ import (
 	auth2 "github.com/qwibi/qwibi-go-sdk/pkg/auth"
 	"github.com/qwibi/qwibi-go-sdk/pkg/command"
 	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
-	"github.com/qwibi/qwibi-go-sdk/pkg/geometry"
 	"github.com/qwibi/qwibi-go-sdk/pkg/metadata"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/proto"
@@ -120,7 +119,7 @@ func (c *QApiClient) Join(gid string) (*geo.QGeoLayer, error) {
 }
 
 // Post ...
-func (c *QApiClient) Post(object *geo.QGeoObject[geometry.QGeometry]) (*geo.QGeoObject[geometry.QGeometry], error) {
+func (c *QApiClient) Post(object *geo.QGeoObject) (*geo.QGeoObject, error) {
 	req := &proto.QPBxPostRequest{
 		Object: object.Pb(),
 	}
@@ -162,7 +161,7 @@ func (c *QApiClient) Post(object *geo.QGeoObject[geometry.QGeometry]) (*geo.QGeo
 //}
 
 func (c *QApiClient) Bot(gid string, h func(request *command.QRequest)) error {
-	qlog.Infof("Start Bot for... %s", gid)
+	//qlog.Infof("Start Bot for... %s", gid)
 
 	client, err := c.apiClient.Bot(c.ctx, grpc.EmptyCallOption{})
 	if err != nil {
@@ -238,7 +237,7 @@ func (c *QApiClient) Bot(gid string, h func(request *command.QRequest)) error {
 //}
 
 func (c *QApiClient) Stream(gid string, handler func(r *proto.QPBxStreamResponse)) error {
-	qlog.Infof("Start stream... %s", gid)
+	//qlog.Infof("Start stream... %s", gid)
 	stream, err := c.apiClient.Stream(c.ctx)
 	if err != nil {
 		return qlog.Error(err)
@@ -247,8 +246,8 @@ func (c *QApiClient) Stream(gid string, handler func(r *proto.QPBxStreamResponse
 	for {
 		msg, err := stream.Recv()
 		if err == io.EOF {
-			qlog.Infof("Client connected: %+v", c)
-			qlog.Infof("Goroutines: %d", runtime.NumGoroutine())
+			//qlog.Infof("Client connected: %+v", c)
+			//qlog.Infof("Goroutines: %d", runtime.NumGoroutine())
 			return qlog.Error(err)
 		}
 		if err != nil {
