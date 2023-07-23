@@ -6,214 +6,82 @@ import (
 	"github.com/qwibi/qwibi-go-sdk/pkg/geometry"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/proto"
-	"regexp"
 )
 
 type QGeoObject struct {
-	Gid        string    `json:"gid"`
-	Feature    *QFeature `json:"feature"`
-	Properties []byte    `json:"properties"`
+	Gid        string             `json:"gid"`
+	ParentID   string             `json:"parent_id,omitempty"`
+	Geometry   geometry.QGeometry `json:"geometry"`
+	Properties []byte             `json:"properties"`
 }
 
-//func NewGeoObject2[T feature.QFeature]() *QGeoObject {
-//	return &QGeoObject{
-//		Gid:        utils.NewID(),
-//		Feature:    make(T),
-//		Properties: []byte{},
-//	}
-//}
+func NewGeoObject(geometry geometry.QGeometry, options ...Option) *QGeoObject {
+	// Default configuration
+	config := &Config{
+		Gid: utils.NewID(),
+	}
 
-func NewGeoObject(geometry geometry.QGeometry) *QGeoObject {
+	// Apply options
+	for _, opt := range options {
+		opt(config)
+	}
+
 	return &QGeoObject{
-		Gid:        utils.NewID(),
-		Feature:    NewFeature(geometry),
-		Properties: []byte{},
+		Gid:        config.Gid,
+		ParentID:   "",
+		Geometry:   geometry,
+		Properties: config.Properties,
 	}
 }
 
-func NewGeoLayer() *QGeoObject {
-	return NewGeoObject(geometry.NewLayer())
-}
-
-func NewGeoPoint() *QGeoObject {
-	return NewGeoObject(geometry.NewPoint())
-}
-
-//func NewGeoObject(feature *QFeature) *QGeoObject {
-//	return &QGeoObject{
-//		Gid:        utils.NewID(),
-//		Feature:    feature,
-//		Properties: []byte{},
-//	}
-//}
-
-//func NewGeoPoint() *QGeoObject {
-//	return NewGeoObject(feature.NewPointFeature())
-//}
-
 func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject, error) {
-	feature, err := NewFeaturePb(in.Feature)
+	object := &QGeoObject{
+		Gid:        in.Gid,
+		ParentID:   in.ParentID,
+		Properties: in.Properties,
+	}
+
+	geometry, err := geometry.NewGeometryPb(in.Geometry)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
 
-	object := &QGeoObject{
-		Gid:        in.Gid,
-		Feature:    feature,
-		Properties: in.Properties,
-	}
+	object.Geometry = geometry
 
-	return object, object.Valid()
+	return object, nil
+}
+
+func (c *QGeoObject) Pb() *proto.QPBxGeoObject {
+	return &proto.QPBxGeoObject{
+		Gid:        c.Gid,
+		Geometry:   c.Geometry.Pb(),
+		ParentID:   c.ParentID,
+		Properties: c.Properties,
+	}
 }
 
 func NewGeoObjectBytes(data []byte) (*QGeoObject, error) {
-
-	var object QGeoObject
 	var raw QGeoObject
-	//var raw map[string]interface{}
 
 	err := json.Unmarshal(data, &raw)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
 
-	return &object, nil
+	qlog.TODO()
+
+	return &raw, nil
 }
 
-// package geo
-//
-// import (
-//
-//	"github.com/qwibi/qwibi-go-sdk/internal/utils"
-//	"github.com/qwibi/qwibi-go-sdk/pkg/feature"
-//	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
-//	"github.com/qwibi/qwibi-go-sdk/proto"
-//	regexp "github.com/wasilibs/go-re2"
-//
-// )
-//
-//	type QGeoObject struct {
-//		Gid        string           `json:"gid"`
-//		Feature    feature.QFeature `json:"feature"`
-//		Properties []byte           `json:"properties"`
-//	}
-//
-// //func (c *QGeoObject) UnmarshalJSON(data []byte) error {
-// //	var v map[string]interface{}
-// //	if err := json.Unmarshal(data, &v); err != nil {
-// //		return qlog.Error(err)
-// //	}
-// //
-// //	if p1, ok := v["gid"]; ok {
-// //		c.Gid = p1.(string)
-// //	}
-// //
-// //	if p2, ok := v["feature"]; ok {
-// //		feature, err := feature2.NewFeatureDecoder(p2)
-// //		if err != nil {
-// //			return qlog.Error(err)
-// //		}
-// //		c.Feature = feature
-// //	}
-// //
-// //	qlog.Infof("!!!! %+s", v)
-// //
-// //	return nil
-// //}
-//
-//	func NewGeoObject(feature feature.QFeature) (*QGeoObject, error) {
-//		object := &QGeoObject{
-//			Gid:        utils.NewID(),
-//			Feature:    feature,
-//			Properties: []byte{},
-//		}
-//
-//		return object, object.Valid()
-//	}
-//
-//	func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject, error) {
-//		object := &QGeoObject{
-//			Gid:        in.Gid,
-//			Properties: in.Properties,
-//		}
-//
-//		if in.Feature == nil {
-//			return nil, qlog.Error("Feature not defined")
-//		}
-//
-//		if in.Feature.Type == nil {
-//			return nil, qlog.Error("Invalid Feature format")
-//		}
-//
-//		switch v := in.Feature.Type.(type) {
-//		case *proto.QPBxFeature_Point:
-//			f, err := feature.NewPointFeaturePb(v.Point)
-//			if err != nil {
-//				return nil, qlog.Error(err)
-//			}
-//			object.Feature = f
-//		default:
-//			qlog.Error("Unknown feature type", v)
-//		}
-//
-//		return object, object.Valid()
-//	}
-
-func (c *QGeoObject) Pb() *proto.QPBxGeoObject {
-	return &proto.QPBxGeoObject{
-		Gid:        c.Gid,
-		Feature:    c.Feature.Pb(),
-		Properties: c.Properties,
-	}
-}
-
-func (c *QGeoObject) Valid() error {
-	if c.Gid == "" {
-		return qlog.Error("Object gid not defined")
-	}
-
-	if c.Feature == nil {
-		return qlog.Error("Feature not defined")
-	}
-
-	re := regexp.MustCompile("^[A-Za-z0-9_]\\w{4,20}$")
-	if !re.MatchString(c.Gid) {
-		return qlog.Error("Wrong gid format:", c.Gid)
-	}
-
-	return nil
-}
-
-//
-//func NewGeoPoint() *QGeoObject {
-//	object, _ := NewGeoObject(feature.NewPointFeature())
-//	return object
+//func (c *QGeoObject) MarshalJSON() ([]byte, error) {
+//	return json.Marshal(&struct {
+//		Gid string `json:"type"`
+//	}{
+//		Gid: utils.NewID(),
+//	})
 //}
 
-//func (c *QGeoObject) UnmarshalJSON(data []byte) error {
-//	v := struct {
-//		Gid        string          `json:"gid"`
-//		Feature    json.RawMessage `json:"feature"`
-//		Properties []byte          `json:"properties"`
-//		//*QGeoObject
-//	}{}
-//	if err := json.Unmarshal(data, &v); err != nil {
-//		return qlog.Error(err)
-//	}
-//
-//	//if p1, ok := v["gid"]; ok {
-//	//	c.Gid = p1.(string)
-//	//}
-//	//
-//	//if p2, ok := v["feature"]; ok {
-//	//	feature, err := feature2.NewFeatureDecoder(p2)
-//	//	if err != nil {
-//	//		return qlog.Error(err)
-//	//	}
-//	//	c.Feature = feature
-//	//}
-//
-//	qlog.Infof("!!!! %+s", v)
-//
-//	return nil
-//}
+func (c *QGeoObject) String() string {
+	b, _ := json.Marshal(c)
+	return string(b)
+}

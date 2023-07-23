@@ -101,7 +101,7 @@ func Infof(format string, args ...interface{}) Status {
 	caller := caller(runtime.Caller(1))
 	m := fmt.Sprintf(format, args...)
 
-	log.Infof("%s %s", caller, m)
+	log.Infof("%s %d %s", caller, runtime.NumGoroutine(), m)
 
 	return Status{
 		Code:    INFO,

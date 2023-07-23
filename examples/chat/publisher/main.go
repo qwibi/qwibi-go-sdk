@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	sdk "github.com/qwibi/qwibi-go-sdk/internal/client"
 	"github.com/qwibi/qwibi-go-sdk/pkg/auth"
-	sdk "github.com/qwibi/qwibi-go-sdk/pkg/client"
 	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
+	"github.com/qwibi/qwibi-go-sdk/pkg/geometry"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/pkg/stream"
+	"time"
 )
 
 var client *sdk.QApiClient
@@ -26,15 +28,32 @@ func main() {
 	}
 	qlog.Infof("Auth with Session... %+v", session)
 
-	object := geo.NewGeoPoint()
-	object.Properties = []byte("object properties")
-	//object.Feature.Properties = []byte("feature properties")
+	//layer, err := client.Join(gid)
+	//if err != nil {
+	//	qlog.Error(err)
+	//	return
+	//}
 
-	layer, err := client.Layer("chat")
-	if err != nil {
-		qlog.Error(err)
-		return
-	}
+	layer := geo.NewGeoObject(geometry.NewPoint(),
+		//geo.WithGid("testGid"),
+		geo.WithProperties([]byte("object properties")),
+	)
+
+	go func() {
+		for {
+			object := geo.NewGeoObject(geometry.NewPoint(),
+				//geo.WithGid("testGid"),
+				geo.WithProperties([]byte("object properties")),
+			)
+
+			qlog.Infof("Post object %v", object)
+			//_, err = layer.Post(object)
+			//if err != nil {
+			//	qlog.Error(err)
+			//}
+			time.Sleep(3 * time.Second)
+		}
+	}()
 
 	qlog.Infof("Join to layer: %+v", layer)
 	err = client.Join(layer.Gid, func(m stream.QMessage) {

@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	sdk "github.com/qwibi/qwibi-go-sdk"
 	"github.com/qwibi/qwibi-go-sdk/pkg/auth"
+	sdk "github.com/qwibi/qwibi-go-sdk/pkg/client"
 	"github.com/qwibi/qwibi-go-sdk/pkg/command"
 	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"

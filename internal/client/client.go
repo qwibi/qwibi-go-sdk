@@ -1,4 +1,4 @@
-package sdk
+package client
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
 	"github.com/qwibi/qwibi-go-sdk/pkg/metadata"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
+	"github.com/qwibi/qwibi-go-sdk/pkg/stream"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 	grpc "google.golang.org/grpc"
 	"io"
@@ -100,12 +101,40 @@ func (c *QApiClient) BasicAuth(login string, password string) (*auth2.QSession, 
 }
 
 // Join ...
-func (c *QApiClient) Join(gid string) (*geo.QGeoLayer, error) {
+func (c *QApiClient) Join(gid string, handler func(m stream.QMessage)) error {
 	req := &proto.QPBxJoinRequest{
 		Gid: gid,
 	}
 
-	res, err := c.apiClient.Join(c.ctx, req)
+	client, err := c.apiClient.Join(c.ctx, req, grpc.EmptyCallOption{})
+	if err != nil {
+		return qlog.Error(err)
+	}
+
+	for {
+		msg, err := client.Recv()
+		if err == io.EOF {
+			//qlog.Infof("Client connected: %+v", c)
+			//qlog.Infof("Goroutines: %d", runtime.NumGoroutine())
+			return qlog.Error(err)
+		}
+		if err != nil {
+			return qlog.Error(err)
+		}
+
+		qlog.Infof("==> Join: [%T] %+v", msg, msg)
+
+		handler(stream.QMessage{})
+	}
+}
+
+// Layer ...
+func (c *QApiClient) Layer(gid string) (*geo.QGeoLayer, error) {
+	req := &proto.QPBxLayerRequest{
+		Name: gid,
+	}
+
+	res, err := c.apiClient.Layer(c.ctx, req)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
@@ -160,25 +189,12 @@ func (c *QApiClient) Post(object *geo.QGeoObject) (*geo.QGeoObject, error) {
 //	return objects, nil
 //}
 
-func (c *QApiClient) Bot(gid string, h func(request *command.QRequest)) error {
-	//qlog.Infof("Start Bot for... %s", gid)
-
+func (c *QApiClient) Bot(gid string, handler func(request *command.QRequest)) error {
 	client, err := c.apiClient.Bot(c.ctx, grpc.EmptyCallOption{})
 	if err != nil {
 		return qlog.Error(err)
 	}
 
-	//go func() {
-	//	for {
-	//		qlog.Infof("Send ping command...")
-	//		client.Send(&proto.QPBxBotRequest{
-	//			Path: "/ping",
-	//		})
-	//		time.Sleep(2 * time.Second)
-	//	}
-	//}()
-
-	//// Receive ...
 	for {
 		in, err := client.Recv()
 		if err == io.EOF {
@@ -196,10 +212,61 @@ func (c *QApiClient) Bot(gid string, h func(request *command.QRequest)) error {
 			Path: "/kkkk",
 		}
 
-		h(cmd)
-
+		handler(cmd)
 	}
 }
+
+//func (c *QApiClient) Stream(gid string, handler func(m stream.QMessage)) error {
+//	//qlog.Infof("Start stream... %s", gid)
+//	stream, err := c.apiClient.Stream(c.ctx)
+//	if err != nil {
+//		return qlog.Error(err)
+//	}
+//
+//	for {
+//		msg, err := stream.Recv()
+//		if err == io.EOF {
+//			//qlog.Infof("Client connected: %+v", c)
+//			//qlog.Infof("Goroutines: %d", runtime.NumGoroutine())
+//			return qlog.Error(err)
+//		}
+//		if err != nil {
+//			return qlog.Error(err)
+//		}
+//
+//		qlog.Infof("==> Stream: [%T] %+v", msg, msg)
+//
+//		handler(stream.QMessage{})
+//	}
+//
+//}
+
+//func (c *QApiClient) Stream(gid string, h func(request *command.QRequest)) error {
+//	client, err := c.apiClient.Stream(c.ctx, grpc.EmptyCallOption{})
+//	if err != nil {
+//		return qlog.Error(err)
+//	}
+//
+//	for {
+//		in, err := client.Recv()
+//		if err == io.EOF {
+//			qlog.Infof("Client connected: %+v", c)
+//			qlog.Infof("Goroutines: %d", runtime.NumGoroutine())
+//			return qlog.Error(err)
+//		}
+//		if err != nil {
+//			return qlog.Error(err)
+//		}
+//
+//		qlog.Infof("==> Bot: [%T] %+v", in, in)
+//
+//		cmd := &command.QRequest{
+//			Path: "/kkkk",
+//		}
+//
+//		h(cmd)
+//	}
+//}
 
 //// / Stream
 //func (c *QApiClient) Stream() error {
@@ -235,30 +302,3 @@ func (c *QApiClient) Bot(gid string, h func(request *command.QRequest)) error {
 //
 //	}
 //}
-
-func (c *QApiClient) Stream(gid string, handler func(r *proto.QPBxStreamResponse)) error {
-	//qlog.Infof("Start stream... %s", gid)
-	stream, err := c.apiClient.Stream(c.ctx)
-	if err != nil {
-		return qlog.Error(err)
-	}
-
-	for {
-		msg, err := stream.Recv()
-		if err == io.EOF {
-			//qlog.Infof("Client connected: %+v", c)
-			//qlog.Infof("Goroutines: %d", runtime.NumGoroutine())
-			return qlog.Error(err)
-		}
-		if err != nil {
-			return qlog.Error(err)
-		}
-
-		qlog.Infof("==> Stream: [%T] %+v", msg, msg)
-
-		handler(msg)
-
-		//c.Post(point)
-	}
-
-}

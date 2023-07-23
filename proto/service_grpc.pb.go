@@ -24,10 +24,12 @@ const _ = grpc.SupportPackageIsVersion7
 type QPBxApiClient interface {
 	// AUTH return authToken
 	Auth(ctx context.Context, in *QPBxAuthRequest, opts ...grpc.CallOption) (*QPBxAuthResponse, error)
+	// Layer
+	Layer(ctx context.Context, in *QPBxLayerRequest, opts ...grpc.CallOption) (*QPBxLayerResponse, error)
 	// Post
 	Post(ctx context.Context, in *QPBxPostRequest, opts ...grpc.CallOption) (*QPBxPostResponse, error)
-	// Join to geo object layer
-	Join(ctx context.Context, in *QPBxJoinRequest, opts ...grpc.CallOption) (*QPBxJoinResponse, error)
+	// Join to geo object
+	Join(ctx context.Context, in *QPBxJoinRequest, opts ...grpc.CallOption) (QPBxApi_JoinClient, error)
 	// Get geo objects
 	Get(ctx context.Context, in *QPBxGetRequest, opts ...grpc.CallOption) (*QPBxGetResponse, error)
 	// Bot
@@ -53,6 +55,15 @@ func (c *qPBxApiClient) Auth(ctx context.Context, in *QPBxAuthRequest, opts ...g
 	return out, nil
 }
 
+func (c *qPBxApiClient) Layer(ctx context.Context, in *QPBxLayerRequest, opts ...grpc.CallOption) (*QPBxLayerResponse, error) {
+	out := new(QPBxLayerResponse)
+	err := c.cc.Invoke(ctx, "/QPBxApi/Layer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *qPBxApiClient) Post(ctx context.Context, in *QPBxPostRequest, opts ...grpc.CallOption) (*QPBxPostResponse, error) {
 	out := new(QPBxPostResponse)
 	err := c.cc.Invoke(ctx, "/QPBxApi/Post", in, out, opts...)
@@ -62,13 +73,36 @@ func (c *qPBxApiClient) Post(ctx context.Context, in *QPBxPostRequest, opts ...g
 	return out, nil
 }
 
-func (c *qPBxApiClient) Join(ctx context.Context, in *QPBxJoinRequest, opts ...grpc.CallOption) (*QPBxJoinResponse, error) {
-	out := new(QPBxJoinResponse)
-	err := c.cc.Invoke(ctx, "/QPBxApi/Join", in, out, opts...)
+func (c *qPBxApiClient) Join(ctx context.Context, in *QPBxJoinRequest, opts ...grpc.CallOption) (QPBxApi_JoinClient, error) {
+	stream, err := c.cc.NewStream(ctx, &QPBxApi_ServiceDesc.Streams[0], "/QPBxApi/Join", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &qPBxApiJoinClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type QPBxApi_JoinClient interface {
+	Recv() (*QPBxJoinResponse, error)
+	grpc.ClientStream
+}
+
+type qPBxApiJoinClient struct {
+	grpc.ClientStream
+}
+
+func (x *qPBxApiJoinClient) Recv() (*QPBxJoinResponse, error) {
+	m := new(QPBxJoinResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 func (c *qPBxApiClient) Get(ctx context.Context, in *QPBxGetRequest, opts ...grpc.CallOption) (*QPBxGetResponse, error) {
@@ -81,7 +115,7 @@ func (c *qPBxApiClient) Get(ctx context.Context, in *QPBxGetRequest, opts ...grp
 }
 
 func (c *qPBxApiClient) Bot(ctx context.Context, opts ...grpc.CallOption) (QPBxApi_BotClient, error) {
-	stream, err := c.cc.NewStream(ctx, &QPBxApi_ServiceDesc.Streams[0], "/QPBxApi/Bot", opts...)
+	stream, err := c.cc.NewStream(ctx, &QPBxApi_ServiceDesc.Streams[1], "/QPBxApi/Bot", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +146,7 @@ func (x *qPBxApiBotClient) Recv() (*QPBxBotResponse, error) {
 }
 
 func (c *qPBxApiClient) Stream(ctx context.Context, opts ...grpc.CallOption) (QPBxApi_StreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &QPBxApi_ServiceDesc.Streams[1], "/QPBxApi/Stream", opts...)
+	stream, err := c.cc.NewStream(ctx, &QPBxApi_ServiceDesc.Streams[2], "/QPBxApi/Stream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -148,10 +182,12 @@ func (x *qPBxApiStreamClient) Recv() (*QPBxStreamResponse, error) {
 type QPBxApiServer interface {
 	// AUTH return authToken
 	Auth(context.Context, *QPBxAuthRequest) (*QPBxAuthResponse, error)
+	// Layer
+	Layer(context.Context, *QPBxLayerRequest) (*QPBxLayerResponse, error)
 	// Post
 	Post(context.Context, *QPBxPostRequest) (*QPBxPostResponse, error)
-	// Join to geo object layer
-	Join(context.Context, *QPBxJoinRequest) (*QPBxJoinResponse, error)
+	// Join to geo object
+	Join(*QPBxJoinRequest, QPBxApi_JoinServer) error
 	// Get geo objects
 	Get(context.Context, *QPBxGetRequest) (*QPBxGetResponse, error)
 	// Bot
@@ -167,11 +203,14 @@ type UnimplementedQPBxApiServer struct {
 func (UnimplementedQPBxApiServer) Auth(context.Context, *QPBxAuthRequest) (*QPBxAuthResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Auth not implemented")
 }
+func (UnimplementedQPBxApiServer) Layer(context.Context, *QPBxLayerRequest) (*QPBxLayerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Layer not implemented")
+}
 func (UnimplementedQPBxApiServer) Post(context.Context, *QPBxPostRequest) (*QPBxPostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Post not implemented")
 }
-func (UnimplementedQPBxApiServer) Join(context.Context, *QPBxJoinRequest) (*QPBxJoinResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Join not implemented")
+func (UnimplementedQPBxApiServer) Join(*QPBxJoinRequest, QPBxApi_JoinServer) error {
+	return status.Errorf(codes.Unimplemented, "method Join not implemented")
 }
 func (UnimplementedQPBxApiServer) Get(context.Context, *QPBxGetRequest) (*QPBxGetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
@@ -212,6 +251,24 @@ func _QPBxApi_Auth_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _QPBxApi_Layer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QPBxLayerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QPBxApiServer).Layer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/QPBxApi/Layer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QPBxApiServer).Layer(ctx, req.(*QPBxLayerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _QPBxApi_Post_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QPBxPostRequest)
 	if err := dec(in); err != nil {
@@ -230,22 +287,25 @@ func _QPBxApi_Post_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QPBxApi_Join_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QPBxJoinRequest)
-	if err := dec(in); err != nil {
-		return nil, err
+func _QPBxApi_Join_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(QPBxJoinRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(QPBxApiServer).Join(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/QPBxApi/Join",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QPBxApiServer).Join(ctx, req.(*QPBxJoinRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(QPBxApiServer).Join(m, &qPBxApiJoinServer{stream})
+}
+
+type QPBxApi_JoinServer interface {
+	Send(*QPBxJoinResponse) error
+	grpc.ServerStream
+}
+
+type qPBxApiJoinServer struct {
+	grpc.ServerStream
+}
+
+func (x *qPBxApiJoinServer) Send(m *QPBxJoinResponse) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 func _QPBxApi_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -330,12 +390,12 @@ var QPBxApi_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _QPBxApi_Auth_Handler,
 		},
 		{
-			MethodName: "Post",
-			Handler:    _QPBxApi_Post_Handler,
+			MethodName: "Layer",
+			Handler:    _QPBxApi_Layer_Handler,
 		},
 		{
-			MethodName: "Join",
-			Handler:    _QPBxApi_Join_Handler,
+			MethodName: "Post",
+			Handler:    _QPBxApi_Post_Handler,
 		},
 		{
 			MethodName: "Get",
@@ -343,6 +403,11 @@ var QPBxApi_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "Join",
+			Handler:       _QPBxApi_Join_Handler,
+			ServerStreams: true,
+		},
 		{
 			StreamName:    "Bot",
 			Handler:       _QPBxApi_Bot_Handler,

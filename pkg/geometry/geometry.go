@@ -20,8 +20,6 @@ func NewGeometryPb(in *proto.QPBxGeometry) (QGeometry, error) {
 	}
 
 	switch v := in.Type.(type) {
-	case *proto.QPBxGeometry_Layer:
-		return NewLayerPb(v.Layer)
 	case *proto.QPBxGeometry_Point:
 		return NewPointPb(v.Point)
 	default:
