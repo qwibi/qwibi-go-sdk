@@ -1,6 +1,7 @@
 package geometry
 
 import (
+	"github.com/mitchellh/mapstructure"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 )
@@ -25,4 +26,23 @@ func NewGeometryPb(in *proto.QPBxGeometry) (QGeometry, error) {
 	default:
 		return nil, qlog.Errorf("Unknown geometry type: %s", v)
 	}
+}
+
+func NewGeometryStruct(v map[string]interface{}) (QGeometry, error) {
+	if v == nil {
+		return nil, qlog.Error("Bad parameter type nil")
+	}
+
+	switch t := v["type"]; t {
+	case QPointGeometryType:
+		var o QPoint
+		err := mapstructure.Decode(v, &o)
+		if err != nil {
+			return nil, qlog.Error(err)
+		}
+		return &o, nil
+	default:
+		return nil, qlog.Errorf("Unknown gemetry type: %s", t)
+	}
+
 }

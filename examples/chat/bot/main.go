@@ -3,18 +3,18 @@ package main
 import (
 	"context"
 	"github.com/qwibi/qwibi-go-sdk/pkg/auth"
-	sdk "github.com/qwibi/qwibi-go-sdk/pkg/client"
 	"github.com/qwibi/qwibi-go-sdk/pkg/command"
-	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
+	"github.com/qwibi/qwibi-go-sdk/pkg/object"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
+	"github.com/qwibi/qwibi-go-sdk/pkg/qwibi"
 )
 
-var client *sdk.QApiClient
+var client *qwibi.QApiClient
 
 func main() {
 	addr := "127.0.0.1:8080"
 	ctx := context.Background()
-	var client, err = sdk.NewClient(ctx, addr)
+	var client, err = qwibi.NewClient(ctx, addr)
 	if err != nil {
 		panic(err)
 	}
@@ -26,8 +26,8 @@ func main() {
 	}
 	qlog.Infof("Auth with Session... %+v", session)
 
-	layer := geo.NewGeoLayer(
-		geo.WithGid("chat"),
+	layer := qwibi.NewGeoLayer(
+		object.WithGid("chat"),
 	)
 
 	qlog.Infof("Start Bot for layer: %+v", layer)

@@ -2,21 +2,22 @@ package main
 
 import (
 	"context"
-	sdk "github.com/qwibi/qwibi-go-sdk/internal/client"
+	"fmt"
 	"github.com/qwibi/qwibi-go-sdk/pkg/auth"
-	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
+	"github.com/qwibi/qwibi-go-sdk/pkg/event"
 	"github.com/qwibi/qwibi-go-sdk/pkg/geometry"
+	"github.com/qwibi/qwibi-go-sdk/pkg/object"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
-	"github.com/qwibi/qwibi-go-sdk/pkg/stream"
+	"github.com/qwibi/qwibi-go-sdk/pkg/qwibi"
 	"time"
 )
 
-var client *sdk.QApiClient
+var client *qwibi.QApiClient
 
 func main() {
 	addr := "127.0.0.1:8080"
 	ctx := context.Background()
-	var client, err = sdk.NewClient(ctx, addr)
+	var client, err = qwibi.NewClient(ctx, addr)
 	if err != nil {
 		panic(err)
 	}
@@ -28,36 +29,58 @@ func main() {
 	}
 	qlog.Infof("Auth with Session... %+v", session)
 
-	//layer, err := client.Join(gid)
+	//layer, err := client.Stream(gid)
 	//if err != nil {
 	//	qlog.Error(err)
 	//	return
 	//}
 
-	layer := geo.NewGeoObject(geometry.NewPoint(),
-		//geo.WithGid("testGid"),
-		geo.WithProperties([]byte("object properties")),
+	//point, err := client.Object(
+	//	qwibi.WithGeometry(geometry.NewPoint()),
+	//)
+	//if err != nil {
+	//	return
+	//}
+
+	//object, err := client.Object(
+	//	qwibi.WithGid("111"),
+	//	qwibi.WithGeometry(geometry.NewPoint()),
+	//	qwibi.WithProperties([]byte("object properties")),
+	//)
+	//if err != nil {
+	//	qlog.Error(err)
+	//}
+
+	object := object.NewGeoObject(
+		object.WithGid("myID"),
+		object.WithGeometry(geometry.NewPoint()),
+		object.WithProperties([]byte("object properties")),
 	)
+
+	err = client.Post(object)
+	if err != nil {
+		qlog.Error(err)
+	}
 
 	go func() {
 		for {
-			object := geo.NewGeoObject(geometry.NewPoint(),
-				//geo.WithGid("testGid"),
-				geo.WithProperties([]byte("object properties")),
-			)
+			object.Properties = []byte(fmt.Sprintf("%s", time.Now()))
+			qlog.Infof("Post object: %v", object)
 
-			qlog.Infof("Post object %v", object)
-			//_, err = layer.Post(object)
-			//if err != nil {
-			//	qlog.Error(err)
-			//}
+			err = client.Post(object)
+			if err != nil {
+				qlog.Error(err)
+			}
+
+			//client.Connect(gid, object.Gid)
+
 			time.Sleep(3 * time.Second)
 		}
 	}()
 
-	qlog.Infof("Join to layer: %+v", layer)
-	err = client.Join(layer.Gid, func(m stream.QMessage) {
-		qlog.Infof("Stream: request => %s", m)
+	qlog.Infof("Stream to object: %+v", object)
+	err = client.Stream(object.Gid, func(event event.QEvent) {
+		qlog.Infof("Event: [%T] %s", event, event)
 	})
 
 	if err != nil {
