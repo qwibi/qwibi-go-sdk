@@ -9,9 +9,9 @@ import (
 )
 
 type QGeoObject struct {
-	Gid        string             `json:"gid"`
-	Geometry   geometry.QGeometry `json:"geometry"`
-	Properties []byte             `json:"properties"`
+	Gid        string              `json:"gid"`
+	Geometry   *geometry.QGeometry `json:"geometry"`
+	Properties []byte              `json:"properties"`
 }
 
 func NewGeoObject(options ...Option) *QGeoObject {
@@ -95,19 +95,19 @@ func (c *QGeoObject) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *QGeoObject) MarshalJSON() ([]byte, error) {
-	return json.Marshal(&struct {
-		Gid        string             `json:"gid"`
-		Geometry   geometry.QGeometry `json:"geometry"`
-		Properties string             `json:"properties"`
-	}{
-		Gid:        c.Gid,
-		Geometry:   c.Geometry,
-		Properties: string(c.Properties),
-	})
-}
+//func (c *QGeoObject) MarshalJSON() ([]byte, error) {
+//	return json.Marshal(&struct {
+//		Gid        string              `json:"gid"`
+//		Geometry   *geometry.QGeometry `json:"geometry"`
+//		Properties string              `json:"properties"`
+//	}{
+//		Gid:        c.Gid,
+//		Geometry:   c.Geometry,
+//		Properties: string(c.Properties),
+//	})
+//}
 
-func (c *QGeoObject) String() string {
-	b, _ := json.Marshal(c)
-	return string(b)
-}
+//func (c *QGeoObject) String() string {
+//	b, _ := json.Marshal(c)
+//	return string(b)
+//}

@@ -12,10 +12,16 @@ type QObjectUpdate struct {
 }
 
 // UpdateEvent ...
-func NewObjectUpdate(object *object.QGeoObject) *QObjectUpdate {
-	return &QObjectUpdate{
+func NewObjectUpdate(object *object.QGeoObject) (*QObjectUpdate, error) {
+	if object == nil {
+		return nil, qlog.Error("Bed parameter type nil")
+	}
+
+	event := &QObjectUpdate{
 		Object: object,
 	}
+
+	return event, nil
 }
 
 // NewUpdateEventPb ...
@@ -29,11 +35,7 @@ func NewObjectUpdatePb(pb *proto.QPBxObjectUpdate) (*QObjectUpdate, error) {
 		return nil, qlog.Error(err)
 	}
 
-	event := &QObjectUpdate{
-		Object: object,
-	}
-
-	return event, event.Valid()
+	return NewObjectUpdate(object)
 }
 
 // Valid ...
@@ -47,7 +49,7 @@ func (c *QObjectUpdate) Valid() error {
 
 // Pb ...
 func (c *QObjectUpdate) Pb() *proto.QPBxEvent {
-	if c.Object != nil {
+	if c.Object == nil {
 		qlog.Error("ObjectUpdate: object is not defined")
 		return nil
 	}

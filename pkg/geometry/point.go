@@ -92,3 +92,62 @@ func (c *QPoint) String() string {
 //	qlog.TODO("#### Point")
 //	return nil
 //}
+
+//func (c *QPoint) Value() (driver.Value, error) {
+//	return protobuf.Marshal(c.Pb())
+//}
+//
+//func (c *QPoint) Scan(src any) error {
+//	if src == nil {
+//		return nil
+//	}
+//
+//	pb := &proto.QPBxPoint{}
+//
+//	if b, ok := src.([]byte); ok {
+//		if err := protobuf.Unmarshal(b, pb); err != nil {
+//			return err
+//		}
+//		return nil
+//	}
+//
+//	c.Coordinates = pb.Coordinates
+//
+//	return fmt.Errorf("unexpected type %T", src)
+//}
+
+//// Scan implements the Scanner interface.
+//func (p *QPoint) Scan(value any) error {
+//	bin, ok := value.([]byte)
+//	if !ok {
+//		return fmt.Errorf("invalid binary value for point")
+//	}
+//	var op orb.Point
+//	if err := wkb.Scanner(&op).Scan(bin[4:]); err != nil {
+//		return err
+//	}
+//	//p[0], p[1] = op.X(), op.Y()
+//	return nil
+//}
+//
+//// Value implements the driver Valuer interface.
+//func (p QPoint) Value() (driver.Value, error) {
+//	op := orb.Point{1, 1}
+//	return wkb.Value(op).Value()
+//}
+//
+//// FormatParam implements the sql.ParamFormatter interface to tell the SQL
+//// builder that the placeholder for a Point parameter needs to be formatted.
+//func (p QPoint) FormatParam(placeholder string, info *sql.StmtInfo) string {
+//	if info.Dialect == dialect.MySQL {
+//		return "ST_GeomFromWKB(" + placeholder + ")"
+//	}
+//	return placeholder
+//}
+//
+//// SchemaType defines the schema-type of the Point object.
+//func (QPoint) SchemaType() map[string]string {
+//	return map[string]string{
+//		dialect.MySQL: "POINT",
+//	}
+//}

@@ -51,9 +51,13 @@ func main() {
 	//	qlog.Error(err)
 	//}
 
+	point := geometry.NewPoint()
+	point.Coordinates = []float64{1.1, 1.2}
+	geometry := geometry.NewGeometry(point)
+
 	object := object.NewGeoObject(
 		object.WithGid("myID"),
-		object.WithGeometry(geometry.NewPoint()),
+		object.WithGeometry(geometry),
 		object.WithProperties([]byte("object properties")),
 	)
 
@@ -61,6 +65,8 @@ func main() {
 	if err != nil {
 		qlog.Error(err)
 	}
+
+	client.Edge(object.Gid, session.Gid)
 
 	go func() {
 		for {

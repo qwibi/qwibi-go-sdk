@@ -4,7 +4,7 @@ import "github.com/qwibi/qwibi-go-sdk/pkg/geometry"
 
 type Config struct {
 	Gid        string
-	Geometry   geometry.QGeometry
+	Geometry   *geometry.QGeometry
 	Properties []byte
 }
 
@@ -16,7 +16,7 @@ func WithGid(gid string) Option {
 	}
 }
 
-func WithGeometry(geometry geometry.QGeometry) Option {
+func WithGeometry(geometry *geometry.QGeometry) Option {
 	return func(c *Config) {
 		c.Geometry = geometry
 	}
