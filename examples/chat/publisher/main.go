@@ -2,13 +2,12 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/qwibi/qwibi-go-sdk/pkg/auth"
 	"github.com/qwibi/qwibi-go-sdk/pkg/event"
-	"github.com/qwibi/qwibi-go-sdk/pkg/geometry"
-	"github.com/qwibi/qwibi-go-sdk/pkg/object"
+	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qwibi"
+	"math/rand"
 	"time"
 )
 
@@ -29,64 +28,36 @@ func main() {
 	}
 	qlog.Infof("Auth with Session... %+v", session)
 
-	//layer, err := client.Stream(gid)
-	//if err != nil {
-	//	qlog.Error(err)
-	//	return
-	//}
-
-	//point, err := client.Object(
-	//	qwibi.WithGeometry(geometry.NewPoint()),
-	//)
-	//if err != nil {
-	//	return
-	//}
-
-	//object, err := client.Object(
-	//	qwibi.WithGid("111"),
-	//	qwibi.WithGeometry(geometry.NewPoint()),
-	//	qwibi.WithProperties([]byte("object properties")),
-	//)
-	//if err != nil {
-	//	qlog.Error(err)
-	//}
-
-	point := geometry.NewPoint()
-	point.Coordinates = []float64{1.1, 1.2}
-	geometry := geometry.NewGeometry(point)
-
-	object := object.NewGeoObject(
-		object.WithGid("myID"),
-		object.WithGeometry(geometry),
-		object.WithProperties([]byte("object properties")),
+	layer, err := client.Layer(
+	//layer.WithLayerGid("12458"),
+	//layer.WithLayerPublic(true),
 	)
 
-	err = client.Post(object)
 	if err != nil {
 		qlog.Error(err)
+		return
 	}
+	qlog.Infof("Layer: %+v", layer)
 
-	client.Edge(object.Gid, session.Gid)
+	point := geo.NewGeoPoint(
+		geo.PointGid("me"),
+		geo.PointCoordinates(1.1+rand.Float64(), 2.2+rand.Float64()),
+	)
 
 	go func() {
 		for {
-			object.Properties = []byte(fmt.Sprintf("%s", time.Now()))
-			qlog.Infof("Post object: %v", object)
-
-			err = client.Post(object)
+			qlog.Infof("Post: %+v", point)
+			err = layer.Post(point)
 			if err != nil {
 				qlog.Error(err)
 			}
-
-			//client.Connect(gid, object.Gid)
 
 			time.Sleep(3 * time.Second)
 		}
 	}()
 
-	qlog.Infof("Stream to object: %+v", object)
-	err = client.Stream(object.Gid, func(event event.QEvent) {
-		qlog.Infof("Event: [%T] %s", event, event)
+	err = layer.Stream(func(event event.QEvent) {
+		qlog.Infof("Event: [%T] %+v", event, event)
 	})
 
 	if err != nil {

@@ -16,6 +16,7 @@ type geometry interface {
 	Valid() error
 	Pb() *proto.QPBxGeometry
 	GetType() string
+	//String() string
 	//Value() (driver.Value, error)
 	//UnmarshalJSON(data []byte) error
 }
@@ -66,21 +67,6 @@ func NewGeometryStruct(v map[string]interface{}) (*QGeometry, error) {
 }
 
 func (c *QGeometry) Value() (driver.Value, error) {
-	qlog.Infof("=> Value() %+v", c)
-	//b, err := protobuf.Marshal(c.Pb())
-	//if err != nil {
-	//	return nil, qlog.Error(err)
-	//}
-
-	////todo()
-	//pb := proto.QPBxGeometry{}
-	//
-	//err = protobuf.Unmarshal(b, &pb)
-	//if err != nil {
-	//	return nil, qlog.Error(err)
-	//}
-	//
-	//qlog.Debugf("[QGeometry] Value: %+v => %+v  => %+v", c.geometry, b, pb)
 	return driver.Value(c.String()), nil
 }
 

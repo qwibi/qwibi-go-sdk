@@ -16,8 +16,8 @@ func NewAnonymousAuth() (*QAnonymousAuth, error) {
 }
 
 // NewAnonymousAuthPb ...
-func NewAnonymousAuthPb(pb *proto.QPBxAnonymAuth) (*QAnonymousAuth, error) {
-	if pb == nil {
+func NewAnonymousAuthPb(in *proto.QPBxAnonymAuth) (*QAnonymousAuth, error) {
+	if in == nil {
 		err := errors.New("Invalid parameter type nil")
 		return nil, qlog.Error(err)
 	}

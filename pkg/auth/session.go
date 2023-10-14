@@ -3,43 +3,40 @@ package auth
 import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
-	utils2 "github.com/qwibi/qwibi-go-sdk/pkg/utils"
+	"github.com/qwibi/qwibi-go-sdk/pkg/utils"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 )
 
 // QSession ...
 type QSession struct {
-	Token string
-	Gid   string
+	Token     string
+	AccountId string
 }
 
 // NewSession ...
-func NewSession() (*QSession, error) {
-	session := &QSession{
-		Token: utils2.NewToken(),
-		Gid:   utils2.NewID(),
+func NewSession(options ...SessionOption) *QSession {
+	h := &QSession{
+		Token: utils.NewID(),
 	}
 
-	if err := session.Valid(); err != nil {
-		return nil, qlog.Error(err)
+	for _, opt := range options {
+		opt(h)
 	}
 
-	return session, nil
+	return h
 }
 
 // NewSessionPb ...
-func NewSessionPb(pb *proto.QPBxSession) (*QSession, error) {
-	if pb == nil {
+func NewSessionPb(in *proto.QPBxSession) (*QSession, error) {
+	if in == nil {
 		err := errors.New("Invalid parameter type nil")
 		return nil, qlog.Error(err)
 	}
 
-	session, err := NewSession()
-	if err != nil {
-		return nil, qlog.Error(err)
-	}
-
-	session.Token = pb.Token
+	session := NewSession(
+		WithSessionToken(in.Token),
+		WithSessionAccountId(in.AccountId),
+	)
 
 	return session, nil
 }
@@ -47,26 +44,16 @@ func NewSessionPb(pb *proto.QPBxSession) (*QSession, error) {
 // Valid ...
 func (c *QSession) Valid() error {
 	if c.Token == "" {
-		return qlog.Error("Session token is not defined")
-	}
-
-	if c.Gid == "" {
-		return qlog.Error("Session layerId is not defined")
+		return qlog.Error("session token is not defined")
 	}
 
 	return nil
 }
 
 // Pb ...
-func (c *QSession) Pb() (*proto.QPBxSession, error) {
-	if err := c.Valid(); err != nil {
-		return nil, qlog.Error(err)
+func (c *QSession) Pb() *proto.QPBxSession {
+	return &proto.QPBxSession{
+		Token:     c.Token,
+		AccountId: c.AccountId,
 	}
-
-	pb := &proto.QPBxSession{
-		Token:   c.Token,
-		LayerId: c.Gid,
-	}
-
-	return pb, nil
 }

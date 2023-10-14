@@ -1,18 +1,18 @@
 package event
 
 import (
-	"github.com/qwibi/qwibi-go-sdk/pkg/object"
+	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 )
 
 // QPoint ...
 type QObjectUpdate struct {
-	Object *object.QGeoObject `json:"object"`
+	Object *geo.QGeoObject `json:"object"`
 }
 
 // UpdateEvent ...
-func NewObjectUpdate(object *object.QGeoObject) (*QObjectUpdate, error) {
+func NewObjectUpdate(object *geo.QGeoObject) (*QObjectUpdate, error) {
 	if object == nil {
 		return nil, qlog.Error("Bed parameter type nil")
 	}
@@ -30,7 +30,7 @@ func NewObjectUpdatePb(pb *proto.QPBxObjectUpdate) (*QObjectUpdate, error) {
 		return nil, qlog.Error("ObjectUpdate: bed parameter type nil")
 	}
 
-	object, err := object.NewGeoObjectPb(pb.Object)
+	object, err := geo.NewGeoObjectPb(pb.Object)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
@@ -44,7 +44,7 @@ func (c *QObjectUpdate) Valid() error {
 		return qlog.Error("ObjectUpdate: object not defined")
 	}
 
-	return c.Object.Valid()
+	return nil
 }
 
 // Pb ...
@@ -55,8 +55,8 @@ func (c *QObjectUpdate) Pb() *proto.QPBxEvent {
 	}
 
 	pb := &proto.QPBxEvent{
-		Type: &proto.QPBxEvent_Update{
-			Update: &proto.QPBxObjectUpdate{
+		Type: &proto.QPBxEvent_ObjectUpdate{
+			ObjectUpdate: &proto.QPBxObjectUpdate{
 				Object: c.Object.Pb(),
 			},
 		},

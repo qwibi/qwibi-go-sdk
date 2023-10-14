@@ -193,3 +193,15 @@ func TODO(msg ...interface{}) Status {
 		Message: m,
 	}
 }
+
+func BedRequest(msg ...interface{}) Status {
+	caller := caller(runtime.Caller(1))
+	m := toString(msg...)
+
+	log.Warnf("%s bed request %s", caller, m)
+
+	return Status{
+		Code:    WARN,
+		Message: "bed request",
+	}
+}

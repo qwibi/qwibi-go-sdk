@@ -4,6 +4,8 @@ import (
 	"context"
 	"github.com/qwibi/qwibi-go-sdk/pkg/auth"
 	"github.com/qwibi/qwibi-go-sdk/pkg/event"
+	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
+	"github.com/qwibi/qwibi-go-sdk/pkg/geo/layer"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qwibi"
 )
@@ -25,21 +27,17 @@ func main() {
 	}
 	qlog.Infof("Auth with Session... %+v", session)
 
-	//object := qwibi.NewGeoPoint()
-	//object.Pr
-	//operties = []byte("object properties")
-	//object.Feature.Properties = []byte("feature properties")
+	layer, err := client.Layer(layer.WithLayerGid("123"))
+	if err != nil {
+		qlog.Error(err)
+		return
+	}
+	qlog.Infof("Layer: %+v", layer)
 
-	//layer, err := client.Layer("chat")
-	//if err != nil {
-	//	qlog.Error(err)
-	//	return
-	//}
-
-	gid := "myID"
-	qlog.Infof("Subscribe stream for gid: %s", gid)
-	err = client.Stream(gid, func(event event.QEvent) {
+	err = layer.Stream(func(event event.QEvent) {
 		qlog.Infof("Event: %+v", event)
+		point := geo.NewGeoPoint()
+		layer.Post(point)
 	})
 
 	if err != nil {

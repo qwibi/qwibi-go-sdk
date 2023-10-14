@@ -17,8 +17,10 @@ func NewEventPb(in *proto.QPBxEvent) (QEvent, error) {
 	}
 
 	switch v := in.Type.(type) {
-	case *proto.QPBxEvent_Update:
-		return NewObjectUpdatePb(v.Update)
+	case *proto.QPBxEvent_LayerUpdate:
+		return NewLayerUpdatePb(v.LayerUpdate)
+	case *proto.QPBxEvent_ObjectUpdate:
+		return NewObjectUpdatePb(v.ObjectUpdate)
 	default:
 		return nil, qlog.Errorf("Event: unknown event type: %s", v)
 	}

@@ -39,15 +39,15 @@ func TestBasicAuth(t *testing.T) {
 //func TestPostLayer(t *testing.T) {
 //	object := qwibi.NewGeoPoint()
 //
-//	qlog.Infof("Post request: %#v", object)
-//	res, err := client.Post(object)
+//	qlog.Infof("Node request: %#v", object)
+//	res, err := client.Node(object)
 //	if err != nil {
 //		t.Fatal(err)
 //	}
-//	qlog.Infof("Post response: %#v", res)
+//	qlog.Infof("Node response: %#v", res)
 //
 //	qlog.Infof("Update request: %#v", object)
-//	res2, err := client.Post(object)
+//	res2, err := client.Node(object)
 //	if err != nil {
 //		t.Fatal(err)
 //	}
@@ -57,14 +57,14 @@ func TestBasicAuth(t *testing.T) {
 //func TestGetObjects(t *testing.T) {
 //	testId := fmt.Sprint(rand.Int())
 //	object := qwibi.NewGeoPoint()
-//	object.Gid = testId
+//	object.gid = testId
 //
-//	qlog.Infof("Post request: %#v", object)
-//	res, err := client.Post(object)
+//	qlog.Infof("Node request: %#v", object)
+//	res, err := client.Node(object)
 //	if err != nil {
 //		t.Fatal(err)
 //	}
-//	qlog.Infof("Post response: %#v", res)
+//	qlog.Infof("Node response: %#v", res)
 //
 //	res2, err := client.Get(testId)
 //	if err != nil {
@@ -73,7 +73,7 @@ func TestBasicAuth(t *testing.T) {
 //	qlog.Infof("Get response: %#v", res2)
 //
 //	//qlog.Infof("Update request: %#v", object)
-//	//res2, err := client.Post(object)
+//	//res2, err := client.Node(object)
 //	//if err != nil {
 //	//	t.Fatal(err)
 //	//}
@@ -83,32 +83,32 @@ func TestBasicAuth(t *testing.T) {
 //func TestPostPoint(t *testing.T) {
 //	object := qwibi.NewGeoPoint()
 //
-//	qlog.Infof("Post request: %#v", object)
+//	qlog.Infof("Node request: %#v", object)
 //
-//	res, err := client.Post(object)
+//	res, err := client.Node(object)
 //	if err != nil {
 //		t.Fatal(err)
 //	}
 //
-//	qlog.Infof("Post response: %#v", res)
+//	qlog.Infof("Node response: %#v", res)
 //}
 
 //func TestJoinWithoutGid(t *testing.T) {
 //	qlog.Debug(t.Name())
-//	layer, err := client.Stream("")
+//	QLayer, err := client.Stream("")
 //	if err != nil {
 //		t.Fatal(err)
 //	}
-//	qlog.Infof("Layer response: %#v", layer)
+//	qlog.Infof("Graph response: %#v", QLayer)
 //}
 
 //func TestJoinWithGid(t *testing.T) {
 //	qlog.Debug(t.Name())
-//	layer, err := client.Stream("dXIUiEFyn9WUnh5q")
+//	QLayer, err := client.Stream("dXIUiEFyn9WUnh5q")
 //	if err != nil {
 //		t.Fatal(err)
 //	}
-//	qlog.Infof("Stream response: %#v", layer)
+//	qlog.Infof("Stream response: %#v", QLayer)
 //}
 //
 ////func TestStream(t *testing.T) {
