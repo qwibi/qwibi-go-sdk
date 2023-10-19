@@ -4,7 +4,6 @@ go 1.21
 
 require (
 	entgo.io/ent v0.12.3
-	github.com/golang/protobuf v1.5.3
 	github.com/matoous/go-nanoid/v2 v2.0.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/paulmach/orb v0.10.0
@@ -15,15 +14,14 @@ require (
 )
 
 require (
-	github.com/benbjohnson/clock v1.3.5 // indirect
-	github.com/cip8/autoname v1.0.1 // indirect
+	github.com/devork/twkb v0.0.0-20160219085512-11cf3bec9efc // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/uuid v1.3.1 // indirect
-	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 // indirect
-	github.com/tommy-sho/rate-limiter-grpc-go v0.0.0-20200411092855-98190a33e3f3 // indirect
-	go.uber.org/ratelimit v0.3.0 // indirect
+	github.com/spatial-go/geoos v1.1.3 // indirect
+	github.com/twpayne/go-geom v1.5.2 // indirect
+	go.mongodb.org/mongo-driver v1.11.4 // indirect
 	golang.org/x/net v0.15.0 // indirect
 	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
-	golang.org/x/time v0.3.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231002174617-0333e04122ae // indirect
 )

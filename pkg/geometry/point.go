@@ -13,22 +13,22 @@ type QPoint struct {
 }
 
 // NewPoint ...
-func NewPoint() *QPoint {
+func NewPoint(coordinates ...float64) *QPoint {
 	return &QPoint{
-		Coordinates: []float64{0, 0},
+		Coordinates: coordinates,
 	}
 }
 
 // NewPointPb ...
-func NewPointPb(pb *proto.QPBxPoint) (*QPoint, error) {
+func NewPointPb(in *proto.QPBxPoint) (*QPoint, error) {
 	point := NewPoint()
 
-	if pb == nil {
+	if in == nil {
 		err := errors.New("Invalid parameter type nil")
 		return point, qlog.Error(err)
 	}
 
-	point.Coordinates = pb.Coordinates
+	point.Coordinates = in.Coordinates
 
 	return point, point.Valid()
 }
@@ -87,6 +87,9 @@ func (c *QPoint) String() string {
 	b, _ := c.MarshalJSON()
 	return string(b)
 }
+
+//var g QGeometry
+//g := QPoint{}
 
 //func (f QPoint) UnmarshalJSON(data []byte) error {
 //	qlog.TODO("#### Point")

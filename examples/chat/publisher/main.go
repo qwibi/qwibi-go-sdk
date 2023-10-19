@@ -20,13 +20,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	qlog.Info("Connecto to...", addr)
+	qlog.Info("connecto to...", addr)
 
 	session, err := client.Auth(&auth.QAnonymousAuth{})
 	if err != nil {
 		panic(err)
 	}
-	qlog.Infof("Auth with Session... %+v", session)
+	qlog.Infof("auth with session... %+v", session)
 
 	layer, err := client.Layer(
 	//layer.WithLayerGid("12458"),
@@ -37,16 +37,16 @@ func main() {
 		qlog.Error(err)
 		return
 	}
-	qlog.Infof("Layer: %+v", layer)
+	qlog.Infof("layer: %+v", layer)
 
 	point := geo.NewGeoPoint(
-		geo.PointGid("me"),
-		geo.PointCoordinates(1.1+rand.Float64(), 2.2+rand.Float64()),
+		geo.WithPointGid("me"),
+		geo.WithPointCoordinates(1.1+rand.Float64(), 2.2+rand.Float64()),
 	)
 
 	go func() {
 		for {
-			qlog.Infof("Post: %+v", point)
+			qlog.Infof("post: %+v", point)
 			err = layer.Post(point)
 			if err != nil {
 				qlog.Error(err)
@@ -57,7 +57,7 @@ func main() {
 	}()
 
 	err = layer.Stream(func(event event.QEvent) {
-		qlog.Infof("Event: [%T] %+v", event, event)
+		qlog.Infof("event: [%T] %+v", event, event)
 	})
 
 	if err != nil {

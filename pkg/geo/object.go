@@ -20,8 +20,26 @@ type QGeoObject struct {
 	Object
 }
 
-func NewGeoObject(g Object) *QGeoObject {
+func GeoObject(g Object) *QGeoObject {
 	return &QGeoObject{g}
+}
+
+func NewGeoObject(gid string, geom *geometry.QGeometry, properties []byte) (*QGeoObject, error) {
+	if geom == nil {
+		return nil, qlog.Error("geometry not defined")
+	}
+
+	switch v := geom.Geometry.(type) {
+	case *geometry.QPoint:
+		g := NewGeoPoint(
+			WithPointGid(gid),
+			WithPointGeometry(v),
+			WithPointProperties(properties),
+		)
+		return &QGeoObject{g}, nil
+	default:
+		return nil, qlog.Error("unknown geometry type %T", v)
+	}
 }
 
 func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject, error) {
@@ -32,11 +50,11 @@ func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject, error) {
 			return nil, qlog.Error(err)
 		}
 		point := NewGeoPoint(
-			PointGid(in.Gid),
-			PointCoordinates(geometry.Coordinates...),
-			PointProperties(in.Properties),
+			WithPointGid(in.Gid),
+			WithPointCoordinates(geometry.Coordinates...),
+			WithPointProperties(in.Properties),
 		)
-		return NewGeoObject(point), nil
+		return GeoObject(point), nil
 	default:
 		return nil, qlog.Errorf("Unknown geometry type: %T", v)
 	}

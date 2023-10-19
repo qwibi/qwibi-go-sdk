@@ -1,20 +1,28 @@
 package geo
 
+import "github.com/qwibi/qwibi-go-sdk/pkg/geometry"
+
 type PointOption func(config *QGeoPoint)
 
-func PointGid(gid string) PointOption {
+func WithPointGid(gid string) PointOption {
 	return func(c *QGeoPoint) {
 		c.gid = gid
 	}
 }
 
-func PointProperties(properties []byte) PointOption {
+func WithPointGeometry(geometry *geometry.QPoint) PointOption {
+	return func(c *QGeoPoint) {
+		c.geometry = geometry
+	}
+}
+
+func WithPointProperties(properties []byte) PointOption {
 	return func(c *QGeoPoint) {
 		c.properties = properties
 	}
 }
 
-func PointCoordinates(coordinates ...float64) PointOption {
+func WithPointCoordinates(coordinates ...float64) PointOption {
 	return func(c *QGeoPoint) {
 		c.geometry.Coordinates = coordinates
 	}

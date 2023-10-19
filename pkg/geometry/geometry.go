@@ -2,17 +2,19 @@ package geometry
 
 import (
 	"database/sql/driver"
+	"encoding/hex"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"fmt"
-	protobuf "github.com/golang/protobuf/proto"
 	"github.com/mitchellh/mapstructure"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/proto"
+	geom2 "github.com/twpayne/go-geom"
+	"github.com/twpayne/go-geom/encoding/ewkb"
 )
 
 // QGeometry ...
-type geometry interface {
+type Geometry interface {
 	Valid() error
 	Pb() *proto.QPBxGeometry
 	GetType() string
@@ -22,10 +24,10 @@ type geometry interface {
 }
 
 type QGeometry struct {
-	geometry
+	Geometry
 }
 
-func NewGeometry(g geometry) *QGeometry {
+func NewGeometry(g Geometry) *QGeometry {
 	return &QGeometry{g}
 }
 
@@ -67,34 +69,38 @@ func NewGeometryStruct(v map[string]interface{}) (*QGeometry, error) {
 }
 
 func (c *QGeometry) Value() (driver.Value, error) {
-	return driver.Value(c.String()), nil
+	v := c.String()
+	return driver.Value(v), nil
 }
 
 func (c *QGeometry) Scan(src any) error {
-	qlog.Infof("==> Scan() %+v", c)
+	qlog.Debug("Scan: %s", src)
 	if src == nil {
-		return nil
+		return qlog.Error("scan src is not defined")
 	}
 
-	pb := &proto.QPBxGeometry{}
-
-	if b, ok := src.([]byte); ok {
-		if err := protobuf.Unmarshal(b, pb); err != nil {
-			return qlog.Error(err)
-		}
-	}
-
-	c, err := NewGeometryPb(pb)
-	//qlog.Infof("????? %+v", c)
+	wkbData, err := hex.DecodeString(fmt.Sprintf("%s", src))
 	if err != nil {
-		qlog.Error(err)
+		return qlog.Errorf("error decoding WKB: %v", err)
 	}
 
-	return nil
+	// Decode EWKB data
+	geom, err := ewkb.Unmarshal(wkbData)
+	if err != nil {
+		return qlog.Errorf("error unmarshalling WKB: %v", err)
+	}
+
+	switch v := geom.(type) {
+	case *geom2.Point:
+		c.Geometry = NewPoint(v.FlatCoords()...)
+		return nil
+	default:
+		return qlog.Error("unknown geometry type: %T", v)
+	}
 }
 
 func (c *QGeometry) String() string {
-	return fmt.Sprint(c.geometry)
+	return fmt.Sprint(c.Geometry)
 }
 
 func (c *QGeometry) FormatParam(placeholder string, info *sql.StmtInfo) string {

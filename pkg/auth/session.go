@@ -47,6 +47,10 @@ func (c *QSession) Valid() error {
 		return qlog.Error("session token is not defined")
 	}
 
+	if c.AccountId == "" {
+		return qlog.Error("session account ID is not define")
+	}
+
 	return nil
 }
 
