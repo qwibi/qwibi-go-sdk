@@ -18,7 +18,7 @@ type QGeoPoint struct {
 func NewGeoPoint(options ...PointOption) *QGeoPoint {
 	h := &QGeoPoint{
 		gid:      utils.NewID(),
-		geometry: geometry.NewPoint(),
+		geometry: geometry.NewPoint(0, 0),
 	}
 
 	for _, opt := range options {

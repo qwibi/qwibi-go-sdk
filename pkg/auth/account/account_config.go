@@ -1,4 +1,4 @@
-package auth
+package account
 
 type AccountOption func(config *QAccount)
 

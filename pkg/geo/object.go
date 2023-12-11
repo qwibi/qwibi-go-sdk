@@ -54,6 +54,7 @@ func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject, error) {
 			WithPointCoordinates(geometry.Coordinates...),
 			WithPointProperties(in.Properties),
 		)
+
 		return GeoObject(point), nil
 	default:
 		return nil, qlog.Errorf("Unknown geometry type: %T", v)

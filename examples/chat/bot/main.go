@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/qwibi/qwibi-go-sdk/pkg/auth"
+	"github.com/qwibi/qwibi-go-sdk/pkg/command"
 	"github.com/qwibi/qwibi-go-sdk/pkg/geo/layer"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qwibi"
@@ -32,11 +33,22 @@ func main() {
 	}
 	qlog.Infof("Layer: %+v", layer)
 
-	//err = layer.Bot(func(event event.QEvent) {
-	//	qlog.Infof("Event: %+v", event)
-	//})
 	//
-	//if err != nil {
-	//	qlog.Error(err)
-	//}
+	bot, err := client.Bot(layer.Gid())
+	if err != nil {
+		qlog.Error(err)
+	}
+
+	err = bot.Subscribe(func(request command.QRequest) {
+		qlog.Infof("bot request: %+v", request)
+		response := command.QResponse{
+			Path: "/a/b/c/",
+		}
+		qlog.Infof("bot response: %+v", response)
+		bot.Publish(response)
+	})
+
+	if err != nil {
+		qlog.Error(err)
+	}
 }

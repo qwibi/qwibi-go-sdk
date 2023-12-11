@@ -8,15 +8,15 @@ import (
 
 // QBasicAuth ...
 type QBasicAuth struct {
-	Login    string
-	Password string
+	AccountId string
+	Password  string
 }
 
 // NewBasicAuth ...
 func NewBasicAuth(login string, password string) (*QBasicAuth, error) {
 	auth := &QBasicAuth{
-		Login:    login,
-		Password: password,
+		AccountId: login,
+		Password:  password,
 	}
 
 	if err := auth.Valid(); err != nil {
@@ -33,7 +33,7 @@ func NewBasicAuthPb(pb *proto.QPBxBasicAuth) (*QBasicAuth, error) {
 		return nil, qlog.Error(err)
 	}
 
-	login := pb.Login
+	login := pb.AccountId
 	password := pb.Password
 
 	auth, err := NewBasicAuth(login, password)
@@ -44,10 +44,15 @@ func NewBasicAuthPb(pb *proto.QPBxBasicAuth) (*QBasicAuth, error) {
 	return auth, nil
 }
 
+// Type ...
+func (c *QBasicAuth) Type() string {
+	return QBasicAuthType
+}
+
 // Valid ...
 func (c *QBasicAuth) Valid() error {
-	if c.Login == "" || c.Password == "" {
-		err := errors.New("Login or password not defined")
+	if c.AccountId == "" || c.Password == "" {
+		err := errors.New("AccountId or password not defined")
 		return qlog.Error(err)
 	}
 
@@ -61,8 +66,8 @@ func (c *QBasicAuth) Pb() (*proto.QPBxBasicAuth, error) {
 	}
 
 	pb := &proto.QPBxBasicAuth{
-		Login:    c.Login,
-		Password: c.Password,
+		AccountId: c.AccountId,
+		Password:  c.Password,
 	}
 
 	return pb, nil

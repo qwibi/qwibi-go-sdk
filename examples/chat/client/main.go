@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/qwibi/qwibi-go-sdk/pkg/auth"
 	"github.com/qwibi/qwibi-go-sdk/pkg/event"
-	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
 	"github.com/qwibi/qwibi-go-sdk/pkg/geo/layer"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qwibi"
@@ -27,7 +26,7 @@ func main() {
 	}
 	qlog.Infof("Auth with Session... %+v", session)
 
-	layer, err := client.Layer(layer.WithLayerGid("123"))
+	layer, err := client.Layer(layer.WithLayerGid("1113"))
 	if err != nil {
 		qlog.Error(err)
 		return
@@ -36,8 +35,8 @@ func main() {
 
 	err = layer.Stream(func(event event.QEvent) {
 		qlog.Infof("Event: %+v", event)
-		point := geo.NewGeoPoint()
-		layer.Post(point)
+		//point := geo.NewGeoPoint()
+		//layer.Post(point)
 	})
 
 	if err != nil {

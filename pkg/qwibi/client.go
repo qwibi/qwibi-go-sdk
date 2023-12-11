@@ -58,6 +58,14 @@ func (c *QApiClient) Layer(options ...layer.LayerOption) (*geoLayer, error) {
 	return l, nil
 }
 
+//func (c *QApiClient) Bot(layerId string) (*geoBot, error) {
+//	client, err := c.apiClient.Bot(c.ctx, grpc.EmptyCallOption{})
+//	if err != nil {
+//		return nil, qlog.Error(err)
+//	}
+//
+//}
+
 //// Stream ...
 //func (c *QApiClient) Stream(gid string, handler func(m stream.QMessage)) error {
 //	req := &proto.QPBxJoinRequest{

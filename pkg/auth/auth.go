@@ -7,6 +7,7 @@ import (
 )
 
 type QAuth interface {
+	Type() string
 	Valid() error
 }
 

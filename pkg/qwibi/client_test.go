@@ -20,7 +20,7 @@ func init() {
 
 func TestAnonymousAuth(t *testing.T) {
 	qlog.Debug(t.Name())
-	res, err := client.AnonymousAuth()
+	res, err := client.AnonymousAuth("")
 	if err != nil {
 		t.Fatal(err)
 	}

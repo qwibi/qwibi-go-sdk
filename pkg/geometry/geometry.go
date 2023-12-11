@@ -74,12 +74,15 @@ func (c *QGeometry) Value() (driver.Value, error) {
 }
 
 func (c *QGeometry) Scan(src any) error {
-	qlog.Debug("Scan: %s", src)
 	if src == nil {
 		return qlog.Error("scan src is not defined")
 	}
 
-	wkbData, err := hex.DecodeString(fmt.Sprintf("%s", src))
+	s := fmt.Sprintf("%s", src)
+
+	qlog.Debugf("Scan: %s", s)
+
+	wkbData, err := hex.DecodeString(s)
 	if err != nil {
 		return qlog.Errorf("error decoding WKB: %v", err)
 	}

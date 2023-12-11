@@ -3,16 +3,26 @@ package auth
 import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
+	"github.com/qwibi/qwibi-go-sdk/pkg/utils"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 )
 
 // QAnonymousAuth ...
-type QAnonymousAuth struct{}
+type QAnonymousAuth struct {
+	Token string
+}
 
 // NewAnonymousAuth ...
-func NewAnonymousAuth() (*QAnonymousAuth, error) {
-	auth := &QAnonymousAuth{}
-	return auth, nil
+func NewAnonymousAuth(options ...AnonymousAuthOption) (*QAnonymousAuth, error) {
+	h := &QAnonymousAuth{
+		Token: utils.NewID(),
+	}
+
+	for _, opt := range options {
+		opt(h)
+	}
+
+	return h, nil
 }
 
 // NewAnonymousAuthPb ...
@@ -22,9 +32,19 @@ func NewAnonymousAuthPb(in *proto.QPBxAnonymAuth) (*QAnonymousAuth, error) {
 		return nil, qlog.Error(err)
 	}
 
-	auth := &QAnonymousAuth{}
+	auth, err := NewAnonymousAuth(
+		WithAnonymousAuthToken(in.Token),
+	)
+	if err != nil {
+		return nil, qlog.Error(err)
+	}
 
 	return auth, nil
+}
+
+// Type ...
+func (c *QAnonymousAuth) Type() string {
+	return QAnonymousAuthType
 }
 
 // Valid ...
@@ -34,6 +54,6 @@ func (c *QAnonymousAuth) Valid() error {
 
 // Pb ...
 func (c *QAnonymousAuth) Pb() (*proto.QPBxAnonymAuth, error) {
-	pb := &proto.QPBxAnonymAuth{}
+	pb := &proto.QPBxAnonymAuth{Token: c.Token}
 	return pb, nil
 }

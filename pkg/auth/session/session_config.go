@@ -1,4 +1,4 @@
-package auth
+package session
 
 type SessionOption func(config *QSession)
 

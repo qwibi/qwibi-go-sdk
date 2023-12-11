@@ -1,4 +1,4 @@
-package auth
+package account
 
 import (
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
