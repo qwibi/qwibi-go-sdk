@@ -11,17 +11,17 @@ import (
 )
 
 type geoLayer struct {
-	layer *layer.QGeoLayer
+	layer *layer.QGeoLayer `json:"layer"`
 	*QApiClient
 }
 
 func (c *geoLayer) Gid() string {
 	if c == nil {
-		qlog.Error("Bed layer parameter type nil")
+		qlog.Error("bad layer parameter type nil")
 	}
 
 	if c.layer == nil {
-		qlog.Error("Bed layer parameter type nil")
+		qlog.Error("bad layer parameter type nil")
 	}
 
 	return c.layer.LayerId()
@@ -41,14 +41,14 @@ func (c *geoLayer) Post(object geo.Object) error {
 	return nil
 }
 
-// Stream ...
-func (c *geoLayer) Stream(handler func(event event.QEvent)) error {
+// Subscribe ...
+func (c *geoLayer) Subscribe(handler func(event event.QEvent)) error {
 	if c == nil {
-		qlog.Error("bed layer parameter type nil")
+		qlog.Error("bad layer parameter type nil")
 	}
 
 	if c.layer == nil {
-		qlog.Error("Bed layer parameter type nil")
+		qlog.Error("bad layer parameter type nil")
 	}
 
 	req := &proto.QPBxStreamRequest{
@@ -79,4 +79,13 @@ func (c *geoLayer) Stream(handler func(event event.QEvent)) error {
 
 		handler(event)
 	}
+}
+
+// Bot ...
+func (c *geoLayer) Bot() (*geoBot, error) {
+	bot := &geoBot{
+		layer:      c.layer,
+		QApiClient: c.QApiClient,
+	}
+	return bot, nil
 }

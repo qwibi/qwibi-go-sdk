@@ -18,23 +18,23 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	qlog.Info("Connecto to...", addr)
+	qlog.Info("connect:", addr)
 
 	session, err := client.Auth(&auth.QAnonymousAuth{})
 	if err != nil {
 		panic(err)
 	}
-	qlog.Infof("Auth with Session... %+v", session)
+	qlog.Infof("auth session: %+v", session)
 
-	layer, err := client.Layer(layer.WithLayerGid("1113"))
+	layer, err := client.Layer(layer.WithLayerGid("q25eVPxJLxzkAEKj"))
+	//layer, err := client.Layer()
 	if err != nil {
 		qlog.Error(err)
 		return
 	}
-	qlog.Infof("Layer: %+v", layer)
-
-	err = layer.Stream(func(event event.QEvent) {
-		qlog.Infof("Event: %+v", event)
+	qlog.Infof("subscribe: %+v", layer.Gid())
+	err = layer.Subscribe(func(event event.QEvent) {
+		qlog.Infof("event: %+v", event)
 		//point := geo.NewGeoPoint()
 		//layer.Post(point)
 	})

@@ -5,7 +5,6 @@ import (
 	"github.com/qwibi/qwibi-go-sdk/pkg/auth"
 	"github.com/qwibi/qwibi-go-sdk/pkg/event"
 	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
-	"github.com/qwibi/qwibi-go-sdk/pkg/geo/layer"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qwibi"
 	"math/rand"
@@ -35,8 +34,8 @@ func main() {
 	qlog.Infof("auth with session... %+v", session)
 
 	layer, err := client.Layer(
-		layer.WithLayerGid("mrt"),
-		//layer.WithLayerPublic(true),
+	//layer.WithLayerGid("abc"),
+	//layer.WithLayerPublic(true),
 	)
 	if err != nil {
 		qlog.Error(err)
@@ -61,7 +60,7 @@ func main() {
 		}
 	}()
 
-	err = layer.Stream(func(event event.QEvent) {
+	err = layer.Subscribe(func(event event.QEvent) {
 		qlog.Infof("event[%s]: [%T] %+v", layer.Gid(), event, event)
 	})
 

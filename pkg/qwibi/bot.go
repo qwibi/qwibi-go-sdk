@@ -4,6 +4,8 @@ import (
 	"github.com/qwibi/qwibi-go-sdk/pkg/command"
 	"github.com/qwibi/qwibi-go-sdk/pkg/geo/layer"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
+	"google.golang.org/grpc"
+	"io"
 )
 
 type geoBot struct {
@@ -11,8 +13,39 @@ type geoBot struct {
 	*QApiClient
 }
 
-func (c *geoBot) Subscribe(func(request command.QRequest)) error {
-	return qlog.TODO()
+func (c *geoBot) Subscribe(handler func(request *command.QRequest)) error {
+	if c == nil {
+		qlog.Error("bad bot parameter type nil")
+	}
+
+	if c.layer == nil {
+		qlog.Error("bad layer parameter type nil")
+	}
+
+	bot, err := c.apiClient.Bot(c.ctx, grpc.EmptyCallOption{})
+	if err != nil {
+		return qlog.Error(err)
+	}
+
+	for {
+		in, err := bot.Recv()
+		if err == io.EOF {
+			//qlog.Infof("Client connected: %+v", c)
+			//qlog.Infof("Goroutines: %d", runtime.NumGoroutine())
+			return qlog.Error(err)
+		}
+		if err != nil {
+			return qlog.Error(err)
+		}
+
+		//qlog.Debugf("Client stream: [%T] %v", in, in)
+		command, err := command.NewRequestPb(in.Command)
+		if err != nil {
+			return qlog.Error(err)
+		}
+
+		handler(command)
+	}
 }
 
 func (c *geoBot) Publish(response command.QResponse) error {

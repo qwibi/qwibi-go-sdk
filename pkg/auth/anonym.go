@@ -3,7 +3,6 @@ package auth
 import (
 	"github.com/pkg/errors"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
-	"github.com/qwibi/qwibi-go-sdk/pkg/utils"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 )
 
@@ -14,9 +13,7 @@ type QAnonymousAuth struct {
 
 // NewAnonymousAuth ...
 func NewAnonymousAuth(options ...AnonymousAuthOption) (*QAnonymousAuth, error) {
-	h := &QAnonymousAuth{
-		Token: utils.NewID(),
-	}
+	h := &QAnonymousAuth{}
 
 	for _, opt := range options {
 		opt(h)

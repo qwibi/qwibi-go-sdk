@@ -95,7 +95,7 @@ func TestBasicAuth(t *testing.T) {
 
 //func TestJoinWithoutGid(t *testing.T) {
 //	qlog.Debug(t.Name())
-//	QLayer, err := client.Stream("")
+//	QLayer, err := client.Subscribe("")
 //	if err != nil {
 //		t.Fatal(err)
 //	}
@@ -104,16 +104,16 @@ func TestBasicAuth(t *testing.T) {
 
 //func TestJoinWithGid(t *testing.T) {
 //	qlog.Debug(t.Name())
-//	QLayer, err := client.Stream("dXIUiEFyn9WUnh5q")
+//	QLayer, err := client.Subscribe("dXIUiEFyn9WUnh5q")
 //	if err != nil {
 //		t.Fatal(err)
 //	}
-//	qlog.Infof("Stream response: %#v", QLayer)
+//	qlog.Infof("Subscribe response: %#v", QLayer)
 //}
 //
 ////func TestStream(t *testing.T) {
 ////	log.Info().Msg("Test stream connection")
-////	err := client.Stream()
+////	err := client.Subscribe()
 ////	if err != nil {
 ////		t.Fatal(err)
 ////	}

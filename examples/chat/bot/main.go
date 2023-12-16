@@ -18,34 +18,39 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	qlog.Info("Connecto to...", addr)
+	qlog.Infof("connect to: %s", addr)
 
 	session, err := client.Auth(&auth.QAnonymousAuth{})
 	if err != nil {
 		panic(err)
 	}
-	qlog.Infof("Auth with Session... %+v", session)
+	qlog.Infof("auth session: %+v", session)
 
-	layer, err := client.Layer(layer.WithLayerGid("123"))
+	cmd1, _ := command.NewCommand("help", "help description")
+	cmd2, _ := command.NewCommand("locate", "locate something")
+
+	layer, err := client.Layer(
+		//layer.WithLayerGid("123"),
+		layer.WithLayerCommands(cmd1, cmd2),
+	)
 	if err != nil {
 		qlog.Error(err)
 		return
 	}
-	qlog.Infof("Layer: %+v", layer)
+	qlog.Infof("layer: %+v", layer)
 
-	//
-	bot, err := client.Bot(layer.Gid())
+	bot, err := layer.Bot()
 	if err != nil {
 		qlog.Error(err)
 	}
 
-	err = bot.Subscribe(func(request command.QRequest) {
+	err = bot.Subscribe(func(request *command.QRequest) {
 		qlog.Infof("bot request: %+v", request)
 		response := command.QResponse{
 			Path: "/a/b/c/",
 		}
 		qlog.Infof("bot response: %+v", response)
-		bot.Publish(response)
+		//bot.Publish(response)
 	})
 
 	if err != nil {
