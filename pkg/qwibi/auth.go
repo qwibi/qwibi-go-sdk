@@ -10,12 +10,11 @@ import (
 
 // Auth ...
 func (c *QApiClient) Auth(a auth.QAuth) (*session.QSession, error) {
-
 	switch v := a.(type) {
 	case *auth.QAnonymousAuth:
 		return c.AnonymousAuth(v.Token)
 	case *auth.QBasicAuth:
-		return c.BasicAuth(v.AccountId, v.Password)
+		return c.BasicAuth(v.Login, v.Password)
 	default:
 		return nil, qlog.Error("Unknown auth type")
 	}
@@ -43,7 +42,7 @@ func (c *QApiClient) AnonymousAuth(token string) (*session.QSession, error) {
 		return nil, qlog.Error(err)
 	}
 
-	c.ctx = metadata.SetContextToken(c.ctx, session.Token)
+	c.ctx = metadata.SetSessionContextToken(c.ctx, session.Token)
 
 	return session, nil
 }
@@ -52,8 +51,8 @@ func (c *QApiClient) BasicAuth(login string, password string) (*session.QSession
 	req := &proto.QPBxAuthRequest{
 		Auth: &proto.QPBxAuthRequest_Basic{
 			Basic: &proto.QPBxBasicAuth{
-				AccountId: login,
-				Password:  password,
+				Login:    login,
+				Password: password,
 			},
 		},
 	}
@@ -68,7 +67,7 @@ func (c *QApiClient) BasicAuth(login string, password string) (*session.QSession
 		return nil, qlog.Error(err)
 	}
 
-	c.ctx = metadata.SetContextToken(c.ctx, session.Token)
+	c.ctx = metadata.SetSessionContextToken(c.ctx, session.Token)
 
 	return session, nil
 }

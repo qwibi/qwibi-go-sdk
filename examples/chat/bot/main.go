@@ -2,14 +2,15 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/qwibi/qwibi-go-sdk/pkg/auth"
 	"github.com/qwibi/qwibi-go-sdk/pkg/command"
-	"github.com/qwibi/qwibi-go-sdk/pkg/geo/layer"
+	"github.com/qwibi/qwibi-go-sdk/pkg/layer"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qwibi"
+	sdkRequest "github.com/qwibi/qwibi-go-sdk/pkg/rpc/request"
 )
-
-var client *qwibi.QApiClient
 
 func main() {
 	addr := "127.0.0.1:8080"
@@ -20,18 +21,24 @@ func main() {
 	}
 	qlog.Infof("connect to: %s", addr)
 
-	session, err := client.Auth(&auth.QAnonymousAuth{})
+	session, err := client.Auth(&auth.QBasicAuth{
+		Login:    "maggnus",
+		Password: "test",
+	})
 	if err != nil {
-		panic(err)
+		qlog.Error(err)
+		return
 	}
 	qlog.Infof("auth session: %+v", session)
 
-	cmd1, _ := command.NewCommand("help", "help description")
-	cmd2, _ := command.NewCommand("locate", "locate something")
+	commands := map[string]string{
+		"/help":   "help description",
+		"/locate": "locate something",
+	}
 
 	layer, err := client.Layer(
-		//layer.WithLayerGid("123"),
-		layer.WithLayerCommands(cmd1, cmd2),
+		layer.WithLayerGid("chat"),
+		layer.WithLayerCommands(commands),
 	)
 	if err != nil {
 		qlog.Error(err)
@@ -39,18 +46,50 @@ func main() {
 	}
 	qlog.Infof("layer: %+v", layer)
 
-	bot, err := layer.Bot()
+	token, err := client.Token(layer.LayerId)
 	if err != nil {
 		qlog.Error(err)
+		return
+	}
+	qlog.Infof("token: %+v", token)
+
+	bot, err := client.Bot(token)
+	if err != nil {
+		qlog.Error(err)
+		return
 	}
 
-	err = bot.Subscribe(func(request *command.QRequest) {
+	err = bot.Subscribe(func(request *sdkRequest.QCommandRequest) {
 		qlog.Infof("bot request: %+v", request)
-		response := command.QResponse{
-			Path: "/a/b/c/",
+
+		var res *command.QResponse
+		commandName := request.Command.Command
+		if _, ok := layer.Commands[commandName]; !ok {
+			status := fmt.Sprintf("command not found: %s", commandName)
+			qlog.Warnf(status)
+			res = command.NewResponse(status)
+		} else {
+			switch commandName {
+			case "/help":
+				jsonData, err := json.Marshal(layer.Commands)
+				if err != nil {
+					qlog.Error(err)
+				}
+				res = command.NewResponse(string(jsonData))
+			default:
+				status := fmt.Sprintf("unknown command: %s", commandName)
+				qlog.Warnf(status)
+				res = command.NewResponse(status)
+			}
 		}
-		qlog.Infof("bot response: %+v", response)
-		//bot.Publish(response)
+
+		qlog.Infof("bot response: %+v", res)
+
+		err = bot.Publish(request.RequestId, request.LayerId, res)
+		if err != nil {
+			qlog.Error(err)
+			return
+		}
 	})
 
 	if err != nil {

@@ -1,7 +1,7 @@
 package qwibi
 
 //type Config struct {
-//	AccountId        string
+//	Login        string
 //	Geometry   *geometry.QGeometry
 //	Properties []byte
 //}
@@ -10,7 +10,7 @@ package qwibi
 //
 //func WithGid(gid string) ObjectOption {
 //	return func(c *Config) {
-//		c.AccountId = gid
+//		c.Login = gid
 //	}
 //}
 //

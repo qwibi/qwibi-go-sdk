@@ -3,13 +3,12 @@ package main
 import (
 	"context"
 	"github.com/qwibi/qwibi-go-sdk/pkg/auth"
-	"github.com/qwibi/qwibi-go-sdk/pkg/event"
-	"github.com/qwibi/qwibi-go-sdk/pkg/geo/layer"
+	sdkCommand "github.com/qwibi/qwibi-go-sdk/pkg/command"
+	sdkLayer "github.com/qwibi/qwibi-go-sdk/pkg/layer"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qwibi"
+	"time"
 )
-
-var client *qwibi.QApiClient
 
 func main() {
 	addr := "127.0.0.1:8080"
@@ -26,20 +25,33 @@ func main() {
 	}
 	qlog.Infof("auth session: %+v", session)
 
-	layer, err := client.Layer(layer.WithLayerGid("q25eVPxJLxzkAEKj"))
-	//layer, err := client.Layer()
+	layer, err := client.Layer(
+		sdkLayer.WithLayerGid("chat"),
+	)
 	if err != nil {
 		qlog.Error(err)
 		return
 	}
-	qlog.Infof("subscribe: %+v", layer.Gid())
-	err = layer.Subscribe(func(event event.QEvent) {
-		qlog.Infof("event: %+v", event)
-		//point := geo.NewGeoPoint()
-		//layer.Post(point)
-	})
 
-	if err != nil {
-		qlog.Error(err)
+	qlog.Infof("layer: %+v", layer)
+
+	for {
+		command, err := sdkCommand.NewCommand("/help")
+		if err != nil {
+			qlog.Error(err)
+			return
+		}
+
+		qlog.Infof("command request: %+v", command)
+
+		response, err := client.Command(layer.LayerId, command)
+		if err != nil {
+			qlog.Error(err)
+			return
+		}
+
+		qlog.Infof("command response: %+v", response.Response)
+
+		time.Sleep(3 * time.Second)
 	}
 }

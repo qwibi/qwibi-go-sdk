@@ -2,54 +2,56 @@ package qwibi
 
 import (
 	"github.com/qwibi/qwibi-go-sdk/pkg/command"
-	"github.com/qwibi/qwibi-go-sdk/pkg/geo/layer"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
-	"google.golang.org/grpc"
+	sdkRequest "github.com/qwibi/qwibi-go-sdk/pkg/rpc/request"
+	sdkResponse "github.com/qwibi/qwibi-go-sdk/pkg/rpc/response"
+	"github.com/qwibi/qwibi-go-sdk/proto"
 	"io"
 )
 
 type geoBot struct {
-	layer *layer.QGeoLayer
-	*QApiClient
+	client proto.QPBxApi_BotClient
 }
 
-func (c *geoBot) Subscribe(handler func(request *command.QRequest)) error {
-	if c == nil {
-		qlog.Error("bad bot parameter type nil")
+func (c *geoBot) Subscribe(handler func(request *sdkRequest.QCommandRequest)) error {
+	if c.client == nil {
+		return qlog.Error("bad client parameter type nil")
 	}
 
-	if c.layer == nil {
-		qlog.Error("bad layer parameter type nil")
+	for {
+		in, err := c.client.Recv()
+		if err == io.EOF {
+			return qlog.Error(err)
+		}
+		if err != nil {
+			return qlog.Error(err)
+		}
+
+		request, err := sdkRequest.NewCommandRequestPb(in)
+		if err != nil {
+			return qlog.Error(err)
+		}
+
+		handler(request)
+	}
+}
+
+func (c *geoBot) Publish(requestId string, layerId string, response *command.QResponse) error {
+	if c.client == nil || response == nil {
+		return qlog.Error("bad client parameter type nil")
 	}
 
-	bot, err := c.apiClient.Bot(c.ctx, grpc.EmptyCallOption{})
+	res, err := sdkResponse.NewCommandResponse(requestId, layerId, response)
 	if err != nil {
 		return qlog.Error(err)
 	}
 
-	for {
-		in, err := bot.Recv()
-		if err == io.EOF {
-			//qlog.Infof("Client connected: %+v", c)
-			//qlog.Infof("Goroutines: %d", runtime.NumGoroutine())
-			return qlog.Error(err)
-		}
-		if err != nil {
-			return qlog.Error(err)
-		}
-
-		//qlog.Debugf("Client stream: [%T] %v", in, in)
-		command, err := command.NewRequestPb(in.Command)
-		if err != nil {
-			return qlog.Error(err)
-		}
-
-		handler(command)
+	err = c.client.Send(res.Pb())
+	if err != nil {
+		return qlog.Error(err)
 	}
-}
 
-func (c *geoBot) Publish(response command.QResponse) error {
-	return qlog.TODO()
+	return nil
 }
 
 //// Bot ...

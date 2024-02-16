@@ -6,17 +6,29 @@ import (
 )
 
 type QResponse struct {
-	Path string
-	Args []map[string]string
+	Status string
 }
 
-func NewResponse(path string) QResponse {
-	return QResponse{Path: path}
+func NewResponse(status string) *QResponse {
+	return &QResponse{
+		Status: status,
+	}
 }
 
-func (c *QResponse) Pb() *proto.QPBxCommandResponse {
-	qlog.TODO("QResponse.PB()")
-	return &proto.QPBxCommandResponse{
-		Result: "TODO",
+func NewResponsePb(in *proto.QPBxResponse) (*QResponse, error) {
+	if in == nil {
+		return nil, qlog.Error("wrong parameter type nil")
+	}
+
+	res := &QResponse{
+		Status: in.Status,
+	}
+
+	return res, nil
+}
+
+func (c *QResponse) Pb() *proto.QPBxResponse {
+	return &proto.QPBxResponse{
+		Status: c.Status,
 	}
 }

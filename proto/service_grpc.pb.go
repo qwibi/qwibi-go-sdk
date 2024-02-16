@@ -29,10 +29,14 @@ type QPBxApiClient interface {
 	// Object
 	Post(ctx context.Context, in *QPBxPostRequest, opts ...grpc.CallOption) (*QPBxPostResponse, error)
 	Get(ctx context.Context, in *QPBxGetRequest, opts ...grpc.CallOption) (*QPBxGetResponse, error)
+	// Token
+	Token(ctx context.Context, in *QPBxTokenRequest, opts ...grpc.CallOption) (*QPBxTokenResponse, error)
+	// Command
+	Command(ctx context.Context, in *QPBxCommandRequest, opts ...grpc.CallOption) (*QPBxCommandResponse, error)
 	// Bot
 	Bot(ctx context.Context, opts ...grpc.CallOption) (QPBxApi_BotClient, error)
 	// Stream
-	Stream(ctx context.Context, in *QPBxStreamRequest, opts ...grpc.CallOption) (QPBxApi_StreamClient, error)
+	Stream(ctx context.Context, opts ...grpc.CallOption) (QPBxApi_StreamClient, error)
 }
 
 type qPBxApiClient struct {
@@ -79,6 +83,24 @@ func (c *qPBxApiClient) Get(ctx context.Context, in *QPBxGetRequest, opts ...grp
 	return out, nil
 }
 
+func (c *qPBxApiClient) Token(ctx context.Context, in *QPBxTokenRequest, opts ...grpc.CallOption) (*QPBxTokenResponse, error) {
+	out := new(QPBxTokenResponse)
+	err := c.cc.Invoke(ctx, "/QPBxApi/Token", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *qPBxApiClient) Command(ctx context.Context, in *QPBxCommandRequest, opts ...grpc.CallOption) (*QPBxCommandResponse, error) {
+	out := new(QPBxCommandResponse)
+	err := c.cc.Invoke(ctx, "/QPBxApi/Command", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *qPBxApiClient) Bot(ctx context.Context, opts ...grpc.CallOption) (QPBxApi_BotClient, error) {
 	stream, err := c.cc.NewStream(ctx, &QPBxApi_ServiceDesc.Streams[0], "/QPBxApi/Bot", opts...)
 	if err != nil {
@@ -89,8 +111,8 @@ func (c *qPBxApiClient) Bot(ctx context.Context, opts ...grpc.CallOption) (QPBxA
 }
 
 type QPBxApi_BotClient interface {
-	Send(*QPBxBotRequest) error
-	Recv() (*QPBxBotResponse, error)
+	Send(*QPBxCommandResponse) error
+	Recv() (*QPBxCommandRequest, error)
 	grpc.ClientStream
 }
 
@@ -98,40 +120,39 @@ type qPBxApiBotClient struct {
 	grpc.ClientStream
 }
 
-func (x *qPBxApiBotClient) Send(m *QPBxBotRequest) error {
+func (x *qPBxApiBotClient) Send(m *QPBxCommandResponse) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *qPBxApiBotClient) Recv() (*QPBxBotResponse, error) {
-	m := new(QPBxBotResponse)
+func (x *qPBxApiBotClient) Recv() (*QPBxCommandRequest, error) {
+	m := new(QPBxCommandRequest)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (c *qPBxApiClient) Stream(ctx context.Context, in *QPBxStreamRequest, opts ...grpc.CallOption) (QPBxApi_StreamClient, error) {
+func (c *qPBxApiClient) Stream(ctx context.Context, opts ...grpc.CallOption) (QPBxApi_StreamClient, error) {
 	stream, err := c.cc.NewStream(ctx, &QPBxApi_ServiceDesc.Streams[1], "/QPBxApi/Stream", opts...)
 	if err != nil {
 		return nil, err
 	}
 	x := &qPBxApiStreamClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
 	return x, nil
 }
 
 type QPBxApi_StreamClient interface {
+	Send(*QPBxStreamRequest) error
 	Recv() (*QPBxStreamResponse, error)
 	grpc.ClientStream
 }
 
 type qPBxApiStreamClient struct {
 	grpc.ClientStream
+}
+
+func (x *qPBxApiStreamClient) Send(m *QPBxStreamRequest) error {
+	return x.ClientStream.SendMsg(m)
 }
 
 func (x *qPBxApiStreamClient) Recv() (*QPBxStreamResponse, error) {
@@ -153,10 +174,14 @@ type QPBxApiServer interface {
 	// Object
 	Post(context.Context, *QPBxPostRequest) (*QPBxPostResponse, error)
 	Get(context.Context, *QPBxGetRequest) (*QPBxGetResponse, error)
+	// Token
+	Token(context.Context, *QPBxTokenRequest) (*QPBxTokenResponse, error)
+	// Command
+	Command(context.Context, *QPBxCommandRequest) (*QPBxCommandResponse, error)
 	// Bot
 	Bot(QPBxApi_BotServer) error
 	// Stream
-	Stream(*QPBxStreamRequest, QPBxApi_StreamServer) error
+	Stream(QPBxApi_StreamServer) error
 }
 
 // UnimplementedQPBxApiServer should be embedded to have forward compatible implementations.
@@ -175,10 +200,16 @@ func (UnimplementedQPBxApiServer) Post(context.Context, *QPBxPostRequest) (*QPBx
 func (UnimplementedQPBxApiServer) Get(context.Context, *QPBxGetRequest) (*QPBxGetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
+func (UnimplementedQPBxApiServer) Token(context.Context, *QPBxTokenRequest) (*QPBxTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Token not implemented")
+}
+func (UnimplementedQPBxApiServer) Command(context.Context, *QPBxCommandRequest) (*QPBxCommandResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Command not implemented")
+}
 func (UnimplementedQPBxApiServer) Bot(QPBxApi_BotServer) error {
 	return status.Errorf(codes.Unimplemented, "method Bot not implemented")
 }
-func (UnimplementedQPBxApiServer) Stream(*QPBxStreamRequest, QPBxApi_StreamServer) error {
+func (UnimplementedQPBxApiServer) Stream(QPBxApi_StreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method Stream not implemented")
 }
 
@@ -265,13 +296,49 @@ func _QPBxApi_Get_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
+func _QPBxApi_Token_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QPBxTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QPBxApiServer).Token(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/QPBxApi/Token",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QPBxApiServer).Token(ctx, req.(*QPBxTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _QPBxApi_Command_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QPBxCommandRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QPBxApiServer).Command(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/QPBxApi/Command",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QPBxApiServer).Command(ctx, req.(*QPBxCommandRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _QPBxApi_Bot_Handler(srv interface{}, stream grpc.ServerStream) error {
 	return srv.(QPBxApiServer).Bot(&qPBxApiBotServer{stream})
 }
 
 type QPBxApi_BotServer interface {
-	Send(*QPBxBotResponse) error
-	Recv() (*QPBxBotRequest, error)
+	Send(*QPBxCommandRequest) error
+	Recv() (*QPBxCommandResponse, error)
 	grpc.ServerStream
 }
 
@@ -279,12 +346,12 @@ type qPBxApiBotServer struct {
 	grpc.ServerStream
 }
 
-func (x *qPBxApiBotServer) Send(m *QPBxBotResponse) error {
+func (x *qPBxApiBotServer) Send(m *QPBxCommandRequest) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *qPBxApiBotServer) Recv() (*QPBxBotRequest, error) {
-	m := new(QPBxBotRequest)
+func (x *qPBxApiBotServer) Recv() (*QPBxCommandResponse, error) {
+	m := new(QPBxCommandResponse)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -292,15 +359,12 @@ func (x *qPBxApiBotServer) Recv() (*QPBxBotRequest, error) {
 }
 
 func _QPBxApi_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(QPBxStreamRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(QPBxApiServer).Stream(m, &qPBxApiStreamServer{stream})
+	return srv.(QPBxApiServer).Stream(&qPBxApiStreamServer{stream})
 }
 
 type QPBxApi_StreamServer interface {
 	Send(*QPBxStreamResponse) error
+	Recv() (*QPBxStreamRequest, error)
 	grpc.ServerStream
 }
 
@@ -310,6 +374,14 @@ type qPBxApiStreamServer struct {
 
 func (x *qPBxApiStreamServer) Send(m *QPBxStreamResponse) error {
 	return x.ServerStream.SendMsg(m)
+}
+
+func (x *qPBxApiStreamServer) Recv() (*QPBxStreamRequest, error) {
+	m := new(QPBxStreamRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // QPBxApi_ServiceDesc is the grpc.ServiceDesc for QPBxApi service.
@@ -335,6 +407,14 @@ var QPBxApi_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Get",
 			Handler:    _QPBxApi_Get_Handler,
 		},
+		{
+			MethodName: "Token",
+			Handler:    _QPBxApi_Token_Handler,
+		},
+		{
+			MethodName: "Command",
+			Handler:    _QPBxApi_Command_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
@@ -347,6 +427,7 @@ var QPBxApi_ServiceDesc = grpc.ServiceDesc{
 			StreamName:    "Stream",
 			Handler:       _QPBxApi_Stream_Handler,
 			ServerStreams: true,
+			ClientStreams: true,
 		},
 	},
 	Metadata: "service.proto",
