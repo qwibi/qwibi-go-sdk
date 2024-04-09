@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/qwibi/qwibi-go-sdk/pkg/auth"
-	"github.com/qwibi/qwibi-go-sdk/pkg/command"
+	sdkCommand "github.com/qwibi/qwibi-go-sdk/pkg/command"
 	"github.com/qwibi/qwibi-go-sdk/pkg/layer"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qwibi"
-	sdkRequest "github.com/qwibi/qwibi-go-sdk/pkg/rpc/request"
+	"strings"
 )
 
 func main() {
@@ -32,11 +32,11 @@ func main() {
 	qlog.Infof("auth session: %+v", session)
 
 	commands := map[string]string{
-		"/help":   "help description",
-		"/locate": "locate something",
+		"/help":    "help description",
+		"/message": "send a message",
 	}
 
-	layer, err := client.Layer(
+	result, err := client.Layer(
 		layer.WithLayerGid("chat"),
 		layer.WithLayerCommands(commands),
 	)
@@ -44,9 +44,9 @@ func main() {
 		qlog.Error(err)
 		return
 	}
-	qlog.Infof("layer: %+v", layer)
+	qlog.Infof("Response: %+v", result)
 
-	token, err := client.Token(layer.LayerId)
+	token, err := client.Token(result.Layer.LayerId)
 	if err != nil {
 		qlog.Error(err)
 		return
@@ -59,33 +59,27 @@ func main() {
 		return
 	}
 
-	err = bot.Subscribe(func(request *sdkRequest.QCommandRequest) {
-		qlog.Infof("bot request: %+v", request)
+	err = bot.Subscribe(func(requestId string, layerId string, command *sdkCommand.QCommand) {
+		qlog.Infof("bot command: %+v", command)
 
-		var res *command.QResponse
-		commandName := request.Command.Command
-		if _, ok := layer.Commands[commandName]; !ok {
-			status := fmt.Sprintf("command not found: %s", commandName)
-			qlog.Warnf(status)
-			res = command.NewResponse(status)
-		} else {
-			switch commandName {
-			case "/help":
-				jsonData, err := json.Marshal(layer.Commands)
-				if err != nil {
-					qlog.Error(err)
-				}
-				res = command.NewResponse(string(jsonData))
-			default:
-				status := fmt.Sprintf("unknown command: %s", commandName)
-				qlog.Warnf(status)
-				res = command.NewResponse(status)
+		status := fmt.Sprintf("unknown command: %s", command.Command)
+		response := sdkCommand.NewResponse(status)
+
+		switch command.Command {
+		case "/help":
+			jsonData, err := json.Marshal(result.Layer.Commands)
+			if err != nil {
+				qlog.Error(err)
 			}
+			response = sdkCommand.NewResponse(string(jsonData))
+
+		case "/message":
+			response = messageHandler(command.Args)
 		}
 
-		qlog.Infof("bot response: %+v", res)
+		qlog.Infof("bot response: %+v", response)
 
-		err = bot.Publish(request.RequestId, request.LayerId, res)
+		err = bot.Publish(requestId, layerId, response)
 		if err != nil {
 			qlog.Error(err)
 			return
@@ -95,4 +89,11 @@ func main() {
 	if err != nil {
 		qlog.Error(err)
 	}
+}
+
+func messageHandler(args []string) *sdkCommand.QResponse {
+	text := strings.Join(args, " ")
+	status := fmt.Sprintf(text)
+	response := sdkCommand.NewResponse(status)
+	return response
 }

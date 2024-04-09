@@ -3,10 +3,13 @@ package qwibi
 import (
 	"context"
 	"github.com/pkg/errors"
+	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
 	"github.com/qwibi/qwibi-go-sdk/pkg/layer"
 	"github.com/qwibi/qwibi-go-sdk/pkg/metadata"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/pkg/rpc"
+	"github.com/qwibi/qwibi-go-sdk/pkg/rpc/request"
+	"github.com/qwibi/qwibi-go-sdk/pkg/rpc/response"
 	"github.com/qwibi/qwibi-go-sdk/pkg/utils"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 	grpc "google.golang.org/grpc"
@@ -64,27 +67,50 @@ func (c *QApiClient) Token(layerId string) (utils.Token, error) {
 	return res.Token, nil
 }
 
-func (c *QApiClient) Layer(options ...layer.LayerOption) (*layer.QGeoLayer, error) {
+func (c *QApiClient) Layer(options ...layer.LayerOption) (*response.QLayerResponse, error) {
 	g := layer.NewGeoLayer(options...)
 
-	req := &proto.QPBxLayerRequest{
-		LayerId:    g.LayerId,
-		Public:     g.Public,
-		Properties: g.Properties,
-		Commands:   g.Commands,
-	}
-
-	res, err := c.apiClient.Layer(c.ctx, req)
+	req, err := request.NewLayerRequest(g)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
 
-	layer, err := layer.NewGeoLayerPb(res.Layer)
+	resPb, err := c.apiClient.Layer(c.ctx, req.Pb())
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
 
-	return layer, nil
+	layer, err := layer.NewGeoLayerPb(resPb.Layer)
+	if err != nil {
+		return nil, qlog.Error(err)
+	}
+
+	res, err := response.NewLayerResponse(req.RequestId, layer)
+	if err != nil {
+		return nil, qlog.Error(err)
+	}
+
+	return res, nil
+}
+
+func (c *QApiClient) Post(layerId string, object *geo.QGeoObject) (*response.QPostResponse, error) {
+
+	req, err := request.NewPostRequest(layerId, object)
+	if err != nil {
+		return nil, qlog.Error(err)
+	}
+
+	resPb, err := c.apiClient.Post(c.ctx, req.Pb())
+	if err != nil {
+		return nil, qlog.Error(err)
+	}
+
+	res, err := response.NewPostResponsePb(resPb)
+	if err != nil {
+		return nil, qlog.Error(err)
+	}
+
+	return res, nil
 }
 
 // Subscribe ...

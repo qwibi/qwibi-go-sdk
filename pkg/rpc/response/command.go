@@ -16,7 +16,15 @@ type QCommandResponse struct {
 
 func NewCommandResponse(requestId string, layerId string, response *sdkCommand.QResponse) (*QCommandResponse, error) {
 	if requestId == "" {
-		return nil, qlog.Error("command request ID not defined")
+		return nil, qlog.Error("layer ID is not defined")
+	}
+
+	if layerId == "" {
+		return nil, qlog.Error("layer ID is not define")
+	}
+
+	if response == nil {
+		return nil, qlog.Error("response is not defined")
 	}
 
 	r := &QCommandResponse{
@@ -29,6 +37,10 @@ func NewCommandResponse(requestId string, layerId string, response *sdkCommand.Q
 }
 
 func NewCommandResponsePb(in *proto.QPBxCommandResponse) (*QCommandResponse, error) {
+	if in == nil {
+		return nil, qlog.Error("bad parameter type nil")
+	}
+
 	response, err := sdkCommand.NewResponsePb(in.Response)
 	if err != nil {
 		return nil, qlog.Error(err)

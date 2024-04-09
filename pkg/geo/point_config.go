@@ -6,7 +6,9 @@ type PointOption func(config *QGeoPoint)
 
 func WithPointGid(gid string) PointOption {
 	return func(c *QGeoPoint) {
-		c.gid = gid
+		if gid != "" {
+			c.gid = gid
+		}
 	}
 }
 

@@ -12,7 +12,7 @@ import (
 func (c *QApiClient) Auth(a auth.QAuth) (*session.QSession, error) {
 	switch v := a.(type) {
 	case *auth.QAnonymousAuth:
-		return c.AnonymousAuth(v.Token)
+		return c.AnonymousAuth()
 	case *auth.QBasicAuth:
 		return c.BasicAuth(v.Login, v.Password)
 	default:
@@ -23,12 +23,10 @@ func (c *QApiClient) Auth(a auth.QAuth) (*session.QSession, error) {
 	// return res.Session, nil
 }
 
-func (c *QApiClient) AnonymousAuth(token string) (*session.QSession, error) {
+func (c *QApiClient) AnonymousAuth() (*session.QSession, error) {
 	req := &proto.QPBxAuthRequest{
 		Auth: &proto.QPBxAuthRequest_Anonym{
-			Anonym: &proto.QPBxAnonymAuth{
-				Token: token,
-			},
+			Anonym: &proto.QPBxAnonymAuth{},
 		},
 	}
 

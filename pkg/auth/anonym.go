@@ -29,9 +29,7 @@ func NewAnonymousAuthPb(in *proto.QPBxAnonymAuth) (*QAnonymousAuth, error) {
 		return nil, qlog.Error(err)
 	}
 
-	auth, err := NewAnonymousAuth(
-		WithAnonymousAuthToken(in.Token),
-	)
+	auth, err := NewAnonymousAuth()
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
@@ -51,6 +49,6 @@ func (c *QAnonymousAuth) Valid() error {
 
 // Pb ...
 func (c *QAnonymousAuth) Pb() (*proto.QPBxAnonymAuth, error) {
-	pb := &proto.QPBxAnonymAuth{Token: c.Token}
+	pb := &proto.QPBxAnonymAuth{}
 	return pb, nil
 }

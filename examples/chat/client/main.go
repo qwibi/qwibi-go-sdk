@@ -25,7 +25,7 @@ func main() {
 	}
 	qlog.Infof("auth session: %+v", session)
 
-	layer, err := client.Layer(
+	layerResponse, err := client.Layer(
 		sdkLayer.WithLayerGid("chat"),
 	)
 	if err != nil {
@@ -33,10 +33,10 @@ func main() {
 		return
 	}
 
-	qlog.Infof("layer: %+v", layer)
+	qlog.Infof("layer: %+v", layerResponse)
 
 	for {
-		command, err := sdkCommand.NewCommand("/help")
+		command, err := sdkCommand.NewCommand("/message", "hello world")
 		if err != nil {
 			qlog.Error(err)
 			return
@@ -44,13 +44,13 @@ func main() {
 
 		qlog.Infof("command request: %+v", command)
 
-		response, err := client.Command(layer.LayerId, command)
+		commandResponse, err := client.Command(layerResponse.Layer.LayerId, command)
 		if err != nil {
 			qlog.Error(err)
 			return
 		}
 
-		qlog.Infof("command response: %+v", response.Response)
+		qlog.Infof("command response: %+v", commandResponse.Response)
 
 		time.Sleep(3 * time.Second)
 	}

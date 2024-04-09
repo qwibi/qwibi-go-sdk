@@ -7,7 +7,7 @@ import (
 )
 
 type QCommand struct {
-	 Command string
+	Command string
 	Args    []string
 }
 

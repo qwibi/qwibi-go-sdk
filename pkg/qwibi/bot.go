@@ -13,7 +13,7 @@ type geoBot struct {
 	client proto.QPBxApi_BotClient
 }
 
-func (c *geoBot) Subscribe(handler func(request *sdkRequest.QCommandRequest)) error {
+func (c *geoBot) Subscribe(handler func(requestId string, layerId string, request *command.QCommand)) error {
 	if c.client == nil {
 		return qlog.Error("bad client parameter type nil")
 	}
@@ -32,15 +32,11 @@ func (c *geoBot) Subscribe(handler func(request *sdkRequest.QCommandRequest)) er
 			return qlog.Error(err)
 		}
 
-		handler(request)
+		handler(request.RequestId, request.LayerId, request.Command)
 	}
 }
 
 func (c *geoBot) Publish(requestId string, layerId string, response *command.QResponse) error {
-	if c.client == nil || response == nil {
-		return qlog.Error("bad client parameter type nil")
-	}
-
 	res, err := sdkResponse.NewCommandResponse(requestId, layerId, response)
 	if err != nil {
 		return qlog.Error(err)

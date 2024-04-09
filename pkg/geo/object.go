@@ -31,12 +31,12 @@ func NewGeoObject(gid string, geom *geometry.QGeometry, properties []byte) (*QGe
 
 	switch v := geom.Geometry.(type) {
 	case *geometry.QPoint:
-		g := NewGeoPoint(
+		point := NewGeoPoint(
 			WithPointGid(gid),
 			WithPointGeometry(v),
 			WithPointProperties(properties),
 		)
-		return &QGeoObject{g}, nil
+		return GeoObject(point), point.Valid()
 	default:
 		return nil, qlog.Error("unknown geometry type %T", v)
 	}
@@ -55,7 +55,7 @@ func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject, error) {
 			WithPointProperties(in.Properties),
 		)
 
-		return GeoObject(point), nil
+		return GeoObject(point), point.Valid()
 	default:
 		return nil, qlog.Errorf("Unknown geometry type: %T", v)
 	}

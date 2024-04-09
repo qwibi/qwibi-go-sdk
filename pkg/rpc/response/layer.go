@@ -9,35 +9,44 @@ import (
 )
 
 type QLayerResponse struct {
-	reqId string
-	Layer *layer.QGeoLayer
+	RequestId string
+	Layer     *layer.QGeoLayer
 }
 
-func NewLayerResponse(layer *layer.QGeoLayer) (*QLayerResponse, error) {
-	r := &QLayerResponse{
-		Layer: layer,
+func NewLayerResponse(requestId string, layer *layer.QGeoLayer) (*QLayerResponse, error) {
+	if requestId == "" {
+		return nil, qlog.Error("request ID not defined")
 	}
 
-	return r, nil
+	if layer == nil {
+		return nil, qlog.Error("layer is not defined")
+	}
+
+	res := &QLayerResponse{
+		RequestId: requestId,
+		Layer:     layer,
+	}
+
+	return res, nil
 }
 
 func NewLayerResponsePb(in *proto.QPBxLayerResponse) (*QLayerResponse, error) {
+	if in == nil {
+		return nil, qlog.Error("bad parameter type nil")
+	}
+
 	layer, err := layer.NewGeoLayerPb(in.Layer)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
 
-	return NewLayerResponse(layer)
+	return NewLayerResponse(in.RequestId, layer)
 }
 
 func (c *QLayerResponse) Pb() *proto.QPBxLayerResponse {
 	return &proto.QPBxLayerResponse{
 		Layer: c.Layer.Pb(),
 	}
-}
-
-func (c *QLayerResponse) ReqId() string {
-	return c.reqId
 }
 
 func (c *QLayerResponse) Message() protobuf.Message {
