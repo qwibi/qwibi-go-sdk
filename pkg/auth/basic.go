@@ -30,7 +30,7 @@ func NewBasicAuth(login string, password string) (*QBasicAuth, error) {
 // NewBasicAuthPb ...
 func NewBasicAuthPb(in *proto.QPBxBasicAuth) (*QBasicAuth, error) {
 	if in == nil {
-		err := errors.New("Invalid parameter type nil")
+		err := errors.New("invalid parameter type nil")
 		return nil, qlog.Error(err)
 	}
 

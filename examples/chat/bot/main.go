@@ -9,11 +9,14 @@ import (
 	"github.com/qwibi/qwibi-go-sdk/pkg/layer"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qwibi"
+
 	"strings"
 )
 
 func main() {
 	addr := "127.0.0.1:8080"
+	//addr := "192.168.50.200:8080"
+	//addr := "api.qwibi.com:8080"
 	ctx := context.Background()
 	var client, err = qwibi.NewClient(ctx, addr)
 	if err != nil {
