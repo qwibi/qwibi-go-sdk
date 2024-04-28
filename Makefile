@@ -27,7 +27,7 @@ tag:
 	#git tag -f latest
 	git add -A
 	git commit -m "$(DATE)"
-	git push
+	git push -f
 	git push --tags -f
 
 .DEFAULT_GOAL := get
