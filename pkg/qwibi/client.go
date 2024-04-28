@@ -68,9 +68,8 @@ func (c *QApiClient) Token(layerId string) (utils.Token, error) {
 }
 
 func (c *QApiClient) Layer(options ...layer.LayerOption) (*response.QLayerResponse, error) {
-	g := layer.NewGeoLayer(options...)
 
-	req, err := request.NewLayerRequest(g)
+	req, err := request.NewLayerRequest(options...)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}

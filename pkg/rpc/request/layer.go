@@ -2,7 +2,6 @@ package request
 
 import (
 	"github.com/qwibi/qwibi-go-sdk/pkg/layer"
-	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/pkg/utils"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 	protobuf "google.golang.org/protobuf/proto"
@@ -14,33 +13,28 @@ type QLayerRequest struct {
 	Layer     *layer.QGeoLayer
 }
 
-func NewLayerRequest(layer *layer.QGeoLayer) (*QLayerRequest, error) {
-	if layer == nil {
-		return nil, qlog.Error("layer is not defined")
-	}
+func NewLayerRequest(options ...layer.LayerOption) (*QLayerRequest, error) {
+	layer := layer.NewGeoLayer(options...)
 
 	req := &QLayerRequest{
 		RequestId: utils.RequestId(),
 		Layer:     layer,
 	}
 
-	return req, nil
+	return req, layer.Valid()
 }
 
 func NewLayerRequestPb(in *proto.QPBxLayerRequest) (*QLayerRequest, error) {
-	layer := layer.NewGeoLayer(
+	return NewLayerRequest(
 		layer.WithLayerGid(in.LayerId),
 		layer.WithLayerPublic(in.Public),
 		layer.WithLayerProperties(in.Properties),
 		layer.WithLayerCommands(in.Commands),
 	)
-
-	return NewLayerRequest(layer)
 }
 
 func (c *QLayerRequest) Pb() *proto.QPBxLayerRequest {
 	return &proto.QPBxLayerRequest{
-		RequestId:  c.RequestId,
 		LayerId:    c.Layer.LayerId,
 		Public:     c.Layer.Public,
 		Properties: c.Layer.Properties,

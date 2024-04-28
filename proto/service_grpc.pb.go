@@ -24,6 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type QPBxApiClient interface {
 	// Auth
 	Auth(ctx context.Context, in *QPBxAuthRequest, opts ...grpc.CallOption) (*QPBxAuthResponse, error)
+	// Account
+	Account(ctx context.Context, in *QPBxAccountRequest, opts ...grpc.CallOption) (*QPBxAccountResponse, error)
 	// // Layer
 	Layer(ctx context.Context, in *QPBxLayerRequest, opts ...grpc.CallOption) (*QPBxLayerResponse, error)
 	// Object
@@ -50,6 +52,15 @@ func NewQPBxApiClient(cc grpc.ClientConnInterface) QPBxApiClient {
 func (c *qPBxApiClient) Auth(ctx context.Context, in *QPBxAuthRequest, opts ...grpc.CallOption) (*QPBxAuthResponse, error) {
 	out := new(QPBxAuthResponse)
 	err := c.cc.Invoke(ctx, "/QPBxApi/Auth", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *qPBxApiClient) Account(ctx context.Context, in *QPBxAccountRequest, opts ...grpc.CallOption) (*QPBxAccountResponse, error) {
+	out := new(QPBxAccountResponse)
+	err := c.cc.Invoke(ctx, "/QPBxApi/Account", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -169,6 +180,8 @@ func (x *qPBxApiStreamClient) Recv() (*QPBxStreamResponse, error) {
 type QPBxApiServer interface {
 	// Auth
 	Auth(context.Context, *QPBxAuthRequest) (*QPBxAuthResponse, error)
+	// Account
+	Account(context.Context, *QPBxAccountRequest) (*QPBxAccountResponse, error)
 	// // Layer
 	Layer(context.Context, *QPBxLayerRequest) (*QPBxLayerResponse, error)
 	// Object
@@ -190,6 +203,9 @@ type UnimplementedQPBxApiServer struct {
 
 func (UnimplementedQPBxApiServer) Auth(context.Context, *QPBxAuthRequest) (*QPBxAuthResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Auth not implemented")
+}
+func (UnimplementedQPBxApiServer) Account(context.Context, *QPBxAccountRequest) (*QPBxAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Account not implemented")
 }
 func (UnimplementedQPBxApiServer) Layer(context.Context, *QPBxLayerRequest) (*QPBxLayerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Layer not implemented")
@@ -238,6 +254,24 @@ func _QPBxApi_Auth_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QPBxApiServer).Auth(ctx, req.(*QPBxAuthRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _QPBxApi_Account_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QPBxAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QPBxApiServer).Account(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/QPBxApi/Account",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QPBxApiServer).Account(ctx, req.(*QPBxAccountRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -394,6 +428,10 @@ var QPBxApi_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Auth",
 			Handler:    _QPBxApi_Auth_Handler,
+		},
+		{
+			MethodName: "Account",
+			Handler:    _QPBxApi_Account_Handler,
 		},
 		{
 			MethodName: "Layer",
