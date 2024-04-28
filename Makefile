@@ -16,6 +16,8 @@ push:
 	go mod tidy && git add -A && git commit -m "WIP: Update" | true && git push
 
 release:
+	go get -u ./...
+	go mod tidy
 	@latest_tag=$$(git describe --tags --abbrev=0); \
 	IFS='.' read -ra parts <<< "$$latest_tag"; \
 	major=$${parts[0]}; \
