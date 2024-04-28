@@ -24,9 +24,11 @@ release:
 	new_version=$$major.$$minor.$$((patch+1)); \
 	today=$$(date +'%d/%m/%Y'); \
 	git add -A; \
-	git commit -m "$$today"; \
+	git commit -m "Data: $$today"; \
+	git tag -d latest || true; \
+	git tag -a -f latest -m "Latest version"; \
 	git tag $$new_version; \
-	git push | true; \
-	git push --tags
+	git push --tags --force; \
+	git push --force
 
 .DEFAULT_GOAL := get
