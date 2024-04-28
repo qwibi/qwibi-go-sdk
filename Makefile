@@ -26,6 +26,7 @@ release:
 	git add -A; \
 	git commit -m "$$today"; \
 	git tag $$new_version; \
+	git push | true; \
 	git push --tags
 
 .DEFAULT_GOAL := get
