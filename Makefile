@@ -24,8 +24,9 @@ tag:
 	new_minor=$$(($$minor + 1))
 	new_version=$$major.$$new_minor.0
 	git tag $$new_version
-	git add .
+	git add -A
 	git commit -m "$(DATE)"
+	git push
 	git push --tags
 
 .DEFAULT_GOAL := get
