@@ -27,8 +27,8 @@ release:
 	today=$$(date +'%d/%m/%Y'); \
 	git add -A; \
 	git commit -m "$$today"; \
-	git tag $$new_version; \
+	git tag -f $$new_version; \
 	git push | true; \
-	git push --tags
+	git push --tags -f
 
 .DEFAULT_GOAL := get
