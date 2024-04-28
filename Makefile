@@ -27,7 +27,7 @@ tag:
 	#git tag -f latest
 	git add -A
 	git commit -m "$(DATE)"
-	git push -f
+	git push | true
 	git push --tags -f
 
 
