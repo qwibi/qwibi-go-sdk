@@ -1,6 +1,5 @@
 GOPATH := $(HOME)/go
 SRC_PATH := $(GOPATH)/src/qwibi.com
-DATE := $(shell date +'%d/%m/%Y')
 
 .PHONY: build get
 
@@ -30,5 +29,17 @@ tag:
 	git push | true
 	git push --tags -f
 
+release:
+	@latest_tag=$$(git describe --tags --abbrev=0); \
+	IFS='.' read -ra parts <<< "$$latest_tag"; \
+	major=$${parts[0]}; \
+	minor=$${parts[1]}; \
+	patch=$${parts[2]}; \
+	new_version=$$major.$$minor.$$((patch+1)); \
+	today=$$(date +'%d/%m/%Y'); \
+	git add -A; \
+	git commit -m "$$today"; \
+	git tag $$new_version; \
+	git push --tags
 
 .DEFAULT_GOAL := get
