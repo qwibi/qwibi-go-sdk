@@ -20,17 +20,13 @@ func NewPostRequest(layerId string, object *geo.QGeoObject) (*QPostRequest, erro
 		return nil, qlog.Error("layer ID is not defined")
 	}
 
-	if object == nil {
-		return nil, qlog.Error("object is not defined")
-	}
-
 	req := &QPostRequest{
 		RequestId: utils.RequestId(),
 		LayerId:   layerId,
 		Object:    object,
 	}
 
-	return req, nil
+	return req, req.Valid()
 }
 
 func NewPostRequestPb(in *proto.QPBxPostRequest) (*QPostRequest, error) {
@@ -49,9 +45,25 @@ func NewPostRequestPb(in *proto.QPBxPostRequest) (*QPostRequest, error) {
 func (c *QPostRequest) Pb() *proto.QPBxPostRequest {
 	return &proto.QPBxPostRequest{
 		RequestId: c.RequestId,
-		LayerId:   c.LayerId,
 		Object:    c.Object.Pb(),
 	}
+}
+
+func (c *QPostRequest) Valid() error {
+	if c.RequestId == "" {
+		return qlog.Error("request ID is not defined")
+	}
+
+	if c.LayerId == "" {
+		return qlog.Error("layer ID is not defined")
+	}
+
+	if c.Object == nil {
+		return qlog.Error("object is not defined" +
+			"")
+	}
+
+	return nil
 }
 
 func (c *QPostRequest) Message() protobuf.Message {

@@ -1,6 +1,7 @@
 package response
 
 import (
+	"github.com/qwibi/qwibi-go-sdk/pkg/geo"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 	protobuf "google.golang.org/protobuf/proto"
@@ -9,21 +10,15 @@ import (
 
 type QPostResponse struct {
 	RequestId string
-	Gid       string
+	LayerId   string
+	Object    *geo.QGeoObject
 }
 
-func NewPostResponse(requestId string, gid string) (*QPostResponse, error) {
-	if requestId == "" {
-		return nil, qlog.Error("request ID not defined")
-	}
-
-	if gid == "" {
-		return nil, qlog.Error("gid ID is not defined")
-	}
-
+func NewPostResponse(requestId string, layerId string, object *geo.QGeoObject) (*QPostResponse, error) {
 	res := &QPostResponse{
 		RequestId: requestId,
-		Gid:       gid,
+		LayerId:   layerId,
+		Object:    object,
 	}
 
 	return res, nil
@@ -34,13 +29,38 @@ func NewPostResponsePb(in *proto.QPBxPostResponse) (*QPostResponse, error) {
 		return nil, qlog.Error("bad parameter type nil")
 	}
 
-	return NewPostResponse(in.RequestId, in.Gid)
+	object, err := geo.NewGeoObjectPb(in.Object)
+	if err != nil {
+		return nil, qlog.Error(err)
+	}
+
+	return NewPostResponse(in.RequestId, in.LayerId, object)
 }
 
 func (c *QPostResponse) Pb() *proto.QPBxPostResponse {
-	return &proto.QPBxPostResponse{
-		Gid: c.Gid,
+	pb := &proto.QPBxPostResponse{
+		RequestId: c.RequestId,
+		LayerId:   c.LayerId,
+		Object:    c.Object.Pb(),
 	}
+
+	return pb
+}
+
+func (c *QPostResponse) Valid() error {
+	if c.RequestId == "" {
+		return qlog.Error("request ID is not defined")
+	}
+
+	if c.Object == nil {
+		return qlog.Error("object is not defined")
+	}
+
+	if c.Object.Valid() != nil {
+		return qlog.Error("invalid object")
+	}
+
+	return nil
 }
 
 func (c *QPostResponse) Message() protobuf.Message {

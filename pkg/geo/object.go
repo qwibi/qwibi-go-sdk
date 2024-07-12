@@ -2,17 +2,17 @@ package geo
 
 import (
 	"encoding/json"
-	"github.com/qwibi/qwibi-go-sdk/pkg/geometry"
+	sdkGeometry "github.com/qwibi/qwibi-go-sdk/pkg/geometry"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 )
 
 // QGeometry ...
 type Object interface {
-	Pb() *proto.QPBxGeoObject
 	Gid() string
-	Geometry() *geometry.QGeometry
+	Geometry() *sdkGeometry.QGeometry
 	Properties() []byte
+	Pb() *proto.QPBxGeoObject
 	Valid() error
 }
 
@@ -24,13 +24,13 @@ func GeoObject(g Object) *QGeoObject {
 	return &QGeoObject{g}
 }
 
-func NewGeoObject(gid string, geom *geometry.QGeometry, properties []byte) (*QGeoObject, error) {
-	if geom == nil {
+func NewGeoObject(gid string, geometry *sdkGeometry.QGeometry, properties []byte) (*QGeoObject, error) {
+	if geometry == nil {
 		return nil, qlog.Error("geometry not defined")
 	}
 
-	switch v := geom.Geometry.(type) {
-	case *geometry.QPoint:
+	switch v := geometry.Geometry.(type) {
+	case *sdkGeometry.QPoint:
 		point := NewGeoPoint(
 			WithPointGid(gid),
 			WithPointGeometry(v),
@@ -45,12 +45,12 @@ func NewGeoObject(gid string, geom *geometry.QGeometry, properties []byte) (*QGe
 func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject, error) {
 	switch v := in.Geometry.Type.(type) {
 	case *proto.QPBxGeometry_Point:
-		geometry, err := geometry.NewPointPb(v.Point)
+		geometry, err := sdkGeometry.NewPointPb(v.Point)
 		if err != nil {
 			return nil, qlog.Error(err)
 		}
+
 		point := NewGeoPoint(
-			WithPointGid(in.Gid),
 			WithPointCoordinates(geometry.Coordinates...),
 			WithPointProperties(in.Properties),
 		)

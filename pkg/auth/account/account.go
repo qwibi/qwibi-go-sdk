@@ -11,26 +11,24 @@ type QAccount struct {
 	Name      string
 }
 
-func NewAccount(options ...AccountOption) *QAccount {
-	h := &QAccount{
+func NewAccount(options ...AccountOption) (*QAccount, error) {
+	account := &QAccount{
 		AccountId: utils.NewID(),
 		Name:      utils.NewID(),
 	}
 
 	for _, opt := range options {
-		opt(h)
+		opt(account)
 	}
 
-	return h
+	return account, account.Valid()
 }
 
 func NewAccountPb(in *proto.QPBxAccount) (*QAccount, error) {
-	account := NewAccount(
+	return NewAccount(
 		WithAccountId(in.AccountId),
 		WithAccountName(in.Name),
 	)
-
-	return account, nil
 }
 
 func (c *QAccount) Pb() *proto.QPBxAccount {
@@ -42,7 +40,11 @@ func (c *QAccount) Pb() *proto.QPBxAccount {
 
 func (c *QAccount) Valid() error {
 	if c.AccountId == "" {
-		return qlog.Error("AccountId ID not defined")
+		return qlog.Error("account ID is not defined")
+	}
+
+	if c.Name == "" {
+		return qlog.Error("account name is not defined")
 	}
 
 	return nil

@@ -1,23 +1,24 @@
 package auth
 
 import (
-	"errors"
+	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 
 	"github.com/qwibi/qwibi-go-sdk/proto"
 )
 
 type QAuth interface {
-	Type() string
-	Valid() error
+	Pb() *proto.QPBxAuth
+	//Type() string
+	//Valid() error
 }
 
-func NewAuthRequestPb(pb *proto.QPBxAuthRequest) (QAuth, error) {
-	switch v := pb.Auth.(type) {
-	case *proto.QPBxAuthRequest_Anonym:
+func NewAuthPb(pb *proto.QPBxAuth) (QAuth, error) {
+	switch v := pb.Type.(type) {
+	case *proto.QPBxAuth_Anonym:
 		return NewAnonymousAuthPb(v.Anonym)
-	case *proto.QPBxAuthRequest_Basic:
+	case *proto.QPBxAuth_Basic:
 		return NewBasicAuthPb(v.Basic)
 	default:
-		return nil, errors.New("Unknown auth request type")
+		return nil, qlog.Errorf("unknown auth request type: %+T", v)
 	}
 }

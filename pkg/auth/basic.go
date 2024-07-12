@@ -66,15 +66,13 @@ func (c *QBasicAuth) Valid() error {
 }
 
 // Pb ...
-func (c *QBasicAuth) Pb() (*proto.QPBxBasicAuth, error) {
-	if err := c.Valid(); err != nil {
-		return nil, qlog.Error(err)
+func (c *QBasicAuth) Pb() *proto.QPBxAuth {
+	return &proto.QPBxAuth{
+		Type: &proto.QPBxAuth_Basic{
+			Basic: &proto.QPBxBasicAuth{
+				Login:    c.Login,
+				Password: c.Password,
+			},
+		},
 	}
-
-	pb := &proto.QPBxBasicAuth{
-		Login:    c.Login,
-		Password: c.Password,
-	}
-
-	return pb, nil
 }

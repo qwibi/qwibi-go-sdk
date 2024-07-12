@@ -45,7 +45,8 @@ func NewAccountResponsePb(in *proto.QPBxAccountResponse) (*QAccountResponse, err
 
 func (c *QAccountResponse) Pb() *proto.QPBxAccountResponse {
 	return &proto.QPBxAccountResponse{
-		Account: c.Account.Pb(),
+		RequestId: c.RequestId,
+		Account:   c.Account.Pb(),
 	}
 }
 

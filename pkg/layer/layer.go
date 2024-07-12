@@ -5,17 +5,18 @@ import (
 	"github.com/qwibi/qwibi-go-sdk/proto"
 )
 
-// QGeoLayer ...
-type QGeoLayer struct {
+// QLayer ...
+type QLayer struct {
 	LayerId    string            `json:"layer_id"`
+	Name       string            `json:"name"`
 	Public     bool              `json:"public"`
 	Properties []byte            `json:"properties"`
 	Commands   map[string]string `json:"commands"`
 }
 
-// NewGeoLayer ...
-func NewGeoLayer(options ...LayerOption) *QGeoLayer {
-	h := &QGeoLayer{}
+// NewLayer ...
+func NewLayer(options ...LayerOption) *QLayer {
+	h := &QLayer{}
 
 	for _, opt := range options {
 		opt(h)
@@ -24,9 +25,11 @@ func NewGeoLayer(options ...LayerOption) *QGeoLayer {
 	return h
 }
 
-func NewGeoLayerPb(in *proto.QPBxGeoLayer) (*QGeoLayer, error) {
-	layer := NewGeoLayer(
+func NewGeoLayerPb(in *proto.QPBxLayer) (*QLayer, error) {
+	layer := NewLayer(
 		WithLayerGid(in.LayerId),
+		WithLayerName(in.Name),
+		WithLayerPublic(in.Public),
 		WithLayerProperties(in.Properties),
 		WithLayerCommands(in.Commands),
 	)
@@ -34,17 +37,23 @@ func NewGeoLayerPb(in *proto.QPBxGeoLayer) (*QGeoLayer, error) {
 	return layer, nil
 }
 
-func (c *QGeoLayer) Pb() *proto.QPBxGeoLayer {
-	return &proto.QPBxGeoLayer{
+func (c *QLayer) Pb() *proto.QPBxLayer {
+	return &proto.QPBxLayer{
 		LayerId:    c.LayerId,
+		Name:       c.Name,
+		Public:     c.Public,
 		Properties: c.Properties,
 		Commands:   c.Commands,
 	}
 }
 
-func (c *QGeoLayer) Valid() error {
+func (c *QLayer) Valid() error {
 	if c.LayerId == "" {
-		return qlog.Error("layer validation error")
+		return qlog.Error("layer id is not defined")
+	}
+
+	if c.Name == "" {
+		return qlog.Error("layer name is not defined")
 	}
 
 	return nil

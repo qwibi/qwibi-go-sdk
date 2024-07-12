@@ -39,7 +39,8 @@ func NewTokenResponsePb(in *proto.QPBxTokenResponse) (*QTokenResponse, error) {
 
 func (c *QTokenResponse) Pb() *proto.QPBxTokenResponse {
 	return &proto.QPBxTokenResponse{
-		Token: c.Token,
+		RequestId: c.RequestId,
+		Token:     c.Token,
 	}
 }
 

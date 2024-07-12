@@ -80,8 +80,6 @@ func (c *QGeometry) Scan(src any) error {
 
 	s := fmt.Sprintf("%s", src)
 
-	qlog.Debugf("Scan: %s", s)
-
 	wkbData, err := hex.DecodeString(s)
 	if err != nil {
 		return qlog.Errorf("error decoding WKB: %v", err)

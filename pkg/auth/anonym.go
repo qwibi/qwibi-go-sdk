@@ -37,18 +37,21 @@ func NewAnonymousAuthPb(in *proto.QPBxAnonymAuth) (*QAnonymousAuth, error) {
 	return auth, nil
 }
 
-// Type ...
-func (c *QAnonymousAuth) Type() string {
-	return QAnonymousAuthType
-}
-
-// Valid ...
-func (c *QAnonymousAuth) Valid() error {
-	return nil
-}
-
 // Pb ...
-func (c *QAnonymousAuth) Pb() (*proto.QPBxAnonymAuth, error) {
-	pb := &proto.QPBxAnonymAuth{}
-	return pb, nil
+func (c *QAnonymousAuth) Pb() *proto.QPBxAuth {
+	return &proto.QPBxAuth{
+		Type: &proto.QPBxAuth_Anonym{
+			Anonym: &proto.QPBxAnonymAuth{},
+		},
+	}
 }
+
+//// Type ...
+//func (c *QAnonymousAuth) Type() string {
+//	return QAnonymousAuthType
+//}
+//
+//// Valid ...
+//func (c *QAnonymousAuth) Valid() error {
+//	return nil
+//}

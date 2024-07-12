@@ -25,7 +25,8 @@ func SetContext(ctx context.Context, key string, value string) context.Context {
 }
 
 func GetSessionContextToken(ctx context.Context) string {
-	return GetContext(ctx, "token")
+	token := GetContext(ctx, "token")
+	return token
 }
 
 func SetSessionContextToken(ctx context.Context, token string) context.Context {

@@ -9,14 +9,14 @@ import (
 
 // QSession ...
 type QSession struct {
-	Token     string
-	AccountId string
+	AccessToken string
+	AccountId   string
 }
 
 // NewSession ...
 func NewSession(options ...SessionOption) *QSession {
 	h := &QSession{
-		Token: utils.NewID(),
+		AccessToken: utils.NewID(),
 	}
 
 	for _, opt := range options {
@@ -34,7 +34,7 @@ func NewSessionPb(in *proto.QPBxSession) (*QSession, error) {
 	}
 
 	session := NewSession(
-		WithSessionToken(in.Token),
+		WithSessionAccessToken(in.AccessToken),
 		WithSessionAccountId(in.AccountId),
 	)
 
@@ -43,7 +43,7 @@ func NewSessionPb(in *proto.QPBxSession) (*QSession, error) {
 
 // Valid ...
 func (c *QSession) Valid() error {
-	if c.Token == "" {
+	if c.AccessToken == "" {
 		return qlog.Error("session token is not defined")
 	}
 
@@ -57,7 +57,7 @@ func (c *QSession) Valid() error {
 // Pb ...
 func (c *QSession) Pb() *proto.QPBxSession {
 	return &proto.QPBxSession{
-		Token:     c.Token,
-		AccountId: c.AccountId,
+		AccessToken: c.AccessToken,
+		AccountId:   c.AccountId,
 	}
 }

@@ -4,48 +4,38 @@ import (
 	"github.com/qwibi/qwibi-go-sdk/pkg/utils"
 )
 
-type LayerOption func(config *QGeoLayer)
+type LayerOption func(config *QLayer)
 
 func WithLayerGid(gid string) LayerOption {
-	return func(c *QGeoLayer) {
+	return func(c *QLayer) {
 		if gid != "" {
 			c.LayerId = gid
 		} else {
 			c.LayerId = utils.NewID()
 		}
-
 	}
 }
 
-func WithLayerCommands(commands map[string]string) LayerOption {
-	return func(c *QGeoLayer) {
-		c.Commands = commands
-	}
-}
-
-//func WithLayerCommandsPb(commands map[string]string) LayerOption {
-//	return func(c *QGeoLayer) {
-//		cmdList := []*command.QCommand{}
-//		for _, cmdPb := range commands {
-//			cmd, err := command.NewCommandPb(cmdPb)
-//			if err != nil {
-//				qlog.Error(err)
-//			}
-//			cmdList = append(cmdList, cmd)
-//		}
-//
-//		c.Commands = comm
-//	}
-//}
-
-func WithLayerProperties(properties []byte) LayerOption {
-	return func(c *QGeoLayer) {
-		c.Properties = properties
+func WithLayerName(name string) LayerOption {
+	return func(c *QLayer) {
+		c.Name = name
 	}
 }
 
 func WithLayerPublic(f bool) LayerOption {
-	return func(c *QGeoLayer) {
+	return func(c *QLayer) {
 		c.Public = f
+	}
+}
+
+func WithLayerProperties(properties []byte) LayerOption {
+	return func(c *QLayer) {
+		c.Properties = properties
+	}
+}
+
+func WithLayerCommands(commands map[string]string) LayerOption {
+	return func(c *QLayer) {
+		c.Commands = commands
 	}
 }

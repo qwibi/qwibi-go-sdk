@@ -10,10 +10,10 @@ import (
 
 type QLayerResponse struct {
 	RequestId string
-	Layer     *layer.QGeoLayer
+	Layer     *layer.QLayer
 }
 
-func NewLayerResponse(requestId string, layer *layer.QGeoLayer) (*QLayerResponse, error) {
+func NewLayerResponse(requestId string, layer *layer.QLayer) (*QLayerResponse, error) {
 	if requestId == "" {
 		return nil, qlog.Error("request ID not defined")
 	}
@@ -45,7 +45,8 @@ func NewLayerResponsePb(in *proto.QPBxLayerResponse) (*QLayerResponse, error) {
 
 func (c *QLayerResponse) Pb() *proto.QPBxLayerResponse {
 	return &proto.QPBxLayerResponse{
-		Layer: c.Layer.Pb(),
+		RequestId: c.RequestId,
+		Layer:     c.Layer.Pb(),
 	}
 }
 

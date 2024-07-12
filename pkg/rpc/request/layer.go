@@ -10,11 +10,11 @@ import (
 
 type QLayerRequest struct {
 	RequestId string
-	Layer     *layer.QGeoLayer
+	Layer     *layer.QLayer
 }
 
 func NewLayerRequest(options ...layer.LayerOption) (*QLayerRequest, error) {
-	layer := layer.NewGeoLayer(options...)
+	layer := layer.NewLayer(options...)
 
 	req := &QLayerRequest{
 		RequestId: utils.RequestId(),
@@ -27,6 +27,7 @@ func NewLayerRequest(options ...layer.LayerOption) (*QLayerRequest, error) {
 func NewLayerRequestPb(in *proto.QPBxLayerRequest) (*QLayerRequest, error) {
 	return NewLayerRequest(
 		layer.WithLayerGid(in.LayerId),
+		layer.WithLayerName(in.Name),
 		layer.WithLayerPublic(in.Public),
 		layer.WithLayerProperties(in.Properties),
 		layer.WithLayerCommands(in.Commands),
@@ -36,6 +37,7 @@ func NewLayerRequestPb(in *proto.QPBxLayerRequest) (*QLayerRequest, error) {
 func (c *QLayerRequest) Pb() *proto.QPBxLayerRequest {
 	return &proto.QPBxLayerRequest{
 		LayerId:    c.Layer.LayerId,
+		Name:       c.Layer.Name,
 		Public:     c.Layer.Public,
 		Properties: c.Layer.Properties,
 		Commands:   c.Layer.Commands,

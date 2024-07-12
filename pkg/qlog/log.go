@@ -41,6 +41,9 @@ func toString(msg ...interface{}) string {
 }
 
 func Error(msg ...interface{}) error {
+	if msg == nil {
+		return nil
+	}
 	caller := caller(runtime.Caller(1))
 	m := toString(msg...)
 	log.Error(caller, " ", m)
@@ -48,6 +51,9 @@ func Error(msg ...interface{}) error {
 }
 
 func Errorf(format string, args ...interface{}) error {
+	if args == nil {
+		return nil
+	}
 	caller := caller(runtime.Caller(1))
 	m := fmt.Sprintf(format, args...)
 	log.Error(caller, " ", m)

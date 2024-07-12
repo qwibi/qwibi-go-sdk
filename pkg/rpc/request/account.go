@@ -2,6 +2,7 @@ package request
 
 import (
 	"github.com/qwibi/qwibi-go-sdk/pkg/auth/account"
+	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/pkg/utils"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 	protobuf "google.golang.org/protobuf/proto"
@@ -13,8 +14,7 @@ type QAccountRequest struct {
 	Account   *account.QAccount
 }
 
-func NewAccountRequest(options ...account.AccountOption) (*QAccountRequest, error) {
-	account := account.NewAccount(options...)
+func NewAccountRequest(account *account.QAccount) (*QAccountRequest, error) {
 	req := &QAccountRequest{
 		RequestId: utils.RequestId(),
 		Account:   account,
@@ -24,16 +24,18 @@ func NewAccountRequest(options ...account.AccountOption) (*QAccountRequest, erro
 }
 
 func NewAccountRequestPb(in *proto.QPBxAccountRequest) (*QAccountRequest, error) {
-	return NewAccountRequest(
-		account.WithAccountId(in.AccountId),
-		account.WithAccountName(in.Name),
-	)
+	account, err := account.NewAccountPb(in.Account)
+	if err != nil {
+		return nil, qlog.Error(err)
+	}
+
+	return NewAccountRequest(account)
 }
 
 func (c *QAccountRequest) Pb() *proto.QPBxAccountRequest {
 	return &proto.QPBxAccountRequest{
-		AccountId: c.Account.AccountId,
-		Name:      c.Account.Name,
+		RequestId: c.RequestId,
+		Account:   c.Account.Pb(),
 	}
 }
 

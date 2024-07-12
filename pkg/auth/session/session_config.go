@@ -2,9 +2,9 @@ package session
 
 type SessionOption func(config *QSession)
 
-func WithSessionToken(token string) SessionOption {
+func WithSessionAccessToken(accessToken string) SessionOption {
 	return func(c *QSession) {
-		c.Token = token
+		c.AccessToken = accessToken
 	}
 }
 

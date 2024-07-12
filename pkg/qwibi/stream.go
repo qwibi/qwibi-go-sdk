@@ -8,7 +8,7 @@ import (
 )
 
 type QStream struct {
-	layer *layer.QGeoLayer
+	layer *layer.QLayer
 	*QApiClient
 }
 
