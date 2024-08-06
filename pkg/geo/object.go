@@ -1,74 +1,53 @@
 package geo
 
 import (
-	"encoding/json"
-	sdkGeometry "github.com/qwibi/qwibi-go-sdk/pkg/geometry"
+	"github.com/qwibi/qwibi-go-sdk/pkg/feature"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 )
 
-// QGeometry ...
-type Object interface {
-	Gid() string
-	Geometry() *sdkGeometry.QGeometry
-	Properties() []byte
-	Pb() *proto.QPBxGeoObject
-	Valid() error
-}
-
 type QGeoObject struct {
-	Object
+	Gid        string
+	Features   []*feature.QFeature
+	Properties []byte
 }
 
-func GeoObject(g Object) *QGeoObject {
-	return &QGeoObject{g}
-}
-
-func NewGeoObject(gid string, geometry *sdkGeometry.QGeometry, properties []byte) (*QGeoObject, error) {
-	if geometry == nil {
-		return nil, qlog.Error("geometry not defined")
+func NewGeoObject(gid string, features []*feature.QFeature, properties []byte) (*QGeoObject, error) {
+	if features == nil {
+		return nil, qlog.Error("features is not defined")
 	}
 
-	switch v := geometry.Geometry.(type) {
-	case *sdkGeometry.QPoint:
-		point := NewGeoPoint(
-			WithPointGid(gid),
-			WithPointGeometry(v),
-			WithPointProperties(properties),
-		)
-		return GeoObject(point), point.Valid()
-	default:
-		return nil, qlog.Error("unknown geometry type %T", v)
+	object := &QGeoObject{
+		Gid:        gid,
+		Features:   features,
+		Properties: properties,
 	}
+
+	return object, nil
 }
 
 func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject, error) {
-	switch v := in.Geometry.Type.(type) {
-	case *proto.QPBxGeometry_Point:
-		geometry, err := sdkGeometry.NewPointPb(v.Point)
+	features := make([]*feature.QFeature, 0)
+
+	for _, pb := range in.Features {
+		feature, err := feature.NewFeaturePb(pb)
 		if err != nil {
 			return nil, qlog.Error(err)
 		}
-
-		point := NewGeoPoint(
-			WithPointCoordinates(geometry.Coordinates...),
-			WithPointProperties(in.Properties),
-		)
-
-		return GeoObject(point), point.Valid()
-	default:
-		return nil, qlog.Errorf("Unknown geometry type: %T", v)
+		features = append(features, feature)
 	}
 
+	return NewGeoObject(in.Gid, features, in.Properties)
 }
 
-func NewGeoObjectBytes(data []byte) (*QGeoObject, error) {
-	var object QGeoObject
-
-	err := json.Unmarshal(data, &object)
-	if err != nil {
-		return nil, qlog.Error(err)
+func (c *QGeoObject) Pb() *proto.QPBxGeoObject {
+	featuresPb := []*proto.QPBxFeature{}
+	for _, feature := range c.Features {
+		featuresPb = append(featuresPb, feature.FeaturePb())
 	}
-
-	return &object, nil
+	return &proto.QPBxGeoObject{
+		Gid:        c.Gid,
+		Features:   featuresPb,
+		Properties: c.Properties,
+	}
 }

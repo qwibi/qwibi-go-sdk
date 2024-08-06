@@ -36,6 +36,7 @@ func NewLayerRequestPb(in *proto.QPBxLayerRequest) (*QLayerRequest, error) {
 
 func (c *QLayerRequest) Pb() *proto.QPBxLayerRequest {
 	return &proto.QPBxLayerRequest{
+		RequestId:  c.RequestId,
 		LayerId:    c.Layer.LayerId,
 		Name:       c.Layer.Name,
 		Public:     c.Layer.Public,

@@ -2,7 +2,7 @@ package qwibi
 
 //type Config struct {
 //	Login        string
-//	Geometry   *geometry.QGeometry
+//	Features   *geometry.QGeometry
 //	Properties []byte
 //}
 //
@@ -16,7 +16,7 @@ package qwibi
 //
 //func WithGeometry(geometry *geometry.QGeometry) ObjectOption {
 //	return func(c *Config) {
-//		c.Geometry = geometry
+//		c.Features = geometry
 //	}
 //}
 //

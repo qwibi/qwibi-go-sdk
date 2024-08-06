@@ -13,24 +13,27 @@ type QPoint struct {
 }
 
 // NewPoint ...
-func NewPoint(coordinates ...float64) *QPoint {
-	return &QPoint{
+func NewPoint(coordinates ...float64) (*QPoint, error) {
+	point := &QPoint{
 		Coordinates: coordinates,
 	}
+
+	return point, nil
 }
 
 // NewPointPb ...
 func NewPointPb(in *proto.QPBxPoint) (*QPoint, error) {
-	point := NewPoint()
-
 	if in == nil {
 		err := errors.New("Invalid parameter type nil")
-		return point, qlog.Error(err)
+		return nil, qlog.Error(err)
 	}
 
-	point.Coordinates = in.Coordinates
+	point, err := NewPoint(in.Coordinates...)
+	if err != nil {
+		return nil, qlog.Error(err)
+	}
 
-	return point, point.Valid()
+	return point, nil
 }
 
 //func NewPointMap(f map[string]interface{}) (QPoint, error) {
@@ -44,7 +47,7 @@ func NewPointPb(in *proto.QPBxPoint) (*QPoint, error) {
 //	return nil, qlog.TODO()
 //}
 
-// Valid ...
+// GetType...
 func (c *QPoint) GetType() string {
 	return QPointGeometryType
 }
@@ -60,33 +63,26 @@ func (c *QPoint) Valid() error {
 }
 
 // Pb ...
-func (c *QPoint) Pb() *proto.QPBxGeometry {
-	return &proto.QPBxGeometry{
-		Type: &proto.QPBxGeometry_Point{
-			Point: &proto.QPBxPoint{
-				Coordinates: c.Coordinates,
-			},
-		},
+func (c *QPoint) Pb() *proto.QPBxPoint {
+	return &proto.QPBxPoint{
+		Coordinates: c.Coordinates,
 	}
 }
 
-func (c *QPoint) MarshalJSON() ([]byte, error) {
-	//type Alias QPoint // Create an alias to avoid infinite recursion
+func (c *QPoint) MarshalGeoJSON() ([]byte, error) {
 	return json.Marshal(&struct {
 		Type        string    `json:"type"`
 		Coordinates []float64 `json:"coordinates"`
-		//Alias
 	}{
 		Type:        QPointGeometryType,
 		Coordinates: c.Coordinates,
-		//Alias:       (Alias)(*c),
 	})
 }
 
-func (c *QPoint) String() string {
-	b, _ := c.MarshalJSON()
-	return string(b)
-}
+//func (c *QPoint) String() string {
+//	b, _ := c.MarshalGeoJSON()
+//	return string(b)
+//}
 
 //var g QGeometry
 //g := QPoint{}

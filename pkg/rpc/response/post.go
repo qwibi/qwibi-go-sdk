@@ -56,10 +56,6 @@ func (c *QPostResponse) Valid() error {
 		return qlog.Error("object is not defined")
 	}
 
-	if c.Object.Valid() != nil {
-		return qlog.Error("invalid object")
-	}
-
 	return nil
 }
 

@@ -27,13 +27,13 @@ func NewCommandResponse(requestId string, layerId string, response *sdkCommand.Q
 		return nil, qlog.Error("response is not defined")
 	}
 
-	r := &QCommandResponse{
+	res := &QCommandResponse{
 		RequestId: requestId,
 		LayerId:   layerId,
 		Response:  response,
 	}
 
-	return r, nil
+	return res, nil
 }
 
 func NewCommandResponsePb(in *proto.QPBxCommandResponse) (*QCommandResponse, error) {
