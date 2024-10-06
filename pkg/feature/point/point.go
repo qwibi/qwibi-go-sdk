@@ -11,20 +11,24 @@ import (
 
 // QPointFeature ...
 type QPointFeature struct {
-	fid        string            `json:"fid"`
-	geometry   *geometry.QPoint  `json:"geometry"`
-	properties *QPointProperties `json:"properties"`
+	fid        string                   `json:"fid"`
+	geometry   *geometry.QPoint         `json:"geometry"`
+	properties *QPointFeatureProperties `json:"properties"`
 }
 
-// NewPoint ...
+// NewPointFeature ...
 func NewPointFeature(geometry *geometry.QPoint, option ...PointOption) (*QPointFeature, error) {
-	feature := &QPointFeature{
+	h := &QPointFeature{
 		fid:        utils.NewID(),
 		geometry:   geometry,
-		properties: NewPointProperties(option...),
+		properties: NewPointProperties(),
 	}
 
-	return feature, nil
+	for _, opt := range option {
+		opt(h)
+	}
+
+	return h, nil
 }
 
 // NewPointFeaturePb ...
@@ -39,12 +43,15 @@ func NewPointFeaturePb(in *proto.QPBxPointFeature) (*QPointFeature, error) {
 		return nil, qlog.Error(err)
 	}
 
-	feature, err := NewPointFeature(geometry)
+	properties := NewPointFeaturePropertiesPb(in.Properties)
+
+	feature, err := NewPointFeature(geometry,
+		WithFid(in.Fid),
+		WithProperties(properties),
+	)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
-
-	feature.properties = NewPointPropertiesPb(in.Properties)
 
 	return feature, feature.Valid()
 }
@@ -68,10 +75,11 @@ func (c *QPointFeature) Properties() []byte {
 }
 
 func (c *QPointFeature) Pb() *proto.QPBxPointFeature {
+
 	return &proto.QPBxPointFeature{
 		Fid:        c.fid,
 		Geometry:   c.geometry.Pb(),
-		Properties: c.properties.Pb(),
+		Properties: c.properties.pb(),
 	}
 }
 

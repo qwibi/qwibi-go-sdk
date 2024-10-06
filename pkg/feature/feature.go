@@ -20,23 +20,26 @@ type QFeature struct {
 	Feature
 }
 
-func NewFeature(fid string, geometry *sdkGeometry.QGeometry, properties []byte) *QFeature {
+func NewFeature(fid string, geometry *sdkGeometry.QGeometry, b []byte) (*QFeature, error) {
 	switch v := geometry.Geometry.(type) {
 	case *sdkGeometry.QPoint:
+
+		properties, err := point.NewPointFeaturePropertiesByte(b)
+		if err != nil {
+			return nil, qlog.Error(err)
+		}
+
 		pointFeature, err := point.NewPointFeature(v,
 			point.WithFid(fid),
 			point.WithProperties(properties),
 		)
 		if err != nil {
-			qlog.Error(err)
-			return nil
+			return nil, qlog.Error(err)
 		}
-		return &QFeature{pointFeature}
+		return &QFeature{pointFeature}, nil
 	default:
-		qlog.Warnf("unknown geometry type: %T", v)
+		return nil, qlog.Errorf("unknown geometry type: %T", v)
 	}
-
-	return nil
 }
 
 // NewGeometryPb ...

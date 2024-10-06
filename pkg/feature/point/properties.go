@@ -2,78 +2,35 @@ package point
 
 import (
 	"encoding/json"
+	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/proto"
 )
 
-type QPointProperties struct {
-	fid       string
-	imageName string
+type QPointFeatureProperties struct {
+	ImageURI *string `json:"image_uri"`
 }
 
-func NewPointProperties(options ...PointOption) *QPointProperties {
-	h := &QPointProperties{}
-	for _, opt := range options {
-		opt(h)
+func NewPointProperties() *QPointFeatureProperties {
+	return &QPointFeatureProperties{}
+}
+
+func NewPointFeaturePropertiesPb(pb *proto.QPBxPointFeature_Properties) *QPointFeatureProperties {
+	properties := NewPointProperties()
+	properties.ImageURI = pb.ImageUri
+	return properties
+}
+
+func NewPointFeaturePropertiesByte(b []byte) (*QPointFeatureProperties, error) {
+	pb := &proto.QPBxPointFeature_Properties{}
+	err := json.Unmarshal(b, pb)
+	if err != nil {
+		return nil, qlog.Error(err)
 	}
-
-	return h
+	return NewPointFeaturePropertiesPb(pb), nil
 }
 
-func NewPointPropertiesPb(in *proto.QPBxPointFeature_Properties) *QPointProperties {
-	return NewPointProperties(
-		WithImageName(in.Image),
-	)
-}
-
-func (c *QPointProperties) Pb() *proto.QPBxPointFeature_Properties {
+func (c *QPointFeatureProperties) pb() *proto.QPBxPointFeature_Properties {
 	return &proto.QPBxPointFeature_Properties{
-		Image: c.imageName,
+		ImageUri: c.ImageURI,
 	}
 }
-
-type PointOption func(c *QPointProperties)
-
-func WithFid(fid string) PointOption {
-	return func(c *QPointProperties) {
-		c.fid = fid
-	}
-}
-
-func WithProperties(properties []byte) PointOption {
-	return func(c *QPointProperties) {
-		json.Unmarshal(properties, c)
-	}
-}
-
-func WithImageName(name string) PointOption {
-	return func(c *QPointProperties) {
-		c.imageName = name
-	}
-}
-
-//
-//func WithPointGid(gid string) PointOption {
-//	return func(c *QGeoPoint) {
-//		if gid != "" {
-//			c.gid = gid
-//		}
-//	}
-//}
-//
-//func WithPointGeometry(geometry *geometry.QPoint) PointOption {
-//	return func(c *QGeoPoint) {
-//		c.feature = geometry
-//	}
-//}
-//
-//func WithPointProperties(properties []byte) PointOption {
-//	return func(c *QGeoPoint) {
-//		c.properties = properties
-//	}
-//}
-//
-//func WithPointCoordinates(coordinates ...float64) PointOption {
-//	return func(c *QGeoPoint) {
-//		c.feature.Coordinates = coordinates
-//	}
-//}

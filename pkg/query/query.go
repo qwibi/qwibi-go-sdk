@@ -6,13 +6,11 @@ import (
 )
 
 type QQuery struct {
-	LayerId string `json:"layerId"`
+	Location string `json:"location"`
 }
 
-func NewQuery(layerId string, options ...QueryOption) (*QQuery, error) {
-	h := &QQuery{
-		LayerId: layerId,
-	}
+func NewQuery(options ...QueryOption) (*QQuery, error) {
+	h := &QQuery{}
 
 	for _, opt := range options {
 		err := opt(h)
@@ -25,8 +23,5 @@ func NewQuery(layerId string, options ...QueryOption) (*QQuery, error) {
 }
 
 func NewQueryPb(in *proto.QPBxQuery) (*QQuery, error) {
-	if in == nil {
-		return nil, qlog.Error("bed parameter type nil")
-	}
-	return NewQuery(in.LayerId)
+	return NewQuery()
 }

@@ -20,7 +20,7 @@ func NewQueryResponse(requestId string, objects []*geo.QGeoObject) (*QQueryRespo
 }
 
 func NewQueryResponsePb(in *proto.QPBxQueryResponse) (*QQueryResponse, error) {
-	objects := make([]*geo.QGeoObject, len(in.Objects))
+	objects := make([]*geo.QGeoObject, 0)
 	for _, pbObject := range in.Objects {
 		object, err := geo.NewGeoObjectPb(pbObject)
 		if err != nil {
@@ -33,7 +33,7 @@ func NewQueryResponsePb(in *proto.QPBxQueryResponse) (*QQueryResponse, error) {
 }
 
 func (c *QQueryResponse) Pb() *proto.QPBxQueryResponse {
-	pbObjects := make([]*proto.QPBxGeoObject, len(c.Objects))
+	pbObjects := make([]*proto.QPBxGeoObject, 0)
 	for _, object := range c.Objects {
 		pbObjects = append(pbObjects, object.Pb())
 	}

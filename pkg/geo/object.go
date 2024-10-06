@@ -12,18 +12,20 @@ type QGeoObject struct {
 	Properties []byte
 }
 
-func NewGeoObject(gid string, features []*feature.QFeature, properties []byte) (*QGeoObject, error) {
+func NewGeoObject(features []*feature.QFeature, option ...ObjectOption) (*QGeoObject, error) {
 	if features == nil {
 		return nil, qlog.Error("features is not defined")
 	}
 
-	object := &QGeoObject{
-		Gid:        gid,
-		Features:   features,
-		Properties: properties,
+	h := &QGeoObject{
+		Features: features,
 	}
 
-	return object, nil
+	for _, opt := range option {
+		opt(h)
+	}
+
+	return h, nil
 }
 
 func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject, error) {
@@ -37,7 +39,10 @@ func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject, error) {
 		features = append(features, feature)
 	}
 
-	return NewGeoObject(in.Gid, features, in.Properties)
+	return NewGeoObject(features,
+		WithGid(in.Gid),
+		WithProperties(in.Properties),
+	)
 }
 
 func (c *QGeoObject) Pb() *proto.QPBxGeoObject {

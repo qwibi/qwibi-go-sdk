@@ -22,15 +22,15 @@ func WithLayerName(name string) LayerOption {
 	}
 }
 
-func WithLayerPublic(f bool) LayerOption {
+func WithLayerPublic(public bool) LayerOption {
 	return func(c *QLayer) {
-		c.Public = f
+		c.Public = public
 	}
 }
 
-func WithLayerProperties(properties []byte) LayerOption {
+func WithLayerProperties(b []byte) LayerOption {
 	return func(c *QLayer) {
-		c.Properties = properties
+		c.Properties = b
 	}
 }
 
