@@ -17,7 +17,7 @@ func WithGid(gid string) ObjectOption {
 	}
 }
 
-func WithProperties(b []byte) ObjectOption {
+func WithProperties(b map[string]interface{}) ObjectOption {
 	return func(c *QGeoObject) error {
 		if b != nil {
 			c.Properties = b

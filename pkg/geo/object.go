@@ -4,12 +4,13 @@ import (
 	"github.com/qwibi/qwibi-go-sdk/pkg/feature"
 	"github.com/qwibi/qwibi-go-sdk/pkg/qlog"
 	"github.com/qwibi/qwibi-go-sdk/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type QGeoObject struct {
 	Gid        string
 	Features   []*feature.QFeature
-	Properties []byte
+	Properties map[string]interface{}
 }
 
 func NewGeoObject(features []*feature.QFeature, option ...ObjectOption) (*QGeoObject, error) {
@@ -41,7 +42,7 @@ func NewGeoObjectPb(in *proto.QPBxGeoObject) (*QGeoObject, error) {
 
 	return NewGeoObject(features,
 		WithGid(in.Gid),
-		WithProperties(in.Properties),
+		WithProperties(in.Properties.AsMap()),
 	)
 }
 
@@ -50,9 +51,15 @@ func (c *QGeoObject) Pb() *proto.QPBxGeoObject {
 	for _, feature := range c.Features {
 		featuresPb = append(featuresPb, feature.FeaturePb())
 	}
+
+	pbProperties, err := structpb.NewStruct(c.Properties)
+	if err != nil {
+		qlog.Error(err)
+	}
+
 	return &proto.QPBxGeoObject{
 		Gid:        c.Gid,
 		Features:   featuresPb,
-		Properties: c.Properties,
+		Properties: pbProperties,
 	}
 }

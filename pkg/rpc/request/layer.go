@@ -21,7 +21,7 @@ func NewLayerRequest(options ...layer.LayerOption) (*QLayerRequest, error) {
 		Layer:     layer,
 	}
 
-	return req, layer.Valid()
+	return req, nil
 }
 
 func NewLayerRequestPb(in *proto.QPBxLayerRequest) (*QLayerRequest, error) {

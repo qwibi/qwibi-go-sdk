@@ -25,8 +25,10 @@ func (c *QApiClient) Auth(a auth.QAuth) (*session.QSession, error) {
 
 func (c *QApiClient) AnonymousAuth() (*session.QSession, error) {
 	req := &proto.QPBxAuthRequest{
-		Auth: &proto.QPBxAuthRequest_Anonym{
-			Anonym: &proto.QPBxAnonymAuth{},
+		Auth: &proto.QPBxAuth{
+			Type: &proto.QPBxAuth_Anonym{
+				Anonym: &proto.QPBxAnonymAuth{},
+			},
 		},
 	}
 
@@ -47,10 +49,12 @@ func (c *QApiClient) AnonymousAuth() (*session.QSession, error) {
 
 func (c *QApiClient) BasicAuth(login string, password string) (*session.QSession, error) {
 	req := &proto.QPBxAuthRequest{
-		Auth: &proto.QPBxAuthRequest_Basic{
-			Basic: &proto.QPBxBasicAuth{
-				Login:    login,
-				Password: password,
+		Auth: &proto.QPBxAuth{
+			Type: &proto.QPBxAuth_Basic{
+				Basic: &proto.QPBxBasicAuth{
+					Login:    login,
+					Password: password,
+				},
 			},
 		},
 	}

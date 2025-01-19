@@ -12,7 +12,7 @@ type QStream struct {
 	*QApiClient
 }
 
-func (c *QStream) Post(object geo.Object) error {
+func (c *QStream) Post(object geo.QGeoObject) error {
 	req := &proto.QPBxPostRequest{
 		LayerId: c.layer.LayerId,
 		Object:  object.Pb(),
