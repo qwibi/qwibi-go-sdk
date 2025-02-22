@@ -14,7 +14,7 @@ type QStream struct {
 
 func (c *QStream) Post(object geo.QGeoObject) error {
 	req := &proto.QPBxPostRequest{
-		LayerId: c.layer.LayerId,
+		LayerId: c.layer.PrivateId,
 		Object:  object.Pb(),
 	}
 

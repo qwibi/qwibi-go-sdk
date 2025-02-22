@@ -6,25 +6,35 @@ import (
 
 type LayerOption func(config *QLayer)
 
-func WithLayerGid(gid string) LayerOption {
+func WithLaeyrId(layerId string) LayerOption {
 	return func(c *QLayer) {
-		if gid != "" {
-			c.LayerId = gid
+		if layerId != "" {
+			c.LayerId = layerId
 		} else {
 			c.LayerId = utils.NewID()
 		}
 	}
 }
 
-func WithLayerName(name string) LayerOption {
+func WithPublicId(publicId string) LayerOption {
 	return func(c *QLayer) {
-		c.Name = name
+		if publicId != "" {
+			c.PublicId = publicId
+		} else {
+			c.PublicId = utils.NewID()
+		}
 	}
 }
 
-func WithLayerPublic(public bool) LayerOption {
+func WithIsPublic(f bool) LayerOption {
 	return func(c *QLayer) {
-		c.Public = public
+		c.IsPublic = f
+	}
+}
+
+func WithLayerName(name string) LayerOption {
+	return func(c *QLayer) {
+		c.Name = name
 	}
 }
 

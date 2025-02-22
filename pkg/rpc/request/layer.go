@@ -26,9 +26,10 @@ func NewLayerRequest(options ...layer.LayerOption) (*QLayerRequest, error) {
 
 func NewLayerRequestPb(in *proto.QPBxLayerRequest) (*QLayerRequest, error) {
 	return NewLayerRequest(
-		layer.WithLayerGid(in.LayerId),
+		layer.WithLaeyrId(in.LayerId),
+		layer.WithPublicId(in.PublicId),
+		layer.WithIsPublic(in.IsPublic),
 		layer.WithLayerName(in.Name),
-		layer.WithLayerPublic(in.Public),
 		layer.WithLayerProperties(in.Properties),
 		layer.WithLayerCommands(in.Commands),
 	)
@@ -38,8 +39,8 @@ func (c *QLayerRequest) Pb() *proto.QPBxLayerRequest {
 	return &proto.QPBxLayerRequest{
 		RequestId:  c.RequestId,
 		LayerId:    c.Layer.LayerId,
+		PublicId:   c.Layer.PublicId,
 		Name:       c.Layer.Name,
-		Public:     c.Layer.Public,
 		Properties: c.Layer.Properties,
 		Commands:   c.Layer.Commands,
 	}

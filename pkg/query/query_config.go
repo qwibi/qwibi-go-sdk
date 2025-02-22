@@ -7,7 +7,7 @@ type QueryOption func(config *QQuery) error
 //		if layerId == "" {
 //			return qlog.Error("layer ID is not defined")
 //		} else {
-//			c.LayerId = layerId
+//			c.PrivateId = layerId
 //		}
 //		return nil
 //	}

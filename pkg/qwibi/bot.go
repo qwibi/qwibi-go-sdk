@@ -61,7 +61,7 @@ func (c *geoBot) Publish(requestId string, layerId string, response *command.QRe
 //	}
 //
 //	//req := &proto.QPBxStreamRequest{
-//	//	LayerId: c.layer.LayerId(),
+//	//	PrivateId: c.layer.PrivateId(),
 //	//}
 //
 //	client, err := c.apiClient.Bot(c.ctx, grpc.EmptyCallOption{})
