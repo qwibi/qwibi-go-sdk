@@ -35,7 +35,7 @@ func NewLayerResponsePb(in *proto.QPBxLayerResponse) (*QLayerResponse, error) {
 		return nil, qlog.Error("bad parameter type nil")
 	}
 
-	layer, err := layer.NewGeoLayerPb(in.Layer)
+	layer, err := layer.NewLayerPb(in.Layer)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}

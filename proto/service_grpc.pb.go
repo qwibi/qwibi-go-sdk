@@ -35,6 +35,8 @@ type QPBxApiClient interface {
 	Get(ctx context.Context, in *QPBxGetRequest, opts ...grpc.CallOption) (*QPBxGetResponse, error)
 	// Query
 	Query(ctx context.Context, in *QPBxQueryRequest, opts ...grpc.CallOption) (*QPBxQueryResponse, error)
+	// Search
+	Search(ctx context.Context, in *QPBxSearchRequest, opts ...grpc.CallOption) (*QPBxSearchResponse, error)
 	// Token
 	Token(ctx context.Context, in *QPBxTokenRequest, opts ...grpc.CallOption) (*QPBxTokenResponse, error)
 	// Command
@@ -110,6 +112,15 @@ func (c *qPBxApiClient) Get(ctx context.Context, in *QPBxGetRequest, opts ...grp
 func (c *qPBxApiClient) Query(ctx context.Context, in *QPBxQueryRequest, opts ...grpc.CallOption) (*QPBxQueryResponse, error) {
 	out := new(QPBxQueryResponse)
 	err := c.cc.Invoke(ctx, "/QPBxApi/Query", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *qPBxApiClient) Search(ctx context.Context, in *QPBxSearchRequest, opts ...grpc.CallOption) (*QPBxSearchResponse, error) {
+	out := new(QPBxSearchResponse)
+	err := c.cc.Invoke(ctx, "/QPBxApi/Search", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -213,6 +224,8 @@ type QPBxApiServer interface {
 	Get(context.Context, *QPBxGetRequest) (*QPBxGetResponse, error)
 	// Query
 	Query(context.Context, *QPBxQueryRequest) (*QPBxQueryResponse, error)
+	// Search
+	Search(context.Context, *QPBxSearchRequest) (*QPBxSearchResponse, error)
 	// Token
 	Token(context.Context, *QPBxTokenRequest) (*QPBxTokenResponse, error)
 	// Command
@@ -247,6 +260,9 @@ func (UnimplementedQPBxApiServer) Get(context.Context, *QPBxGetRequest) (*QPBxGe
 }
 func (UnimplementedQPBxApiServer) Query(context.Context, *QPBxQueryRequest) (*QPBxQueryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Query not implemented")
+}
+func (UnimplementedQPBxApiServer) Search(context.Context, *QPBxSearchRequest) (*QPBxSearchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
 }
 func (UnimplementedQPBxApiServer) Token(context.Context, *QPBxTokenRequest) (*QPBxTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Token not implemented")
@@ -398,6 +414,24 @@ func _QPBxApi_Query_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _QPBxApi_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QPBxSearchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QPBxApiServer).Search(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/QPBxApi/Search",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QPBxApiServer).Search(ctx, req.(*QPBxSearchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _QPBxApi_Token_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QPBxTokenRequest)
 	if err := dec(in); err != nil {
@@ -520,6 +554,10 @@ var QPBxApi_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Query",
 			Handler:    _QPBxApi_Query_Handler,
+		},
+		{
+			MethodName: "Search",
+			Handler:    _QPBxApi_Search_Handler,
 		},
 		{
 			MethodName: "Token",

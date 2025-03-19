@@ -79,7 +79,7 @@ func (c *QApiClient) Layer(options ...layer.LayerOption) (*response.QLayerRespon
 		return nil, qlog.Error(err)
 	}
 
-	layer, err := layer.NewGeoLayerPb(resPb.Layer)
+	layer, err := layer.NewLayerPb(resPb.Layer)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}

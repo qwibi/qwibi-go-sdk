@@ -7,8 +7,8 @@ import (
 
 // QLayer ...
 type QLayer struct {
+	Gid        string            `json:"gid"`
 	LayerId    string            `json:"layer_id"`
-	PublicId   string            `json:"public_id"`
 	IsPublic   bool              `json:"is_public"`
 	Name       string            `json:"name"`
 	Properties []byte            `json:"properties"`
@@ -26,10 +26,10 @@ func NewLayer(options ...LayerOption) *QLayer {
 	return h
 }
 
-func NewGeoLayerPb(in *proto.QPBxLayer) (*QLayer, error) {
+func NewLayerPb(in *proto.QPBxLayer) (*QLayer, error) {
 	layer := NewLayer(
+		WithGid(in.Gid),
 		WithLaeyrId(in.LayerId),
-		WithPublicId(in.PublicId),
 		WithIsPublic(in.IsPublic),
 		WithLayerName(in.Name),
 		WithLayerProperties(in.Properties),
@@ -41,8 +41,9 @@ func NewGeoLayerPb(in *proto.QPBxLayer) (*QLayer, error) {
 
 func (c *QLayer) Pb() *proto.QPBxLayer {
 	return &proto.QPBxLayer{
+		Gid:        c.Gid,
 		LayerId:    c.LayerId,
-		PublicId:   c.PublicId,
+		IsPublic:   c.IsPublic,
 		Name:       c.Name,
 		Properties: c.Properties,
 		Commands:   c.Commands,

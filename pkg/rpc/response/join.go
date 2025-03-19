@@ -21,7 +21,7 @@ func NewJoinResponse(requestId string, layer *layer.QLayer) (*QJoinResponse, err
 }
 
 func NewJoinResponsePb(in *proto.QPBxJoinResponse) (*QJoinResponse, error) {
-	layer, err := layer.NewGeoLayerPb(in.Layer)
+	layer, err := layer.NewLayerPb(in.Layer)
 	if err != nil {
 		return nil, qlog.Error(err)
 	}
